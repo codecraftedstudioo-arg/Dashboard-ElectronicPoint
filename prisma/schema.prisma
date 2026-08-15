@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductType {
+  IPHONE
+  MACBOOK
+}
+
+enum ProductStatus {
+  AVAILABLE
+  SOLD
+  RESERVED
+  ARCHIVED
+}
+
+enum PhysicalCondition {
+  IMPECABLE
+  EXCELENTE
+  MUY_BUENO
+  BUENO
+  CON_DETALLES
+}
+
+enum SaleChannel {
+  CLIENTE
+  FACEBOOK_MARKETPLACE
+  INSTAGRAM
+  REFERIDO
+  OTRO
+}
+
+model Product {
+  id                 String             @id @default(cuid())
+  internalCode       String             @unique
+  type               ProductType
+  name               String
+  storage            String
+  color              String
+  batteryCondition   Int?
+  physicalCondition  PhysicalCondition
+  cost               Float
+  salePrice          Float
+  description        String?
+  status             ProductStatus      @default(AVAILABLE)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  images             ProductImage[]
+  sale               Sale?
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  url       String
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Sale {
+  id         String      @id @default(cuid())
+  productId  String      @unique
+  soldPrice  Float
+  channel    SaleChannel
+  notes      String?
+  soldAt     DateTime    @default(now())
+  createdAt  DateTime    @default(now())
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
+
+model AppCounter {
+  id    String @id
+  value Int    @default(0)
+}

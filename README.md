@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stock Apple USADOS
 
-## Getting Started
+Dashboard interno para administrar stock de iPhones y MacBooks usados.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 + TypeScript + Tailwind CSS 4
+- Prisma (SQLite local; listo para PostgreSQL/Supabase)
+- Supabase Storage (opcional; fallback a `/public/uploads`)
+
+## Arranque
 
 ```bash
+npm install
+cp .env.example .env   # ya incluye DATABASE_URL=file:./dev.db
+npx prisma db push
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrí [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script | Descripción |
+|--------|-------------|
+| `npm run dev` | Servidor de desarrollo |
+| `npm run db:seed` | Carga los 8 iPhones de referencia + ventas demo |
+| `npm run db:reset` | Reinicia DB y vuelve a seedear |
+| `npm run build` | Build de producción |
 
-## Learn More
+## Moneda
 
-To learn more about Next.js, take a look at the following resources:
+Todo el sistema trabaja en **USD**. Formato: `$1.250 USD`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Generador de listas
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+La vista previa replica el formato WhatsApp:
 
-## Deploy on Vercel
+```
+LISTA IPHONE USADOS 📱
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+(30 días de Garantía)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+• *iPhone 16 Pro Max 256GB Natural* 🔋 92% 900 USD
+```
+
+## Supabase (producción)
+
+En `.env`:
+
+```
+DATABASE_URL=postgresql://...   # cambiar provider a postgresql en prisma/schema.prisma
+NEXT_PUBLIC_SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE_KEY=...
+SUPABASE_STORAGE_BUCKET=product-images
+```
