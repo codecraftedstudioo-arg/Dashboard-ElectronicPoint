@@ -42,6 +42,13 @@ export async function uploadProductImage(file: File): Promise<string> {
     return data.publicUrl;
   }
 
+  // On Vercel/production the filesystem is not a durable image host.
+  if (process.env.VERCEL || process.env.NODE_ENV === "production") {
+    throw new Error(
+      "Supabase Storage no está configurado. Definí NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY.",
+    );
+  }
+
   const dir = path.join(process.cwd(), "public", "uploads");
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, filename), bytes);
