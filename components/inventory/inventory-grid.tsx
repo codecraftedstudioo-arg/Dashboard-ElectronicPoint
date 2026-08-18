@@ -169,21 +169,21 @@ export function InventoryGrid({ products }: { products: InventoryItem[] }) {
             <Link key={product.id} href={`/equipos/${product.id}`}>
               <Card className="h-full transition-colors hover:border-accent/30">
                 <div className="flex gap-3">
-                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-[#121212]">
+                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-input">
                     {img ? (
                       <Image src={img} alt={product.name} fill className="object-cover" unoptimized />
                     ) : null}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-xs text-muted">{product.internalCode}</div>
-                    <div className="truncate font-medium text-white">
+                    <div className="truncate font-medium text-foreground">
                       {product.name}
                     </div>
-                    <div className="mt-1 text-sm text-zinc-400">
+                    <div className="mt-1 text-sm text-muted">
                       {product.storage} · {product.color}
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1.5">
-                      <Badge className="border-card-border text-zinc-300">
+                      <Badge className="border-card-border text-muted">
                         {PRODUCT_TYPE_LABELS[product.type]}
                       </Badge>
                       <Badge className={CONDITION_COLORS[product.physicalCondition]}>

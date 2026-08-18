@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Package, DollarSign, Tag, TrendingUp, Plus } from "lucide-react";
 import { PageHeader, Button } from "@/components/ui";
 import { CurrencySelector } from "@/components/layout/app-shell";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { StatCard } from "@/components/dashboard/stat-card";
 import {
   RecentProductsCard,
@@ -48,6 +49,7 @@ export default async function DashboardPage() {
         subtitle="Resumen general de tu inventario"
         actions={
           <>
+            <ThemeToggle />
             <CurrencySelector />
             <Link href="/agregar">
               <Button>

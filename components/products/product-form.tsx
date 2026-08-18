@@ -234,7 +234,7 @@ export function ProductForm({
           </div>
         </div>
 
-        <div className="grid gap-3 rounded-xl border border-card-border bg-[#121212] p-4 sm:grid-cols-2">
+        <div className="grid gap-3 rounded-xl border border-card-border bg-input p-4 sm:grid-cols-2">
           <div>
             <div className="text-xs text-muted">Ganancia (auto)</div>
             <div className="mt-1 text-lg font-semibold text-accent">
@@ -243,7 +243,7 @@ export function ProductForm({
           </div>
           <div>
             <div className="text-xs text-muted">Margen (auto)</div>
-            <div className="mt-1 text-lg font-semibold text-white">{margin}</div>
+            <div className="mt-1 text-lg font-semibold text-foreground">{margin}</div>
           </div>
         </div>
 
@@ -268,7 +268,7 @@ export function ProductForm({
                   <div
                     key={img.id}
                     className={cn(
-                      "group relative aspect-square overflow-hidden rounded-xl border border-card-border bg-[#121212]",
+                      "group relative aspect-square overflow-hidden rounded-xl border border-card-border bg-input",
                       busy && "opacity-50",
                     )}
                   >
@@ -280,7 +280,7 @@ export function ProductForm({
                       unoptimized
                     />
                     {img.isPrimary ? (
-                      <span className="absolute left-2 top-2 rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-black">
+                      <span className="absolute left-2 top-2 rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-accent-contrast">
                         Principal
                       </span>
                     ) : null}
@@ -290,7 +290,7 @@ export function ProductForm({
                           type="button"
                           disabled={busy || pending}
                           onClick={() => handleSetPrimary(img.id)}
-                          className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-white/10 px-2 py-1.5 text-[11px] font-medium text-white hover:bg-white/20 disabled:opacity-50"
+                          className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-white/10 px-2 py-1.5 text-[11px] font-medium text-foreground hover:bg-white/20 disabled:opacity-50"
                           title="Marcar como principal"
                         >
                           <Star className="h-3.5 w-3.5" />
@@ -328,7 +328,7 @@ export function ProductForm({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-card-border bg-[#121212] px-4 py-3 text-sm font-medium text-white transition-colors hover:border-accent/40 hover:bg-white/[0.03] sm:w-auto"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-card-border bg-input px-4 py-3 text-sm font-medium text-foreground transition-colors hover:border-accent/40 hover:bg-hover sm:w-auto"
           >
             <ImagePlus className="h-4 w-4 text-accent" />
             Agregar Imagen
@@ -345,7 +345,7 @@ export function ProductForm({
                 {selectedFiles.map((file, index) => (
                   <div
                     key={`${file.name}-${file.size}-${index}`}
-                    className="relative overflow-hidden rounded-xl border border-accent/30 bg-[#121212]"
+                    className="relative overflow-hidden rounded-xl border border-accent/30 bg-input"
                   >
                     <div className="relative aspect-square">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -355,13 +355,13 @@ export function ProductForm({
                         className="h-full w-full object-cover"
                       />
                     </div>
-                    <div className="truncate px-2 py-1.5 text-[11px] text-zinc-300">
+                    <div className="truncate px-2 py-1.5 text-[11px] text-muted">
                       {file.name}
                     </div>
                     <button
                       type="button"
                       onClick={() => removeSelectedFile(index)}
-                      className="absolute right-1.5 top-1.5 rounded-full bg-black/70 p-1 text-white hover:bg-red-500/80"
+                      className="absolute right-1.5 top-1.5 rounded-full bg-black/70 p-1 text-foreground hover:bg-red-500/80"
                       title="Quitar de la selección"
                     >
                       <X className="h-3.5 w-3.5" />

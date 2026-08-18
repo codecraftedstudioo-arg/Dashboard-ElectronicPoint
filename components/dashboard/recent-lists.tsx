@@ -43,7 +43,7 @@ export function RecentProductsCard({
   return (
     <Card className="h-full">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-white md:text-lg">
+        <h2 className="text-base font-semibold text-foreground md:text-lg">
           Últimos equipos ingresados
         </h2>
         <Link
@@ -63,7 +63,7 @@ export function RecentProductsCard({
               href={`/equipos/${product.id}`}
               className="flex items-center gap-3 rounded-xl border border-transparent px-2 py-2.5 transition-colors hover:border-card-border hover:bg-white/[0.03]"
             >
-              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#121212]">
+              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-input">
                 {img ? (
                   <Image
                     src={img}
@@ -75,7 +75,7 @@ export function RecentProductsCard({
                 ) : null}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium text-white">
+                <div className="truncate text-sm font-medium text-foreground">
                   {product.name}
                 </div>
                 <div className="truncate text-xs text-muted">
@@ -94,7 +94,7 @@ export function RecentProductsCard({
                 </div>
               </div>
               <div className="shrink-0 text-right">
-                <div className="text-sm font-medium text-white">
+                <div className="text-sm font-medium text-foreground">
                   {formatUSD(product.salePrice)}
                 </div>
                 <div className="mt-0.5 text-[11px] text-muted">Venta</div>
@@ -134,7 +134,7 @@ export function RecentSalesCard({
   return (
     <Card className="h-full">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-white md:text-lg">
+        <h2 className="text-base font-semibold text-foreground md:text-lg">
           Ventas recientes
         </h2>
         <Link
@@ -154,7 +154,7 @@ export function RecentSalesCard({
               href={`/equipos/${sale.product.id}`}
               className="flex items-center gap-3 rounded-xl border border-transparent px-2 py-2.5 transition-colors hover:border-card-border hover:bg-white/[0.03]"
             >
-              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#121212]">
+              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-input">
                 {img ? (
                   <Image
                     src={img}
@@ -166,7 +166,7 @@ export function RecentSalesCard({
                 ) : null}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium text-white">
+                <div className="truncate text-sm font-medium text-foreground">
                   {sale.product.name}
                 </div>
                 <div className="truncate text-xs text-muted">
@@ -180,7 +180,7 @@ export function RecentSalesCard({
                 </div>
               </div>
               <div className="shrink-0 text-right">
-                <div className="text-sm font-medium text-white">
+                <div className="text-sm font-medium text-foreground">
                   {formatUSD(sale.soldPrice)}
                 </div>
                 <div className="mt-1 text-xs font-medium text-accent">

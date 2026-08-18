@@ -26,14 +26,14 @@ export function SellModal({
       <div className="w-full max-w-md rounded-2xl border border-card-border bg-card p-5 shadow-2xl">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-semibold text-white">Registrar venta</h3>
+            <h3 className="text-lg font-semibold text-foreground">Registrar venta</h3>
             <p className="text-sm text-muted">
               El equipo no se elimina; pasa a estado vendido.
             </p>
           </div>
           <button
             type="button"
-            className="text-muted hover:text-white"
+            className="text-muted hover:text-foreground"
             onClick={() => setOpen(false)}
           >
             ✕

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import { Menu, Plus } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button, Select } from "@/components/ui";
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -26,7 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={() => setOpen((prev) => !prev)}
-            className="relative z-30 rounded-xl border border-card-border p-2 text-white"
+            className="relative z-30 rounded-xl border border-card-border p-2 text-foreground"
             aria-label={open ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={open}
             aria-controls="mobile-sidebar"
@@ -34,12 +35,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Menu className="h-5 w-5" />
           </button>
           <div className="text-sm font-semibold">Stock Apple</div>
-          <Link href="/agregar" className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
+          <Link href="/agregar">
             <Button className="!px-3 !py-2 text-xs">
               <Plus className="h-4 w-4" />
               Agregar
             </Button>
           </Link>
+          </div>
         </div>
         <main className="flex-1 overflow-x-hidden px-4 py-5 md:px-6 md:py-6 lg:px-8">
           {children}
@@ -57,7 +61,7 @@ export function CurrencySelector() {
       <Select
         defaultValue="USD"
         aria-label="Moneda"
-        className="!w-auto !border-0 !bg-transparent !px-1 !py-0 font-semibold text-white !ring-0"
+        className="!w-auto !border-0 !bg-transparent !px-1 !py-0 font-semibold text-foreground !ring-0"
       >
         <option value="USD">USD</option>
       </Select>

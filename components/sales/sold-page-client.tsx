@@ -156,13 +156,13 @@ export function SoldPageClient({
             <Link key={sale.id} href={`/equipos/${sale.product.id}`}>
               <Card className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-[#121212]">
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-input">
                     {img ? (
                       <Image src={img} alt={sale.product.name} fill className="object-cover" unoptimized />
                     ) : null}
                   </div>
                   <div className="min-w-0">
-                    <div className="font-medium text-white">
+                    <div className="font-medium text-foreground">
                       {sale.product.name} {sale.product.storage}
                     </div>
                     <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted">

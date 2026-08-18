@@ -22,7 +22,7 @@ function renderPreviewLine(line: string) {
   return parts.map((part, i) => {
     if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
       return (
-        <strong key={i} className="font-semibold text-white">
+        <strong key={i} className="font-semibold text-foreground">
           {part.slice(1, -1)}
         </strong>
       );
@@ -85,7 +85,7 @@ export function ListGenerator({
   return (
     <Card className={cn("flex h-full flex-col", compact && "p-4")}>
       <div>
-        <h2 className="text-base font-semibold text-white md:text-lg">
+        <h2 className="text-base font-semibold text-foreground md:text-lg">
           Generar lista de equipos
         </h2>
         <p className="mt-1 text-sm text-muted">
@@ -136,7 +136,7 @@ export function ListGenerator({
             {products.map((p) => {
               const checked = selectedIds.includes(p.id);
               return (
-                <label key={p.id} className="flex items-center gap-2 text-sm text-zinc-300">
+                <label key={p.id} className="flex items-center gap-2 text-sm text-muted">
                   <input
                     type="checkbox"
                     checked={checked}
@@ -187,13 +187,13 @@ export function ListGenerator({
             ).map(([key, label]) => (
               <label
                 key={key}
-                className="flex cursor-pointer items-center gap-2.5 text-sm text-zinc-300"
+                className="flex cursor-pointer items-center gap-2.5 text-sm text-muted"
               >
                 <span
                   className={cn(
                     "flex h-4 w-4 items-center justify-center rounded border",
                     fields[key]
-                      ? "border-accent bg-accent text-black"
+                      ? "border-accent bg-accent text-accent-contrast"
                       : "border-card-border bg-transparent",
                   )}
                 >
@@ -218,7 +218,7 @@ export function ListGenerator({
 
       <div className="mt-5 flex min-h-0 flex-1 flex-col">
         <div className="mb-2 flex items-center justify-between">
-          <div className="text-sm font-medium text-zinc-300">Vista previa</div>
+          <div className="text-sm font-medium text-muted">Vista previa</div>
           {generated ? (
             <span className="text-[11px] text-accent">Lista actualizada</span>
           ) : null}
@@ -232,7 +232,7 @@ export function ListGenerator({
               backgroundSize: "22px 22px",
             }}
           />
-          <div className="relative max-h-64 overflow-y-auto rounded-2xl bg-whatsapp p-4 text-[13px] leading-relaxed text-zinc-100 shadow-lg">
+          <div className="relative max-h-64 overflow-y-auto rounded-2xl bg-whatsapp p-4 text-[13px] leading-relaxed text-foreground shadow-lg">
             {livePreview.split("\n").map((line, i) => (
               <div key={i} className={line === "" ? "h-2" : ""}>
                 {renderPreviewLine(line)}

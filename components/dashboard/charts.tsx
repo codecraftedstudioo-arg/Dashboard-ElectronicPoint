@@ -34,7 +34,7 @@ export function FinancialSummaryChart({
 
   return (
     <Card>
-      <h2 className="text-base font-semibold text-white md:text-lg">
+      <h2 className="text-base font-semibold text-foreground md:text-lg">
         Resumen financiero
       </h2>
       <div className="mt-4 grid gap-4 md:grid-cols-[180px_1fr] md:items-center">
@@ -67,14 +67,14 @@ export function FinancialSummaryChart({
         <div className="space-y-3">
           {data.map((item, i) => (
             <div key={item.name} className="flex items-center justify-between gap-3 text-sm">
-              <div className="flex items-center gap-2 text-zinc-300">
+              <div className="flex items-center gap-2 text-muted">
                 <span
                   className="h-2.5 w-2.5 shrink-0 rounded-full"
                   style={{ background: FINANCIAL_COLORS[i] }}
                 />
                 {item.name}
               </div>
-              <div className="font-medium text-white">{formatUSD(item.value)}</div>
+              <div className="font-medium text-foreground">{formatUSD(item.value)}</div>
             </div>
           ))}
         </div>
@@ -100,7 +100,7 @@ export function ChannelSalesChart({
 
   return (
     <Card>
-      <h2 className="text-base font-semibold text-white md:text-lg">
+      <h2 className="text-base font-semibold text-foreground md:text-lg">
         Ventas por canal (30 días)
       </h2>
       <div className="mt-4 grid gap-4 md:grid-cols-[180px_1fr] md:items-center">
@@ -143,14 +143,14 @@ export function ChannelSalesChart({
                 key={item.key}
                 className="flex items-center justify-between gap-3 text-sm"
               >
-                <div className="flex items-center gap-2 text-zinc-300">
+                <div className="flex items-center gap-2 text-muted">
                   <span
                     className="h-2.5 w-2.5 shrink-0 rounded-full"
                     style={{ background: CHANNEL_COLORS[i] }}
                   />
                   {item.name}
                 </div>
-                <div className="text-zinc-400">
+                <div className="text-muted">
                   {item.value} ventas ({pct}%)
                 </div>
               </div>

@@ -12,6 +12,7 @@ import {
   Smartphone,
   X,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { cn } from "@/components/ui";
 
 const nav = [
@@ -57,7 +58,7 @@ export function Sidebar({
               <Smartphone className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-base font-semibold text-white">Stock Apple</div>
+              <div className="text-base font-semibold text-foreground">Stock Apple</div>
               <div className="text-[11px] font-medium tracking-[0.18em] text-muted">
                 USADOS
               </div>
@@ -89,7 +90,7 @@ export function Sidebar({
                   "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
                   active
                     ? "bg-accent-dim text-accent"
-                    : "text-zinc-400 hover:bg-white/5 hover:text-white",
+                    : "text-muted hover:bg-hover hover:text-foreground",
                 )}
               >
                 <Icon className="h-4.5 w-4.5" />
@@ -99,15 +100,21 @@ export function Sidebar({
           })}
         </nav>
 
-        <div className="mt-auto rounded-2xl border border-card-border bg-card p-4">
-          <div className="text-xs text-muted">Moneda actual</div>
-          <div className="mt-3 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-bold text-black">
-              $
-            </div>
-            <div>
-              <div className="text-sm font-semibold text-white">USD</div>
-              <div className="text-xs text-muted">Dólar estadounidense</div>
+        <div className="mt-auto space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs text-muted">Apariencia</span>
+            <ThemeToggle />
+          </div>
+          <div className="rounded-2xl border border-card-border bg-card p-4">
+            <div className="text-xs text-muted">Moneda actual</div>
+            <div className="mt-3 flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-contrast">
+                $
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-foreground">USD</div>
+                <div className="text-xs text-muted">Dólar estadounidense</div>
+              </div>
             </div>
           </div>
         </div>

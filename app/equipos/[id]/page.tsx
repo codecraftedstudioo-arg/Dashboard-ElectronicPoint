@@ -55,7 +55,7 @@ export default async function ProductDetailPage({
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <Card>
-          <div className="relative mb-4 aspect-square overflow-hidden rounded-2xl bg-[#121212] sm:aspect-[4/3]">
+          <div className="relative mb-4 aspect-square overflow-hidden rounded-2xl bg-input sm:aspect-[4/3]">
             {main ? (
               <Image src={main} alt={product.name} fill className="object-contain p-6" unoptimized />
             ) : (
@@ -103,7 +103,7 @@ export default async function ProductDetailPage({
             {product.description ? (
               <div>
                 <div className="text-sm text-muted">Descripción</div>
-                <p className="mt-1 text-sm text-zinc-200">{product.description}</p>
+                <p className="mt-1 text-sm text-foreground">{product.description}</p>
               </div>
             ) : null}
           </Card>
@@ -124,7 +124,7 @@ export default async function ProductDetailPage({
 
           {product.sale ? (
             <Card className="space-y-3">
-              <h3 className="font-semibold text-white">Venta registrada</h3>
+              <h3 className="font-semibold text-foreground">Venta registrada</h3>
               <Row label="Precio final" value={formatUSD(product.sale.soldPrice)} />
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted">Canal</span>
@@ -140,7 +140,7 @@ export default async function ProductDetailPage({
                 <Row label="Ganancia real" value={formatUSD(realProfit)} accent />
               ) : null}
               {product.sale.notes ? (
-                <p className="text-sm text-zinc-300">{product.sale.notes}</p>
+                <p className="text-sm text-muted">{product.sale.notes}</p>
               ) : null}
             </Card>
           ) : null}
@@ -162,7 +162,7 @@ function Row({
   return (
     <div className="flex items-center justify-between gap-3 text-sm">
       <span className="text-muted">{label}</span>
-      <span className={accent ? "font-medium text-accent" : "font-medium text-white"}>
+      <span className={accent ? "font-medium text-accent" : "font-medium text-foreground"}>
         {value}
       </span>
     </div>
@@ -181,7 +181,7 @@ function Metric({
   return (
     <div>
       <div className="text-xs text-muted">{label}</div>
-      <div className={`mt-1 text-lg font-semibold ${accent ? "text-accent" : "text-white"}`}>
+      <div className={`mt-1 text-lg font-semibold ${accent ? "text-accent" : "text-foreground"}`}>
         {value}
       </div>
     </div>
