@@ -28,6 +28,7 @@ export default async function EditProductPage({
           name: product.name,
           storage: product.storage,
           color: product.color,
+          imei: product.imei,
           batteryCondition: product.batteryCondition,
           physicalCondition: product.physicalCondition,
           cost: product.cost,

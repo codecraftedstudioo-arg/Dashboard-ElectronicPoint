@@ -22,6 +22,7 @@ type InventoryItem = {
   name: string;
   storage: string;
   color: string;
+  imei: string | null;
   batteryCondition: number | null;
   physicalCondition: PhysicalCondition;
   cost: number;
@@ -53,7 +54,8 @@ export function InventoryGrid({ products }: { products: InventoryItem[] }) {
           p.name.toLowerCase().includes(q) ||
           p.internalCode.toLowerCase().includes(q) ||
           p.storage.toLowerCase().includes(q) ||
-          p.color.toLowerCase().includes(q),
+          p.color.toLowerCase().includes(q) ||
+          (p.imei?.toLowerCase().includes(q) ?? false),
       );
     }
     if (type !== "ALL") list = list.filter((p) => p.type === type);

@@ -24,11 +24,17 @@ async function collectImages(formData: FormData) {
   return urls;
 }
 
+function parseImei(value: FormDataEntryValue | null): string | null {
+  const imei = String(value ?? "").trim();
+  return imei || null;
+}
+
 export async function createProduct(formData: FormData) {
   const type = String(formData.get("type")) as ProductType;
   const name = String(formData.get("name") || "").trim();
   const storage = String(formData.get("storage") || "").trim();
   const color = String(formData.get("color") || "").trim();
+  const imei = parseImei(formData.get("imei"));
   const batteryRaw = formData.get("batteryCondition");
   const batteryCondition =
     batteryRaw === null || batteryRaw === ""
@@ -55,6 +61,7 @@ export async function createProduct(formData: FormData) {
       name,
       storage,
       color,
+      imei,
       batteryCondition: type === "IPHONE" ? batteryCondition : null,
       physicalCondition,
       cost,
@@ -81,6 +88,7 @@ export async function updateProduct(productId: string, formData: FormData) {
   const name = String(formData.get("name") || "").trim();
   const storage = String(formData.get("storage") || "").trim();
   const color = String(formData.get("color") || "").trim();
+  const imei = parseImei(formData.get("imei"));
   const batteryRaw = formData.get("batteryCondition");
   const batteryCondition =
     batteryRaw === null || batteryRaw === ""
@@ -105,6 +113,7 @@ export async function updateProduct(productId: string, formData: FormData) {
       name,
       storage,
       color,
+      imei,
       batteryCondition: type === "IPHONE" ? batteryCondition : null,
       physicalCondition,
       cost,

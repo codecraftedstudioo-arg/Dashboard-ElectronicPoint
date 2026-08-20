@@ -38,6 +38,7 @@ export async function getAllProducts(filters?: {
       { internalCode: { contains: q } },
       { color: { contains: q } },
       { storage: { contains: q } },
+      { imei: { contains: q } },
     ];
   }
   return prisma.product.findMany({

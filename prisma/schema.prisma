@@ -43,6 +43,7 @@ model Product {
   name               String
   storage            String
   color              String
+  imei               String?
   batteryCondition   Int?
   physicalCondition  PhysicalCondition
   cost               Float
@@ -53,6 +54,8 @@ model Product {
   updatedAt          DateTime           @updatedAt
   images             ProductImage[]
   sale               Sale?
+
+  @@index([imei])
 }
 
 model ProductImage {

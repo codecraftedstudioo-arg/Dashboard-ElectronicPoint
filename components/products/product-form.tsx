@@ -35,6 +35,7 @@ type ProductFormValues = {
   name: string;
   storage: string;
   color: string;
+  imei?: string | null;
   batteryCondition: number | null;
   physicalCondition: PhysicalCondition;
   cost: number;
@@ -178,6 +179,16 @@ export function ProductForm({
               required
               defaultValue={initial?.color}
               placeholder="Natural"
+            />
+          </div>
+          <div>
+            <Label>IMEI</Label>
+            <Input
+              name="imei"
+              defaultValue={initial?.imei ?? ""}
+              placeholder="356938035643809"
+              inputMode="numeric"
+              maxLength={17}
             />
           </div>
           {type === "IPHONE" ? (
@@ -370,12 +381,7 @@ export function ProductForm({
                 ))}
               </div>
             </div>
-          ) : (
-            <p className="mt-2 text-xs text-muted">
-              Podés agregar más archivos. Se suben a Supabase Storage si está configurado; si no, a
-              /public/uploads.
-            </p>
-          )}
+          ) : null}
         </div>
       </Card>
 

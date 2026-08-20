@@ -82,6 +82,7 @@ export default async function ProductDetailPage({
           <Card className="space-y-3">
             <Row label="Capacidad" value={product.storage} />
             <Row label="Color" value={product.color} />
+            <Row label="IMEI" value={product.imei || "—"} />
             <Row
               label="Batería"
               value={
