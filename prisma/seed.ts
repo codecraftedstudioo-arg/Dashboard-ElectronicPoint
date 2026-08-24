@@ -189,6 +189,7 @@ async function main() {
             {
               url: placeholder(item.name),
               isPrimary: true,
+              sortOrder: 0,
             },
           ],
         },
@@ -212,7 +213,7 @@ async function main() {
         status: "SOLD",
         createdAt: daysAgo(item.daysAgoSold + 10),
         images: {
-          create: [{ url: placeholder(item.name), isPrimary: true }],
+          create: [{ url: placeholder(item.name), isPrimary: true, sortOrder: 0 }],
         },
         sale: {
           create: {

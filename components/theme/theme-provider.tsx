@@ -1,10 +1,12 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-
-export type Theme = "dark" | "light";
-
-const STORAGE_KEY = "stock-apple-theme";
+import {
+  parseTheme,
+  THEME_COOKIE,
+  THEME_STORAGE_KEY,
+  type Theme,
+} from "@/lib/theme";
 
 type ThemeContextValue = {
   theme: Theme;
@@ -24,19 +26,31 @@ function applyTheme(theme: Theme) {
   root.style.colorScheme = theme;
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
+function persistTheme(theme: Theme) {
+  window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  document.cookie = `${THEME_COOKIE}=${theme}; path=/; max-age=31536000; SameSite=Lax`;
+}
+
+export function ThemeProvider({
+  children,
+  initialTheme,
+}: {
+  children: ReactNode;
+  initialTheme: Theme;
+}) {
+  const [theme, setThemeState] = useState<Theme>(initialTheme);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    const next: Theme = stored === "light" ? "light" : "dark";
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    const next = parseTheme(stored ?? initialTheme);
     setThemeState(next);
     applyTheme(next);
-  }, []);
+    persistTheme(next);
+  }, [initialTheme]);
 
   function setTheme(next: Theme) {
     setThemeState(next);
-    window.localStorage.setItem(STORAGE_KEY, next);
+    persistTheme(next);
     applyTheme(next);
   }
 

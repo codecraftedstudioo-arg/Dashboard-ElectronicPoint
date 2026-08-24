@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge, Button, Card, PageHeader } from "@/components/ui";
+import { ProductGallery } from "@/components/products/product-gallery";
 import { SellModal } from "@/components/products/sell-modal";
 import { formatUSD } from "@/lib/currency";
 import { calcProfit, formatMargin } from "@/lib/calculations";
@@ -13,7 +13,6 @@ import {
   SALE_CHANNEL_LABELS,
 } from "@/lib/constants";
 import { getProductById } from "@/lib/queries";
-import { primaryImageUrl } from "@/lib/images";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +29,6 @@ export default async function ProductDetailPage({
   const realProfit = product.sale
     ? calcProfit(product.sale.soldPrice, product.cost)
     : null;
-  const main = primaryImageUrl(product.images);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -55,27 +53,14 @@ export default async function ProductDetailPage({
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <Card>
-          <div className="relative mb-4 aspect-square overflow-hidden rounded-2xl bg-input sm:aspect-[4/3]">
-            {main ? (
-              <Image src={main} alt={product.name} fill className="object-contain p-6" unoptimized />
-            ) : (
-              <div className="flex h-full items-center justify-center text-muted">
-                Sin imagen
-              </div>
-            )}
-          </div>
-          {product.images.length > 1 ? (
-            <div className="flex gap-2 overflow-x-auto">
-              {product.images.map((img) => (
-                <div
-                  key={img.id}
-                  className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-card-border"
-                >
-                  <Image src={img.url} alt="" fill className="object-cover" unoptimized />
-                </div>
-              ))}
-            </div>
-          ) : null}
+          <ProductGallery
+            images={product.images.map((img) => ({
+              id: img.id,
+              url: img.url,
+              isPrimary: img.isPrimary,
+            }))}
+            productName={product.name}
+          />
         </Card>
 
         <div className="space-y-4">

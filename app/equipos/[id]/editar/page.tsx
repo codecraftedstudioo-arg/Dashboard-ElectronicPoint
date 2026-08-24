@@ -38,6 +38,7 @@ export default async function EditProductPage({
             id: img.id,
             url: img.url,
             isPrimary: img.isPrimary,
+            sortOrder: img.sortOrder,
           })),
         }}
       />

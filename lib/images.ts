@@ -1,6 +1,24 @@
-export function primaryImageUrl(
-  images: { url: string; isPrimary: boolean }[],
-): string | null {
+export type ProductImageLike = {
+  id?: string;
+  url: string;
+  isPrimary: boolean;
+  sortOrder?: number;
+  createdAt?: Date;
+};
+
+export function sortProductImages<T extends ProductImageLike>(images: T[]): T[] {
+  return [...images].sort((a, b) => {
+    const orderDiff = (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+    if (orderDiff !== 0) return orderDiff;
+    if (a.createdAt && b.createdAt) {
+      return a.createdAt.getTime() - b.createdAt.getTime();
+    }
+    return 0;
+  });
+}
+
+export function primaryImageUrl(images: ProductImageLike[]): string | null {
   if (!images.length) return null;
-  return images.find((i) => i.isPrimary)?.url ?? images[0].url;
+  const sorted = sortProductImages(images);
+  return sorted.find((i) => i.isPrimary)?.url ?? sorted[0].url;
 }

@@ -16,7 +16,9 @@ function parseNumber(value: FormDataEntryValue | null): number {
 }
 
 async function collectImages(formData: FormData) {
-  const files = formData.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
+  const files = formData
+    .getAll("images")
+    .filter((f): f is File => f instanceof File && f.size > 0);
   const urls: string[] = [];
   for (const file of files) {
     urls.push(await uploadProductImage(file));
@@ -29,6 +31,11 @@ function parseImei(value: FormDataEntryValue | null): string | null {
   return imei || null;
 }
 
+function parsePrimaryIndex(formData: FormData): number {
+  const raw = Number(formData.get("primaryImageIndex"));
+  return Number.isFinite(raw) && raw >= 0 ? Math.floor(raw) : 0;
+}
+
 export async function createProduct(formData: FormData) {
   const type = String(formData.get("type")) as ProductType;
   const name = String(formData.get("name") || "").trim();
@@ -37,9 +44,7 @@ export async function createProduct(formData: FormData) {
   const imei = parseImei(formData.get("imei"));
   const batteryRaw = formData.get("batteryCondition");
   const batteryCondition =
-    batteryRaw === null || batteryRaw === ""
-      ? null
-      : Number(batteryRaw);
+    batteryRaw === null || batteryRaw === "" ? null : Number(batteryRaw);
   const physicalCondition = String(
     formData.get("physicalCondition"),
   ) as PhysicalCondition;
@@ -53,6 +58,7 @@ export async function createProduct(formData: FormData) {
 
   const internalCode = await nextInternalCode();
   const imageUrls = await collectImages(formData);
+  const primaryIndex = parsePrimaryIndex(formData);
 
   const product = await prisma.product.create({
     data: {
@@ -71,7 +77,8 @@ export async function createProduct(formData: FormData) {
       images: {
         create: imageUrls.map((url, index) => ({
           url,
-          isPrimary: index === 0,
+          sortOrder: index,
+          isPrimary: index === primaryIndex,
         })),
       },
     },
@@ -91,9 +98,7 @@ export async function updateProduct(productId: string, formData: FormData) {
   const imei = parseImei(formData.get("imei"));
   const batteryRaw = formData.get("batteryCondition");
   const batteryCondition =
-    batteryRaw === null || batteryRaw === ""
-      ? null
-      : Number(batteryRaw);
+    batteryRaw === null || batteryRaw === "" ? null : Number(batteryRaw);
   const physicalCondition = String(
     formData.get("physicalCondition"),
   ) as PhysicalCondition;
@@ -102,9 +107,20 @@ export async function updateProduct(productId: string, formData: FormData) {
   const description = String(formData.get("description") || "").trim() || null;
 
   const imageUrls = await collectImages(formData);
+  const primaryIndex = parsePrimaryIndex(formData);
+  const newPrimaryAmongNewRaw = formData.get("newPrimaryAmongNew");
+  const newPrimaryAmongNew =
+    newPrimaryAmongNewRaw === null || newPrimaryAmongNewRaw === ""
+      ? null
+      : Number(newPrimaryAmongNewRaw);
   const existingCount = await prisma.productImage.count({
     where: { productId },
   });
+  const maxOrder = await prisma.productImage.aggregate({
+    where: { productId },
+    _max: { sortOrder: true },
+  });
+  const startOrder = (maxOrder._max.sortOrder ?? -1) + 1;
 
   await prisma.product.update({
     where: { id: productId },
@@ -124,7 +140,11 @@ export async function updateProduct(productId: string, formData: FormData) {
             images: {
               create: imageUrls.map((url, index) => ({
                 url,
-                isPrimary: existingCount === 0 && index === 0,
+                sortOrder: startOrder + index,
+                isPrimary:
+                  existingCount === 0
+                    ? index === primaryIndex
+                    : newPrimaryAmongNew === index,
               })),
             },
           }
@@ -132,9 +152,36 @@ export async function updateProduct(productId: string, formData: FormData) {
     },
   });
 
+  if (
+    imageUrls.length > 0 &&
+    newPrimaryAmongNew !== null &&
+    Number.isFinite(newPrimaryAmongNew) &&
+    newPrimaryAmongNew >= 0 &&
+    newPrimaryAmongNew < imageUrls.length
+  ) {
+    const created = await prisma.productImage.findMany({
+      where: { productId, url: { in: imageUrls } },
+      orderBy: { sortOrder: "asc" },
+    });
+    const target = created[newPrimaryAmongNew];
+    if (target) {
+      await prisma.$transaction([
+        prisma.productImage.updateMany({
+          where: { productId },
+          data: { isPrimary: false },
+        }),
+        prisma.productImage.update({
+          where: { id: target.id },
+          data: { isPrimary: true },
+        }),
+      ]);
+    }
+  }
+
   revalidatePath("/");
   revalidatePath("/inventario");
   revalidatePath(`/equipos/${productId}`);
+  revalidatePath(`/equipos/${productId}/editar`);
   revalidatePath("/listas");
   redirect(`/equipos/${productId}`);
 }
@@ -151,7 +198,7 @@ export async function deleteProductImage(imageId: string, productId: string) {
   if (image.isPrimary) {
     const next = await prisma.productImage.findFirst({
       where: { productId },
-      orderBy: { createdAt: "asc" },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     });
     if (next) {
       await prisma.productImage.update({
@@ -188,6 +235,32 @@ export async function setPrimaryProductImage(imageId: string, productId: string)
   revalidatePath(`/equipos/${productId}/editar`);
   revalidatePath("/");
   revalidatePath("/inventario");
+}
+
+export async function reorderProductImages(productId: string, imageIds: string[]) {
+  const images = await prisma.productImage.findMany({
+    where: { productId },
+    select: { id: true },
+  });
+  const validIds = new Set(images.map((img) => img.id));
+  if (
+    imageIds.length !== images.length ||
+    imageIds.some((id) => !validIds.has(id))
+  ) {
+    throw new Error("Orden de imágenes inválido.");
+  }
+
+  await prisma.$transaction(
+    imageIds.map((id, index) =>
+      prisma.productImage.update({
+        where: { id },
+        data: { sortOrder: index },
+      }),
+    ),
+  );
+
+  revalidatePath(`/equipos/${productId}`);
+  revalidatePath(`/equipos/${productId}/editar`);
 }
 
 export async function markAsSold(formData: FormData) {

@@ -2,6 +2,10 @@ import { prisma } from "@/lib/prisma";
 import { calcProfit } from "@/lib/calculations";
 import type { Prisma, ProductStatus, SaleChannel } from "@prisma/client";
 
+export const productImagesInclude = {
+  orderBy: [{ sortOrder: "asc" as const }, { createdAt: "asc" as const }],
+};
+
 export async function nextInternalCode(): Promise<string> {
   const counter = await prisma.appCounter.upsert({
     where: { id: "product" },
@@ -18,7 +22,7 @@ export type ProductWithRelations = Prisma.ProductGetPayload<{
 export async function getAvailableProducts() {
   return prisma.product.findMany({
     where: { status: "AVAILABLE" },
-    include: { images: true, sale: true },
+    include: { images: productImagesInclude, sale: true },
     orderBy: { createdAt: "desc" },
   });
 }
@@ -43,7 +47,7 @@ export async function getAllProducts(filters?: {
   }
   return prisma.product.findMany({
     where,
-    include: { images: true, sale: true },
+    include: { images: productImagesInclude, sale: true },
     orderBy: { createdAt: "desc" },
   });
 }
@@ -51,7 +55,7 @@ export async function getAllProducts(filters?: {
 export async function getProductById(id: string) {
   return prisma.product.findUnique({
     where: { id },
-    include: { images: true, sale: true },
+    include: { images: productImagesInclude, sale: true },
   });
 }
 
@@ -60,7 +64,7 @@ export async function getRecentSales(limit = 8) {
     take: limit,
     orderBy: { soldAt: "desc" },
     include: {
-      product: { include: { images: true } },
+      product: { include: { images: productImagesInclude } },
     },
   });
 }
@@ -86,7 +90,7 @@ export async function getSales(filters?: {
     where,
     orderBy: { soldAt: "desc" },
     include: {
-      product: { include: { images: true } },
+      product: { include: { images: productImagesInclude } },
     },
   });
 }
@@ -94,7 +98,7 @@ export async function getSales(filters?: {
 export async function getDashboardStats() {
   const available = await prisma.product.findMany({
     where: { status: "AVAILABLE" },
-    include: { images: true },
+    include: { images: productImagesInclude },
   });
   const sales = await prisma.sale.findMany({
     include: { product: true },
