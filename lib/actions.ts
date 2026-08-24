@@ -4,12 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { nextInternalCode } from "@/lib/queries";
-import { deleteStoredImage } from "@/lib/storage";
-import {
-  buildProductImageRecords,
-  extractImageFiles,
-  uploadProductImages,
-} from "@/lib/upload-images";
+import { deleteStoredImage, uploadProductImage } from "@/lib/storage";
 import type {
   PhysicalCondition,
   ProductType,
@@ -20,6 +15,43 @@ function parseNumber(value: FormDataEntryValue | null): number {
   return Number(String(value ?? "0").replace(",", "."));
 }
 
+function isUploadableFile(value: FormDataEntryValue | null): value is File {
+  if (!value || typeof value === "string") return false;
+  if (value instanceof File) return value.size > 0;
+  return (
+    typeof value === "object" &&
+    "arrayBuffer" in value &&
+    "size" in value &&
+    (value as File).size > 0
+  );
+}
+
+async function collectImages(formData: FormData) {
+  const files = formData.getAll("images").filter(isUploadableFile);
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("[images] Selected images:", files.length);
+    files.forEach((file, index) => {
+      console.log(
+        `[images]  ${index + 1}. ${file.name} (${file.size} bytes)`,
+      );
+    });
+  }
+
+  const urls: string[] = [];
+  for (const file of files) {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[images] Uploading image:", file.name);
+    }
+    const url = await uploadProductImage(file);
+    if (process.env.NODE_ENV === "development") {
+      console.log("[images] Uploaded image URL:", url);
+    }
+    urls.push(url);
+  }
+  return urls;
+}
+
 function parseImei(value: FormDataEntryValue | null): string | null {
   const imei = String(value ?? "").trim();
   return imei || null;
@@ -28,36 +60,6 @@ function parseImei(value: FormDataEntryValue | null): string | null {
 function parsePrimaryIndex(formData: FormData): number {
   const raw = Number(formData.get("primaryImageIndex"));
   return Number.isFinite(raw) && raw >= 0 ? Math.floor(raw) : 0;
-}
-
-function parseNewPrimaryAmongNew(formData: FormData): number | null {
-  const raw = formData.get("newPrimaryAmongNew");
-  if (raw === null || raw === "") return null;
-  const value = Number(raw);
-  return Number.isFinite(value) && value >= 0 ? Math.floor(value) : null;
-}
-
-async function createProductImageRecords(
-  productId: string,
-  urls: string[],
-  primaryIndex: number,
-  sortOrderStart = 0,
-) {
-  if (!urls.length) return;
-
-  const records = buildProductImageRecords(
-    productId,
-    urls,
-    primaryIndex,
-    sortOrderStart,
-  );
-
-  if (process.env.NODE_ENV === "development") {
-    console.log("[images] Creating ProductImage records:", records.length);
-    console.log("[images] Product ID:", productId);
-  }
-
-  await prisma.productImage.createMany({ data: records });
 }
 
 export async function createProduct(formData: FormData) {
@@ -75,14 +77,14 @@ export async function createProduct(formData: FormData) {
   const cost = parseNumber(formData.get("cost"));
   const salePrice = parseNumber(formData.get("salePrice"));
   const description = String(formData.get("description") || "").trim() || null;
-  const files = extractImageFiles(formData);
-  const primaryIndex = parsePrimaryIndex(formData);
 
   if (!name || !storage || !color) {
     throw new Error("Completá modelo, capacidad y color.");
   }
 
   const internalCode = await nextInternalCode();
+  const imageUrls = await collectImages(formData);
+  const primaryIndex = parsePrimaryIndex(formData);
 
   const product = await prisma.product.create({
     data: {
@@ -98,31 +100,19 @@ export async function createProduct(formData: FormData) {
       salePrice,
       description,
       status: "AVAILABLE",
+      images: {
+        create: imageUrls.map((url, index) => ({
+          url,
+          sortOrder: index,
+          isPrimary: index === primaryIndex,
+        })),
+      },
     },
   });
 
   if (process.env.NODE_ENV === "development") {
-    console.log("[images] Product created:", product.id);
-  }
-
-  if (files.length > 0) {
-    const uploadedUrls: string[] = [];
-    try {
-      uploadedUrls.push(...(await uploadProductImages(files, product.id)));
-      await createProductImageRecords(
-        product.id,
-        uploadedUrls,
-        primaryIndex,
-      );
-    } catch (error) {
-      for (const url of uploadedUrls) {
-        await deleteStoredImage(url);
-      }
-      await prisma.product.delete({ where: { id: product.id } });
-      throw error instanceof Error
-        ? error
-        : new Error("No se pudieron subir todas las imágenes.");
-    }
+    console.log("[images] Product ID:", product.id);
+    console.log("[images] Creating ProductImage records:", imageUrls.length);
   }
 
   revalidatePath("/");
@@ -146,9 +136,22 @@ export async function updateProduct(productId: string, formData: FormData) {
   const cost = parseNumber(formData.get("cost"));
   const salePrice = parseNumber(formData.get("salePrice"));
   const description = String(formData.get("description") || "").trim() || null;
-  const files = extractImageFiles(formData);
+
+  const imageUrls = await collectImages(formData);
   const primaryIndex = parsePrimaryIndex(formData);
-  const newPrimaryAmongNew = parseNewPrimaryAmongNew(formData);
+  const newPrimaryAmongNewRaw = formData.get("newPrimaryAmongNew");
+  const newPrimaryAmongNew =
+    newPrimaryAmongNewRaw === null || newPrimaryAmongNewRaw === ""
+      ? null
+      : Number(newPrimaryAmongNewRaw);
+  const existingCount = await prisma.productImage.count({
+    where: { productId },
+  });
+  const maxOrder = await prisma.productImage.aggregate({
+    where: { productId },
+    _max: { sortOrder: true },
+  });
+  const startOrder = (maxOrder._max.sortOrder ?? -1) + 1;
 
   await prisma.product.update({
     where: { id: productId },
@@ -163,65 +166,46 @@ export async function updateProduct(productId: string, formData: FormData) {
       cost,
       salePrice,
       description,
+      ...(imageUrls.length
+        ? {
+            images: {
+              create: imageUrls.map((url, index) => ({
+                url,
+                sortOrder: startOrder + index,
+                isPrimary:
+                  existingCount === 0
+                    ? index === primaryIndex
+                    : newPrimaryAmongNew === index,
+              })),
+            },
+          }
+        : {}),
     },
   });
 
-  if (files.length > 0) {
-    const existingCount = await prisma.productImage.count({
-      where: { productId },
+  if (
+    imageUrls.length > 0 &&
+    newPrimaryAmongNew !== null &&
+    Number.isFinite(newPrimaryAmongNew) &&
+    newPrimaryAmongNew >= 0 &&
+    newPrimaryAmongNew < imageUrls.length
+  ) {
+    const created = await prisma.productImage.findMany({
+      where: { productId, url: { in: imageUrls } },
+      orderBy: { sortOrder: "asc" },
     });
-    const maxOrder = await prisma.productImage.aggregate({
-      where: { productId },
-      _max: { sortOrder: true },
-    });
-    const startOrder = (maxOrder._max.sortOrder ?? -1) + 1;
-    const uploadedUrls: string[] = [];
-
-    try {
-      uploadedUrls.push(...(await uploadProductImages(files, productId)));
-
-      const primaryForBatch =
-        existingCount === 0
-          ? primaryIndex
-          : newPrimaryAmongNew ?? -1;
-
-      await createProductImageRecords(
-        productId,
-        uploadedUrls,
-        primaryForBatch,
-        startOrder,
-      );
-
-      if (
-        newPrimaryAmongNew !== null &&
-        newPrimaryAmongNew >= 0 &&
-        newPrimaryAmongNew < uploadedUrls.length
-      ) {
-        const created = await prisma.productImage.findMany({
-          where: { productId, url: { in: uploadedUrls } },
-          orderBy: { sortOrder: "asc" },
-        });
-        const target = created[newPrimaryAmongNew];
-        if (target) {
-          await prisma.$transaction([
-            prisma.productImage.updateMany({
-              where: { productId },
-              data: { isPrimary: false },
-            }),
-            prisma.productImage.update({
-              where: { id: target.id },
-              data: { isPrimary: true },
-            }),
-          ]);
-        }
-      }
-    } catch (error) {
-      for (const url of uploadedUrls) {
-        await deleteStoredImage(url);
-      }
-      throw error instanceof Error
-        ? error
-        : new Error("No se pudieron subir todas las imágenes.");
+    const target = created[newPrimaryAmongNew];
+    if (target) {
+      await prisma.$transaction([
+        prisma.productImage.updateMany({
+          where: { productId },
+          data: { isPrimary: false },
+        }),
+        prisma.productImage.update({
+          where: { id: target.id },
+          data: { isPrimary: true },
+        }),
+      ]);
     }
   }
 

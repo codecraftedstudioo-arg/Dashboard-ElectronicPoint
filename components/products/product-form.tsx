@@ -109,13 +109,52 @@ export function ProductForm({
     }
   }, [newPrimaryIndex, selectedFiles.length]);
 
-  function syncFileInput(files: File[]) {
-    const input = fileInputRef.current;
-    if (!input) return;
-    const dt = new DataTransfer();
-    files.forEach((file) => dt.items.add(file));
-    input.files = dt.files;
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const incoming = Array.from(e.target.files ?? []);
+    if (!incoming.length) return;
+    setSelectedFiles((prev) => [...prev, ...incoming]);
+    e.target.value = "";
   }
+
+  function removeSelectedFile(index: number) {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    if (newPrimaryIndex === index) {
+      setNewPrimaryIndex(0);
+    } else if (newPrimaryIndex > index) {
+      setNewPrimaryIndex((prev) => prev - 1);
+    }
+    if (newPrimaryAmongNew === index) {
+      setNewPrimaryAmongNew(null);
+    } else if (newPrimaryAmongNew !== null && newPrimaryAmongNew > index) {
+      setNewPrimaryAmongNew((prev) => (prev === null ? null : prev - 1));
+    }
+  }
+
+  function moveSelectedFile(index: number, direction: -1 | 1) {
+    const target = index + direction;
+    if (target < 0 || target >= selectedFiles.length) return;
+    setSelectedFiles((prev) => {
+      const next = [...prev];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+    setNewPrimaryIndex((prev) => {
+      if (prev === index) return target;
+      if (prev === target) return index;
+      return prev;
+    });
+    setNewPrimaryAmongNew((prev) => {
+      if (prev === null) return null;
+      if (prev === index) return target;
+      if (prev === target) return index;
+      return prev;
+    });
+  }
+
+  const action =
+    mode === "edit" && initial?.id
+      ? updateProduct.bind(null, initial.id)
+      : createProduct;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -154,56 +193,6 @@ export function ProductForm({
       }
     });
   }
-
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const incoming = Array.from(e.target.files ?? []);
-    if (!incoming.length) return;
-    const next = [...selectedFiles, ...incoming];
-    setSelectedFiles(next);
-    syncFileInput(next);
-    e.target.value = "";
-  }
-
-  function removeSelectedFile(index: number) {
-    const next = selectedFiles.filter((_, i) => i !== index);
-    setSelectedFiles(next);
-    syncFileInput(next);
-    if (newPrimaryIndex === index) {
-      setNewPrimaryIndex(0);
-    } else if (newPrimaryIndex > index) {
-      setNewPrimaryIndex((prev) => prev - 1);
-    }
-    if (newPrimaryAmongNew === index) {
-      setNewPrimaryAmongNew(null);
-    } else if (newPrimaryAmongNew !== null && newPrimaryAmongNew > index) {
-      setNewPrimaryAmongNew((prev) => (prev === null ? null : prev - 1));
-    }
-  }
-
-  function moveSelectedFile(index: number, direction: -1 | 1) {
-    const target = index + direction;
-    if (target < 0 || target >= selectedFiles.length) return;
-    const next = [...selectedFiles];
-    [next[index], next[target]] = [next[target], next[index]];
-    setSelectedFiles(next);
-    syncFileInput(next);
-    setNewPrimaryIndex((prev) => {
-      if (prev === index) return target;
-      if (prev === target) return index;
-      return prev;
-    });
-    setNewPrimaryAmongNew((prev) => {
-      if (prev === null) return null;
-      if (prev === index) return target;
-      if (prev === target) return index;
-      return prev;
-    });
-  }
-
-  const action =
-    mode === "edit" && initial?.id
-      ? updateProduct.bind(null, initial.id)
-      : createProduct;
 
   function handleDeleteImage(imageId: string) {
     if (!initial?.id) return;
