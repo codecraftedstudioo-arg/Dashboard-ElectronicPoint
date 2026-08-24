@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   ArrowDown,
   ArrowUp,
+  CheckCircle2,
   ImagePlus,
   Star,
   Trash2,
@@ -30,6 +31,16 @@ import {
   reorderProductImages,
 } from "@/lib/actions";
 import type { PhysicalCondition, ProductType } from "@prisma/client";
+
+function isNextRedirect(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "digest" in error &&
+    typeof (error as { digest: string }).digest === "string" &&
+    (error as { digest: string }).digest.includes("NEXT_REDIRECT")
+  );
+}
 
 type ExistingImage = {
   id: string;
@@ -74,6 +85,8 @@ export function ProductForm({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [newPrimaryIndex, setNewPrimaryIndex] = useState(0);
   const [newPrimaryAmongNew, setNewPrimaryAmongNew] = useState<number | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const profit = useMemo(() => calcProfit(salePrice, cost), [salePrice, cost]);
@@ -102,6 +115,44 @@ export function ProductForm({
     const dt = new DataTransfer();
     files.forEach((file) => dt.items.add(file));
     input.files = dt.files;
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    formData.delete("images");
+    selectedFiles.forEach((file) => {
+      formData.append("images", file, file.name);
+    });
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("[form] Submitting with images:", selectedFiles.length);
+      selectedFiles.forEach((file, index) => {
+        console.log(`[form]  ${index + 1}. ${file.name} (${file.size} bytes)`);
+      });
+    }
+
+    startTransition(async () => {
+      try {
+        await action(formData);
+        setSubmitSuccess(true);
+      } catch (error) {
+        if (isNextRedirect(error)) throw error;
+        const message =
+          error instanceof Error
+            ? error.message
+            : "No se pudo guardar el producto.";
+        setSubmitError(message);
+        if (process.env.NODE_ENV === "development") {
+          console.error("[form] Submit failed:", error);
+        }
+      }
+    });
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -220,7 +271,7 @@ export function ProductForm({
       : images.findIndex((img) => img.isPrimary);
 
   return (
-    <form action={action} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <input
         type="hidden"
         name="primaryImageIndex"
@@ -455,7 +506,6 @@ export function ProductForm({
 
           <input
             ref={fileInputRef}
-            name="images"
             type="file"
             accept="image/*"
             multiple
@@ -568,8 +618,27 @@ export function ProductForm({
         </div>
       </Card>
 
+      {submitError ? (
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {submitError}
+        </div>
+      ) : null}
+
+      {submitSuccess ? (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          Guardado correctamente
+        </div>
+      ) : null}
+
       <Button type="submit" className="w-full sm:w-auto" disabled={pending}>
-        {mode === "edit" ? "Guardar cambios" : "Agregar equipo"}
+        {pending
+          ? selectedFiles.length > 0
+            ? "Subiendo imágenes..."
+            : "Guardando..."
+          : mode === "edit"
+            ? "Guardar cambios"
+            : "Agregar equipo"}
       </Button>
     </form>
   );
