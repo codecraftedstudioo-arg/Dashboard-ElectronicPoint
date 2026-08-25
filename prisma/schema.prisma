@@ -28,6 +28,11 @@ enum PhysicalCondition {
   CON_DETALLES
 }
 
+enum ChipType {
+  SIM
+  ESIM
+}
+
 enum SaleChannel {
   CLIENTE
   FACEBOOK_MARKETPLACE
@@ -46,6 +51,7 @@ model Product {
   imei               String?
   batteryCondition   Int?
   physicalCondition  PhysicalCondition
+  chip               ChipType?
   cost               Float
   salePrice          Float
   description        String?

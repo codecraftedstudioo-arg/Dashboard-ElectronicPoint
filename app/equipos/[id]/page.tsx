@@ -8,6 +8,7 @@ import { calcProfit, formatMargin } from "@/lib/calculations";
 import {
   CONDITION_COLORS,
   PHYSICAL_CONDITION_LABELS,
+  CHIP_TYPE_LABELS,
   PRODUCT_TYPE_LABELS,
   CHANNEL_COLORS,
   SALE_CHANNEL_LABELS,
@@ -74,6 +75,12 @@ export default async function ProductDetailPage({
                 product.batteryCondition != null
                   ? `${product.batteryCondition}%`
                   : "N/A"
+              }
+            />
+            <Row
+              label="Chip"
+              value={
+                product.chip ? CHIP_TYPE_LABELS[product.chip] : "—"
               }
             />
             <div className="flex items-center justify-between gap-3 text-sm">

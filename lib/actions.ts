@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { nextInternalCode } from "@/lib/queries";
 import { deleteStoredImage, uploadProductImage } from "@/lib/storage";
 import type {
+  ChipType,
   PhysicalCondition,
   ProductType,
   SaleChannel,
@@ -92,6 +93,12 @@ function parseImei(value: FormDataEntryValue | null): string | null {
   return imei || null;
 }
 
+function parseChip(value: FormDataEntryValue | null): ChipType | null {
+  const chip = String(value ?? "").trim();
+  if (chip === "SIM" || chip === "ESIM") return chip;
+  return null;
+}
+
 function parsePrimaryIndex(formData: FormData): number {
   const raw = Number(formData.get("primaryImageIndex"));
   return Number.isFinite(raw) && raw >= 0 ? Math.floor(raw) : 0;
@@ -109,6 +116,7 @@ export async function createProduct(formData: FormData) {
   const physicalCondition = String(
     formData.get("physicalCondition"),
   ) as PhysicalCondition;
+  const chip = parseChip(formData.get("chip"));
   const cost = parseNumber(formData.get("cost"));
   const salePrice = parseNumber(formData.get("salePrice"));
   const description = String(formData.get("description") || "").trim() || null;
@@ -132,6 +140,7 @@ export async function createProduct(formData: FormData) {
       imei,
       batteryCondition: type === "IPHONE" ? batteryCondition : null,
       physicalCondition,
+      chip: type === "IPHONE" ? chip : null,
       cost,
       salePrice,
       description,
@@ -171,6 +180,7 @@ export async function updateProduct(productId: string, formData: FormData) {
   const physicalCondition = String(
     formData.get("physicalCondition"),
   ) as PhysicalCondition;
+  const chip = parseChip(formData.get("chip"));
   const cost = parseNumber(formData.get("cost"));
   const salePrice = parseNumber(formData.get("salePrice"));
   const description = String(formData.get("description") || "").trim() || null;
@@ -202,6 +212,7 @@ export async function updateProduct(productId: string, formData: FormData) {
       imei,
       batteryCondition: type === "IPHONE" ? batteryCondition : null,
       physicalCondition,
+      chip: type === "IPHONE" ? chip : null,
       cost,
       salePrice,
       description,

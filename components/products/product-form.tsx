@@ -20,7 +20,7 @@ import {
   Card,
   cn,
 } from "@/components/ui";
-import { STORAGE_OPTIONS, PHYSICAL_CONDITION_LABELS } from "@/lib/constants";
+import { STORAGE_OPTIONS, PHYSICAL_CONDITION_LABELS, CHIP_TYPE_LABELS } from "@/lib/constants";
 import { calcProfit, formatMargin } from "@/lib/calculations";
 import { formatUSD } from "@/lib/currency";
 import {
@@ -32,7 +32,7 @@ import {
   uploadSingleProductImage,
 } from "@/lib/actions";
 import { compressImageFile } from "@/lib/compress-image";
-import type { PhysicalCondition, ProductType } from "@prisma/client";
+import type { ChipType, PhysicalCondition, ProductType } from "@prisma/client";
 
 function isNextRedirect(error: unknown): boolean {
   return (
@@ -60,6 +60,7 @@ type ProductFormValues = {
   imei?: string | null;
   batteryCondition: number | null;
   physicalCondition: PhysicalCondition;
+  chip?: ChipType | null;
   cost: number;
   salePrice: number;
   description: string | null;
@@ -386,6 +387,20 @@ export function ProductForm({
               ))}
             </Select>
           </div>
+          {type === "IPHONE" ? (
+            <div>
+              <Label>Chip</Label>
+              <Select name="chip" defaultValue={initial?.chip ?? "SIM"} required>
+                {Object.entries(CHIP_TYPE_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          ) : (
+            <input type="hidden" name="chip" value="" />
+          )}
           <div>
             <Label>Costo (USD)</Label>
             <Input

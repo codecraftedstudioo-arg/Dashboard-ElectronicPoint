@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { PhysicalCondition, Prisma } from "@prisma/client";
+import type { ChipType, PhysicalCondition, Prisma } from "@prisma/client";
 
 /** Public-facing product shape — never includes cost, IMEI, or internal codes. */
 export type PublicCatalogProduct = {
@@ -9,6 +9,7 @@ export type PublicCatalogProduct = {
   color: string;
   batteryCondition: number | null;
   physicalCondition: PhysicalCondition;
+  chip: ChipType | null;
   salePrice: number;
   description: string | null;
   images: {
@@ -26,6 +27,7 @@ const publicProductSelect = {
   color: true,
   batteryCondition: true,
   physicalCondition: true,
+  chip: true,
   salePrice: true,
   description: true,
   images: {

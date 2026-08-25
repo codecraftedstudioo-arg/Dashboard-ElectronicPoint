@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui";
 import {
   CONDITION_COLORS,
   PHYSICAL_CONDITION_LABELS,
+  CHIP_TYPE_LABELS,
 } from "@/lib/constants";
 import {
   buildWhatsAppUrl,
@@ -109,6 +110,10 @@ export default async function UsadosProductPage({ params }: PageProps) {
                     ? `${product.batteryCondition}%`
                     : "—"
                 }
+              />
+              <InfoRow
+                label="Chip"
+                value={product.chip ? CHIP_TYPE_LABELS[product.chip] : "—"}
               />
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span className="text-muted">Estado</span>

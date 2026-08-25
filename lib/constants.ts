@@ -6,6 +6,11 @@ export const PHYSICAL_CONDITION_LABELS = {
   CON_DETALLES: "Con detalles",
 } as const;
 
+export const CHIP_TYPE_LABELS = {
+  SIM: "SIM (Físico)",
+  ESIM: "eSIM (Virtual)",
+} as const;
+
 export const SALE_CHANNEL_LABELS = {
   INSTAGRAM: "Instagram",
   CLIENTE: "Cliente",
