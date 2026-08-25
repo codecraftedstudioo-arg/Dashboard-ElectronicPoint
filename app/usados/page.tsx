@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   CatalogFooter,
   CatalogHeader,
@@ -13,12 +14,10 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "iPhones usados — Electronic Point",
-  description:
-    "Equipos seleccionados, revisados y listos para vos. Consultá por WhatsApp.",
+  description: "Equipos seleccionados, revisados y listos para vos.",
   openGraph: {
     title: "iPhones usados — Electronic Point",
-    description:
-      "Equipos seleccionados, revisados y listos para vos. Consultá por WhatsApp.",
+    description: "Equipos seleccionados, revisados y listos para vos.",
     type: "website",
   },
 };
@@ -40,15 +39,17 @@ export default async function UsadosPage() {
         />
         <div className="relative mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 sm:px-6 sm:py-24 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl space-y-4">
-            <p className="text-sm font-medium uppercase tracking-[0.18em] text-muted">
-              Electronic Point
-            </p>
             <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
               iPhones usados
             </h1>
-            <p className="text-base text-muted sm:text-lg">
-              Equipos seleccionados, revisados y listos para vos.
-            </p>
+            <div className="space-y-1">
+              <p className="text-base text-muted sm:text-lg">
+                Equipos seleccionados, revisados y listos para vos.
+              </p>
+              <p className="text-base text-muted sm:text-lg">
+                Garantía de 90 días.
+              </p>
+            </div>
             <a
               href="#equipos"
               className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover"
@@ -56,9 +57,30 @@ export default async function UsadosPage() {
               Ver equipos disponibles
             </a>
           </div>
-          <div className="grid max-w-md grid-cols-2 gap-3 lg:w-[420px]">
-            <div className="aspect-[3/4] rounded-3xl bg-gradient-to-br from-zinc-700/40 to-zinc-900/60 ring-1 ring-white/10" />
-            <div className="mt-8 aspect-[3/4] rounded-3xl bg-gradient-to-br from-accent/25 to-zinc-800/50 ring-1 ring-accent/20" />
+          <div
+            aria-hidden
+            className="grid max-w-md grid-cols-2 gap-3 lg:w-[420px]"
+          >
+            <div className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
+              <Image
+                src="/catalog/hero-iphone-pro.jpg"
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 1024px) 45vw, 210px"
+                className="object-cover"
+              />
+            </div>
+            <div className="relative mt-8 aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
+              <Image
+                src="/catalog/hero-iphone.jpg"
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 1024px) 45vw, 210px"
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>

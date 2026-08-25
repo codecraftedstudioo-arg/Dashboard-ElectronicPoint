@@ -4,10 +4,7 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { CatalogProductCard } from "@/components/catalog/catalog-product-card";
 import { Input, Select } from "@/components/ui";
-import {
-  buildWhatsAppUrl,
-  generalInquiryMessage,
-} from "@/lib/contact";
+import { compareIphoneModelsDesc } from "@/lib/iphone-model-sort";
 import type { PublicCatalogProduct } from "@/lib/public-catalog";
 
 const STORAGE_FILTERS = ["128GB", "256GB", "512GB", "1TB"] as const;
@@ -60,13 +57,12 @@ export function CatalogGrid({
         );
         break;
       default:
+        list.sort((a, b) => compareIphoneModelsDesc(a.name, b.name));
         break;
     }
 
     return list;
   }, [products, search, model, storage, sort]);
-
-  const wa = buildWhatsAppUrl(generalInquiryMessage());
 
   return (
     <div className="space-y-6">
@@ -101,7 +97,7 @@ export function CatalogGrid({
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
           >
-            <option value="newest">Más recientes</option>
+            <option value="newest">Modelo más nuevo</option>
             <option value="price-asc">Menor precio</option>
             <option value="price-desc">Mayor precio</option>
             <option value="battery">Mejor batería</option>
@@ -115,16 +111,8 @@ export function CatalogGrid({
             No hay equipos publicados en este momento.
           </h3>
           <p className="mt-2 text-sm text-muted">
-            Escribinos por WhatsApp y te ayudamos a encontrar el iPhone ideal.
+            Probá ajustar los filtros o volvé más tarde.
           </p>
-          <a
-            href={wa}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center justify-center rounded-full bg-[#25D366] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            Consultar por WhatsApp
-          </a>
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

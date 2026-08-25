@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { compareIphoneModelsDesc } from "@/lib/iphone-model-sort";
 import type { ChipType, PhysicalCondition, Prisma } from "@prisma/client";
 
 /** Public-facing product shape — never includes cost, IMEI, or internal codes. */
@@ -86,6 +87,7 @@ export async function getPublishedIphones(
       );
       break;
     default:
+      sorted.sort((a, b) => compareIphoneModelsDesc(a.name, b.name));
       break;
   }
 
@@ -115,7 +117,8 @@ export async function getPublishedModelNames(): Promise<string[]> {
     },
     select: { name: true },
     distinct: ["name"],
-    orderBy: { name: "asc" },
   });
-  return rows.map((r) => r.name);
+  return rows
+    .map((r) => r.name)
+    .sort(compareIphoneModelsDesc);
 }

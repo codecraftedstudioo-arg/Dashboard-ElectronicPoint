@@ -12,10 +12,6 @@ import {
   PHYSICAL_CONDITION_LABELS,
   CHIP_TYPE_LABELS,
 } from "@/lib/constants";
-import {
-  buildWhatsAppUrl,
-  catalogInquiryMessage,
-} from "@/lib/contact";
 import { formatUSD } from "@/lib/currency";
 import { primaryImageUrl } from "@/lib/images";
 import { parseProductIdFromSlug } from "@/lib/product-slug";
@@ -62,8 +58,6 @@ export default async function UsadosProductPage({ params }: PageProps) {
 
   const product = await getPublishedIphoneById(id);
   if (!product) notFound();
-
-  const wa = buildWhatsAppUrl(catalogInquiryMessage(product));
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -131,15 +125,6 @@ export default async function UsadosProductPage({ params }: PageProps) {
                 </p>
               </div>
             ) : null}
-
-            <a
-              href={wa}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex w-full items-center justify-center rounded-full bg-[#25D366] px-5 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 sm:w-auto"
-            >
-              Consultar por WhatsApp
-            </a>
           </div>
         </div>
       </div>

@@ -66,11 +66,11 @@ html.light {
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
-html.light {
-  color-scheme: light;
+html:not(.light) {
+  color-scheme: dark;
 }
 
 body {
