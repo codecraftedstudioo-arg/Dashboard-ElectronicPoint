@@ -38,8 +38,10 @@ export function CatalogProductCard({ product }: { product: PublicCatalogProduct 
         <h3 className="text-lg font-semibold tracking-tight text-foreground">
           {product.name}
         </h3>
-        <p className="text-sm text-muted">{product.storage}</p>
         <div className="flex flex-wrap gap-1.5">
+          <Badge className="border-card-border text-muted">
+            {product.storage}
+          </Badge>
           {product.batteryCondition != null ? (
             <Badge className="border-card-border text-muted">
               🔋 {product.batteryCondition}% batería

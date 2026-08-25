@@ -88,8 +88,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
               <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                 {product.name}
               </h1>
-              <p className="mt-2 text-lg text-muted">{product.storage}</p>
-              <p className="mt-1 text-sm text-muted">{product.color}</p>
+              <p className="mt-2 text-sm text-muted">{product.color}</p>
             </div>
 
             <div className="text-3xl font-semibold text-foreground">
@@ -97,14 +96,20 @@ export default async function UsadosProductPage({ params }: PageProps) {
             </div>
 
             <div className="grid gap-3 rounded-2xl border border-card-border bg-card p-4">
-              <InfoRow
-                label="Batería"
-                value={
-                  product.batteryCondition != null
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-muted">Capacidad</span>
+                <Badge className="border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
+                  {product.storage}
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-muted">Batería</span>
+                <Badge className="border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
+                  {product.batteryCondition != null
                     ? `${product.batteryCondition}%`
-                    : "—"
-                }
-              />
+                    : "—"}
+                </Badge>
+              </div>
               <InfoRow
                 label="Chip"
                 value={product.chip ? CHIP_TYPE_LABELS[product.chip] : "—"}
