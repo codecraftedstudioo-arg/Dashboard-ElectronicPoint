@@ -29,7 +29,9 @@ import {
   deleteProductImage,
   setPrimaryProductImage,
   reorderProductImages,
+  uploadSingleProductImage,
 } from "@/lib/actions";
+import { compressImageFile } from "@/lib/compress-image";
 import type { PhysicalCondition, ProductType } from "@prisma/client";
 
 function isNextRedirect(error: unknown): boolean {
@@ -61,6 +63,7 @@ type ProductFormValues = {
   cost: number;
   salePrice: number;
   description: string | null;
+  isPublished?: boolean;
   images?: ExistingImage[];
 };
 
@@ -85,8 +88,10 @@ export function ProductForm({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [newPrimaryIndex, setNewPrimaryIndex] = useState(0);
   const [newPrimaryAmongNew, setNewPrimaryAmongNew] = useState<number | null>(null);
+  const [isPublished, setIsPublished] = useState(initial?.isPublished ?? false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const profit = useMemo(() => calcProfit(salePrice, cost), [salePrice, cost]);
@@ -160,36 +165,63 @@ export function ProductForm({
     event.preventDefault();
     setSubmitError(null);
     setSubmitSuccess(false);
+    setUploadProgress(null);
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-
     formData.delete("images");
-    selectedFiles.forEach((file) => {
-      formData.append("images", file, file.name);
-    });
-
-    if (process.env.NODE_ENV === "development") {
-      console.log("[form] Submitting with images:", selectedFiles.length);
-      selectedFiles.forEach((file, index) => {
-        console.log(`[form]  ${index + 1}. ${file.name} (${file.size} bytes)`);
-      });
-    }
 
     startTransition(async () => {
       try {
+        if (selectedFiles.length > 0) {
+          const uploadedUrls: string[] = [];
+
+          for (let index = 0; index < selectedFiles.length; index++) {
+            const original = selectedFiles[index];
+            setUploadProgress(
+              `Subiendo imagen ${index + 1} de ${selectedFiles.length}...`,
+            );
+
+            const compressed = await compressImageFile(original);
+            if (process.env.NODE_ENV === "development") {
+              console.log(
+                `[form] Image ${index + 1}: ${original.name} ${original.size} → ${compressed.size} bytes`,
+              );
+            }
+
+            const single = new FormData();
+            single.append("image", compressed, compressed.name);
+            const url = await uploadSingleProductImage(single);
+            uploadedUrls.push(url);
+          }
+
+          uploadedUrls.forEach((url) => {
+            formData.append("uploadedImageUrls", url);
+          });
+        }
+
+        setUploadProgress(
+          selectedFiles.length > 0 ? "Guardando producto..." : "Guardando...",
+        );
         await action(formData);
         setSubmitSuccess(true);
+        setSelectedFiles([]);
       } catch (error) {
         if (isNextRedirect(error)) throw error;
-        const message =
+        const raw =
           error instanceof Error
             ? error.message
             : "No se pudo guardar el producto.";
+        const message =
+          /unexpected response/i.test(raw)
+            ? "No se pudieron subir las imágenes. Probá de a pocas (máx. 3–4 por vez) o con fotos más livianas."
+            : raw;
         setSubmitError(message);
         if (process.env.NODE_ENV === "development") {
           console.error("[form] Submit failed:", error);
         }
+      } finally {
+        setUploadProgress(null);
       }
     });
   }
@@ -401,6 +433,43 @@ export function ProductForm({
             defaultValue={initial?.description ?? ""}
             placeholder="Pequeña marca en el marco inferior."
           />
+        </div>
+
+        <div className="rounded-xl border border-card-border bg-input p-4">
+          <Label>Mostrar en catálogo público</Label>
+          <p className="mb-3 text-xs text-muted">
+            Solo iPhones disponibles y publicados aparecen en /usados. Por
+            defecto queda oculto.
+          </p>
+          <input type="hidden" name="isPublished" value={isPublished ? "true" : "false"} />
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setIsPublished(true)}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
+                isPublished
+                  ? "border-accent/40 bg-accent-dim text-foreground"
+                  : "border-card-border bg-card text-muted hover:bg-hover",
+              )}
+            >
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+              Publicado
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsPublished(false)}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
+                !isPublished
+                  ? "border-accent/40 bg-accent-dim text-foreground"
+                  : "border-card-border bg-card text-muted hover:bg-hover",
+              )}
+            >
+              <span className="h-2.5 w-2.5 rounded-full bg-zinc-400" />
+              Oculto
+            </button>
+          </div>
         </div>
 
         <div>
@@ -622,9 +691,7 @@ export function ProductForm({
 
       <Button type="submit" className="w-full sm:w-auto" disabled={pending}>
         {pending
-          ? selectedFiles.length > 0
-            ? "Subiendo imágenes..."
-            : "Guardando..."
+          ? uploadProgress || "Guardando..."
           : mode === "edit"
             ? "Guardar cambios"
             : "Agregar equipo"}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Menu, Plus } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -8,6 +9,8 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button, Select } from "@/components/ui";
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const isPublicCatalog = pathname.startsWith("/usados");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -18,6 +21,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       document.body.style.overflow = previous;
     };
   }, [open]);
+
+  if (isPublicCatalog) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="relative flex min-h-screen bg-background text-foreground">
@@ -37,12 +44,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="text-sm font-semibold">Stock Apple</div>
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
-          <Link href="/agregar">
-            <Button className="!px-3 !py-2 text-xs">
-              <Plus className="h-4 w-4" />
-              Agregar
-            </Button>
-          </Link>
+            <Link href="/agregar">
+              <Button className="!px-3 !py-2 text-xs">
+                <Plus className="h-4 w-4" />
+                Agregar
+              </Button>
+            </Link>
           </div>
         </div>
         <main className="flex-1 overflow-x-hidden px-4 py-5 md:px-6 md:py-6 lg:px-8">

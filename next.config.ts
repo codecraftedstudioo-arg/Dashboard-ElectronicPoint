@@ -7,9 +7,10 @@ const nextConfig: NextConfig = {
   // Next.js 16 still applies this from experimental.serverActions at runtime.
   experimental: {
     serverActions: {
-      bodySizeLimit: "20mb",
+      // Single compressed photo uploads stay well under this; kept high for safety.
+      bodySizeLimit: "10mb",
     },
-    proxyClientMaxBodySize: "20mb",
+    proxyClientMaxBodySize: "10mb",
   },
   images: {
     remotePatterns: [

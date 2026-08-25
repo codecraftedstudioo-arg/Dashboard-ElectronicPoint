@@ -50,12 +50,14 @@ model Product {
   salePrice          Float
   description        String?
   status             ProductStatus      @default(AVAILABLE)
+  isPublished        Boolean            @default(false)
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
   images             ProductImage[]
   sale               Sale?
 
   @@index([imei])
+  @@index([status, isPublished, type])
 }
 
 model ProductImage {

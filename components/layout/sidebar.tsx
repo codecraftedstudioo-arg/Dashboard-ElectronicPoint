@@ -10,6 +10,7 @@ import {
   List,
   Settings,
   Smartphone,
+  Store,
   X,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -21,6 +22,7 @@ const nav = [
   { href: "/agregar", label: "Agregar equipo", icon: PlusCircle },
   { href: "/vendidos", label: "Vendidos", icon: ShoppingBag },
   { href: "/listas", label: "Listas", icon: List },
+  { href: "/usados", label: "Publicados", icon: Store },
   { href: "/configuracion", label: "Configuración", icon: Settings },
 ];
 

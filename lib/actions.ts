@@ -26,7 +26,22 @@ function isUploadableFile(value: FormDataEntryValue | null): value is File {
   );
 }
 
+function collectPreUploadedUrls(formData: FormData): string[] {
+  return formData
+    .getAll("uploadedImageUrls")
+    .map((value) => String(value).trim())
+    .filter((url) => url.startsWith("http") || url.startsWith("/uploads/"));
+}
+
 async function collectImages(formData: FormData) {
+  const preUploaded = collectPreUploadedUrls(formData);
+  if (preUploaded.length > 0) {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[images] Using pre-uploaded URLs:", preUploaded.length);
+    }
+    return preUploaded;
+  }
+
   const files = formData.getAll("images").filter(isUploadableFile);
 
   if (process.env.NODE_ENV === "development") {
@@ -50,6 +65,26 @@ async function collectImages(formData: FormData) {
     urls.push(url);
   }
   return urls;
+}
+
+/** Upload one image at a time to avoid Vercel/Next body size limits with multi-photo forms. */
+export async function uploadSingleProductImage(formData: FormData): Promise<string> {
+  const file = formData.get("image");
+  if (!isUploadableFile(file)) {
+    throw new Error("No se recibió ninguna imagen válida.");
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("[images] Uploading single image:", file.name, file.size);
+  }
+
+  const url = await uploadProductImage(file);
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("[images] Uploaded image URL:", url);
+  }
+
+  return url;
 }
 
 function parseImei(value: FormDataEntryValue | null): string | null {
@@ -77,6 +112,7 @@ export async function createProduct(formData: FormData) {
   const cost = parseNumber(formData.get("cost"));
   const salePrice = parseNumber(formData.get("salePrice"));
   const description = String(formData.get("description") || "").trim() || null;
+  const isPublished = formData.get("isPublished") === "true";
 
   if (!name || !storage || !color) {
     throw new Error("Completá modelo, capacidad y color.");
@@ -99,6 +135,7 @@ export async function createProduct(formData: FormData) {
       cost,
       salePrice,
       description,
+      isPublished,
       status: "AVAILABLE",
       images: {
         create: imageUrls.map((url, index) => ({
@@ -118,6 +155,7 @@ export async function createProduct(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/inventario");
   revalidatePath("/listas");
+  revalidatePath("/usados");
   redirect(`/equipos/${product.id}`);
 }
 
@@ -136,6 +174,7 @@ export async function updateProduct(productId: string, formData: FormData) {
   const cost = parseNumber(formData.get("cost"));
   const salePrice = parseNumber(formData.get("salePrice"));
   const description = String(formData.get("description") || "").trim() || null;
+  const isPublished = formData.get("isPublished") === "true";
 
   const imageUrls = await collectImages(formData);
   const primaryIndex = parsePrimaryIndex(formData);
@@ -166,6 +205,7 @@ export async function updateProduct(productId: string, formData: FormData) {
       cost,
       salePrice,
       description,
+      isPublished,
       ...(imageUrls.length
         ? {
             images: {
@@ -214,6 +254,7 @@ export async function updateProduct(productId: string, formData: FormData) {
   revalidatePath(`/equipos/${productId}`);
   revalidatePath(`/equipos/${productId}/editar`);
   revalidatePath("/listas");
+  revalidatePath("/usados");
   redirect(`/equipos/${productId}`);
 }
 
@@ -243,6 +284,7 @@ export async function deleteProductImage(imageId: string, productId: string) {
   revalidatePath(`/equipos/${productId}/editar`);
   revalidatePath("/");
   revalidatePath("/inventario");
+  revalidatePath("/usados");
 }
 
 export async function setPrimaryProductImage(imageId: string, productId: string) {
@@ -266,6 +308,7 @@ export async function setPrimaryProductImage(imageId: string, productId: string)
   revalidatePath(`/equipos/${productId}/editar`);
   revalidatePath("/");
   revalidatePath("/inventario");
+  revalidatePath("/usados");
 }
 
 export async function reorderProductImages(productId: string, imageIds: string[]) {
@@ -325,5 +368,6 @@ export async function markAsSold(formData: FormData) {
   revalidatePath("/inventario");
   revalidatePath("/vendidos");
   revalidatePath(`/equipos/${productId}`);
+  revalidatePath("/usados");
   redirect("/vendidos");
 }
