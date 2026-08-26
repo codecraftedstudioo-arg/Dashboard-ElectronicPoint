@@ -41,7 +41,7 @@ export function ShareCatalogButton({
       aria-label={copied ? "Link del catálogo copiado" : "Compartir catálogo"}
       title={copied ? "Link copiado" : "Compartir catálogo"}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border border-card-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-accent/40 hover:text-accent sm:px-3.5",
+        "inline-flex shrink-0 items-center gap-1.5 rounded-full border border-card-border bg-card px-2.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-accent/40 hover:text-accent sm:px-3.5",
         className,
       )}
     >

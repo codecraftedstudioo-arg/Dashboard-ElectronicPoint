@@ -23,6 +23,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [loaded, setLoaded] = useState<Record<string, boolean>>({});
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const touchStartX = useRef<number | null>(null);
+  const thumbsRef = useRef<HTMLDivElement>(null);
   const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const total = images.length;
@@ -43,11 +44,12 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const closeLightbox = useCallback(() => setLightboxOpen(false), []);
 
   useEffect(() => {
-    thumbRefs.current[index]?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
-    });
+    const scroller = thumbsRef.current;
+    const thumb = thumbRefs.current[index];
+    if (!scroller || !thumb) return;
+    const left =
+      thumb.offsetLeft - (scroller.clientWidth - thumb.offsetWidth) / 2;
+    scroller.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
   }, [index]);
 
   useEffect(() => {
@@ -75,7 +77,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
   if (!total || !current) {
     return (
-      <div className="flex aspect-square items-center justify-center rounded-2xl bg-input text-muted sm:aspect-[4/3]">
+      <div className="flex aspect-square w-full max-w-full items-center justify-center rounded-2xl bg-input text-muted sm:aspect-[4/3]">
         Sin imagen
       </div>
     );
@@ -96,13 +98,13 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   }
 
   return (
-    <div className="space-y-3">
-      <div className="relative">
+    <div className="w-full min-w-0 max-w-full space-y-3">
+      <div className="relative w-full min-w-0 max-w-full">
         <div
           role="button"
           tabIndex={0}
           aria-label="Ampliar imagen"
-          className="relative aspect-square cursor-zoom-in overflow-hidden rounded-2xl bg-input sm:aspect-[4/3]"
+          className="relative aspect-square w-full max-w-full cursor-zoom-in overflow-hidden rounded-2xl bg-input sm:aspect-[4/3]"
           onClick={() => setLightboxOpen(true)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
@@ -124,7 +126,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             priority={index === 0}
             sizes="(max-width: 768px) 100vw, 640px"
             className={cn(
-              "object-contain p-4 transition-opacity duration-200",
+              "object-contain p-2 transition-opacity duration-200 sm:p-4",
               loaded[current.id] ? "opacity-100" : "opacity-0",
             )}
             onLoad={() =>
@@ -143,7 +145,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 disabled={!canPrev}
                 aria-label="Foto anterior"
                 className={cn(
-                  "absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-card-border bg-background/90 text-foreground shadow-sm backdrop-blur transition-colors",
+                  "absolute left-1.5 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-card-border bg-background/90 text-foreground shadow-sm backdrop-blur transition-colors touch-manipulation sm:left-2 sm:h-11 sm:w-11",
                   "hover:bg-hover disabled:pointer-events-none disabled:opacity-30",
                 )}
               >
@@ -158,7 +160,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 disabled={!canNext}
                 aria-label="Foto siguiente"
                 className={cn(
-                  "absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-card-border bg-background/90 text-foreground shadow-sm backdrop-blur transition-colors",
+                  "absolute right-1.5 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-card-border bg-background/90 text-foreground shadow-sm backdrop-blur transition-colors touch-manipulation sm:right-2 sm:h-11 sm:w-11",
                   "hover:bg-hover disabled:pointer-events-none disabled:opacity-30",
                 )}
               >
@@ -166,17 +168,20 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               </button>
             </>
           ) : null}
-        </div>
 
-        {total > 1 ? (
-          <div className="pointer-events-none absolute right-3 top-3 rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium tabular-nums text-foreground backdrop-blur">
-            {index + 1} / {total}
-          </div>
-        ) : null}
+          {total > 1 ? (
+            <div className="pointer-events-none absolute right-2 top-2 max-w-[calc(100%-1rem)] truncate rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium tabular-nums text-foreground backdrop-blur sm:right-3 sm:top-3">
+              {index + 1} / {total}
+            </div>
+          ) : null}
+        </div>
       </div>
 
       {total > 1 ? (
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div
+          ref={thumbsRef}
+          className="catalog-thumb-scroll flex w-full min-w-0 max-w-full gap-2 overflow-x-auto overscroll-x-contain touch-pan-x"
+        >
           {images.map((img, i) => (
             <button
               key={img.id}
@@ -188,7 +193,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               aria-label={`Ver foto ${i + 1}`}
               aria-current={i === index ? "true" : undefined}
               className={cn(
-                "relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 transition-colors",
+                "relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border-2 transition-colors touch-manipulation sm:h-16 sm:w-16",
                 i === index
                   ? "border-accent ring-2 ring-accent/30"
                   : "border-card-border opacity-70 hover:opacity-100",
@@ -211,20 +216,20 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           role="dialog"
           aria-modal="true"
           aria-label={`${productName} — foto ampliada`}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-3 sm:p-4"
           onClick={closeLightbox}
         >
           <button
             type="button"
             onClick={closeLightbox}
             aria-label="Cerrar"
-            className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20"
+            className="absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20 sm:right-4 sm:top-4 sm:h-11 sm:w-11"
           >
             <X className="h-5 w-5" />
           </button>
 
           {total > 1 ? (
-            <div className="absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium tabular-nums text-white backdrop-blur">
+            <div className="absolute left-1/2 top-[max(0.75rem,env(safe-area-inset-top))] z-10 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium tabular-nums text-white backdrop-blur sm:top-4">
               {index + 1} / {total}
             </div>
           ) : null}
@@ -239,7 +244,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 }}
                 disabled={!canPrev}
                 aria-label="Foto anterior"
-                className="absolute left-3 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30 sm:left-6"
+                className="absolute left-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur transition-colors touch-manipulation hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30 sm:left-6 sm:h-12 sm:w-12"
               >
                 <ChevronLeft className="h-6 w-6" />
               </button>
@@ -251,7 +256,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 }}
                 disabled={!canNext}
                 aria-label="Foto siguiente"
-                className="absolute right-3 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30 sm:right-6"
+                className="absolute right-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur transition-colors touch-manipulation hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30 sm:right-6 sm:h-12 sm:w-12"
               >
                 <ChevronRight className="h-6 w-6" />
               </button>
@@ -259,7 +264,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           ) : null}
 
           <div
-            className="relative h-full max-h-[85vh] w-full max-w-5xl"
+            className="relative h-full max-h-[85vh] w-full min-w-0 max-w-5xl"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}

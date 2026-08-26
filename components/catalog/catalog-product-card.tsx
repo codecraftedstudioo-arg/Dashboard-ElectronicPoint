@@ -22,7 +22,7 @@ export function CatalogProductCard({ product }: { product: PublicCatalogProduct 
   return (
     <Link
       href={href}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-card-border bg-card shadow-[var(--shadow)] transition-all duration-300 hover:-translate-y-1 hover:border-accent/35 hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)]"
+      className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-card-border bg-card shadow-[var(--shadow)] transition-all duration-300 hover:-translate-y-1 hover:border-accent/35 hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)]"
     >
       <div className="relative aspect-[4/5] bg-input">
         {img ? (
@@ -49,10 +49,10 @@ export function CatalogProductCard({ product }: { product: PublicCatalogProduct 
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="text-lg font-semibold tracking-tight text-foreground">
+        <h3 className="break-words text-lg font-semibold tracking-tight text-foreground">
           {product.name}
         </h3>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex min-w-0 flex-wrap gap-1.5">
           <Badge className="border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
             {product.storage}
           </Badge>

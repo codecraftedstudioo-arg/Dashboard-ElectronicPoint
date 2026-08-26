@@ -78,9 +78,9 @@ export function CatalogGrid({
   }, [products, search, model, storage, sort]);
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <div className="space-y-3 rounded-2xl border border-card-border bg-card p-4 shadow-[var(--shadow)]">
-        <div className="relative">
+        <div className="relative min-w-0">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <Input
             className="pl-9"
@@ -89,8 +89,12 @@ export function CatalogGrid({
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <Select value={model} onChange={(e) => setModel(e.target.value)}>
+        <div className="grid min-w-0 gap-3 sm:grid-cols-3">
+          <Select
+            className="min-w-0 max-w-full"
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+          >
             <option value="ALL">Modelo: todos</option>
             {models.map((name) => (
               <option key={name} value={name}>
@@ -98,7 +102,11 @@ export function CatalogGrid({
               </option>
             ))}
           </Select>
-          <Select value={storage} onChange={(e) => setStorage(e.target.value)}>
+          <Select
+            className="min-w-0 max-w-full"
+            value={storage}
+            onChange={(e) => setStorage(e.target.value)}
+          >
             <option value="ALL">Capacidad: todas</option>
             {STORAGE_FILTERS.map((opt) => (
               <option key={opt} value={opt}>
@@ -107,6 +115,7 @@ export function CatalogGrid({
             ))}
           </Select>
           <Select
+            className="min-w-0 max-w-full"
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
           >
@@ -156,7 +165,7 @@ export function CatalogGrid({
           ) : null}
         </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid min-w-0 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((product) => (
             <CatalogProductCard key={product.id} product={product} />
           ))}

@@ -30,14 +30,14 @@ export function CatalogHeader() {
     (isCatalogSite && pathname !== "/" && !pathname.startsWith("/usados"));
 
   return (
-    <header className="sticky top-0 z-40 border-b border-card-border/80 bg-background/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-[4.5rem] sm:px-6 lg:h-20 lg:px-8">
+    <header className="sticky top-0 z-40 border-b border-card-border/80 bg-background/90 pt-[env(safe-area-inset-top)] backdrop-blur-md">
+      <div className="mx-auto flex h-14 min-h-14 w-full min-w-0 max-w-6xl items-center justify-between gap-2 px-3 sm:h-[4.5rem] sm:gap-4 sm:px-6 lg:h-20 lg:px-8">
         <Link
           href={homePath}
           aria-current={isCatalogHome ? "page" : undefined}
           aria-label={isProductPage ? "Volver al catálogo" : undefined}
           title={isProductPage ? "Volver al catálogo" : undefined}
-          className="inline-flex items-center gap-1.5 text-lg font-semibold tracking-tight text-foreground transition-colors hover:text-accent sm:gap-2 sm:text-xl lg:text-[1.35rem]"
+          className="inline-flex min-w-0 items-center gap-1 text-[15px] font-semibold tracking-tight text-foreground transition-colors hover:text-accent sm:gap-2 sm:text-xl lg:text-[1.35rem]"
         >
           {isProductPage ? (
             <ChevronLeft
@@ -46,11 +46,11 @@ export function CatalogHeader() {
             />
           ) : null}
           <AppleLogo className="h-5 w-5 shrink-0 sm:h-6 sm:w-6 lg:h-7 lg:w-7" />
-          Usados premium
+          <span className="truncate">Usados premium</span>
         </Link>
-        <div className="flex items-center">
+        <div className="flex shrink-0 items-center">
           <ShareCatalogButton />
-          <div className="ml-3 flex items-center border-l border-card-border pl-3 sm:ml-4 sm:pl-4 lg:ml-6 lg:pl-6">
+          <div className="ml-2 flex items-center border-l border-card-border pl-2 sm:ml-4 sm:pl-4 lg:ml-6 lg:pl-6">
             <ThemeToggle />
           </div>
         </div>
@@ -62,7 +62,7 @@ export function CatalogHeader() {
 export function CatalogFooter() {
   return (
     <footer id="contacto" className="border-t border-card-border bg-card/40">
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 pt-10 pb-[max(2.5rem,calc(2.5rem+env(safe-area-inset-bottom)))] sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <p className="text-sm text-muted">
           iPhones usados seleccionados y revisados.
         </p>

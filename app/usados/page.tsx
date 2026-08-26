@@ -29,7 +29,7 @@ export default async function UsadosPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen w-full min-w-0 bg-background text-foreground">
       <CatalogHeader />
 
       <section className="relative overflow-hidden border-b border-card-border">
@@ -37,9 +37,9 @@ export default async function UsadosPage() {
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_color-mix(in_srgb,var(--accent)_18%,transparent),_transparent_55%)]"
         />
-        <div className="relative mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 sm:px-6 sm:py-24 lg:flex-row lg:items-end lg:justify-between">
+        <div className="relative mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-8 px-4 py-16 sm:px-6 sm:py-24 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl space-y-4">
-            <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+        <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
               Usados premium
             </h1>
             <div className="space-y-1">
@@ -59,7 +59,7 @@ export default async function UsadosPage() {
           </div>
           <div
             aria-hidden
-            className="grid max-w-md grid-cols-2 gap-3 lg:w-[420px]"
+            className="grid w-full min-w-0 max-w-md grid-cols-2 gap-3 lg:w-[420px]"
           >
             <div className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
               <Image
@@ -85,7 +85,7 @@ export default async function UsadosPage() {
         </div>
       </section>
 
-      <section id="equipos" className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+      <section id="equipos" className="mx-auto w-full min-w-0 max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
         <div className="mb-8">
           <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             Equipos disponibles

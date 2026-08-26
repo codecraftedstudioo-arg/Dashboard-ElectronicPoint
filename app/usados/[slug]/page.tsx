@@ -85,10 +85,10 @@ export default async function UsadosProductPage({ params }: PageProps) {
     : null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen w-full min-w-0 bg-background text-foreground">
       <CatalogHeader />
 
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mx-auto w-full min-w-0 max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         <Link
           href={equiposHref}
           className="text-sm text-muted transition-colors hover:text-foreground"
@@ -96,8 +96,8 @@ export default async function UsadosProductPage({ params }: PageProps) {
           ← Volver al catálogo
         </Link>
 
-        <div className="mt-6 grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
-          <div className="rounded-2xl border border-card-border bg-card p-3 sm:p-4">
+        <div className="mt-6 grid min-w-0 gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
+          <div className="w-full min-w-0 max-w-full rounded-2xl border border-card-border bg-card p-2 sm:p-4">
             <ProductGallery
               images={product.images.map((img) => ({
                 id: img.id,
@@ -108,24 +108,24 @@ export default async function UsadosProductPage({ params }: PageProps) {
             />
           </div>
 
-          <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+          <div className="min-w-0 max-w-full space-y-6 lg:sticky lg:top-24 lg:self-start">
             <div className="space-y-4">
-              <div>
-                <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              <div className="min-w-0">
+                <h1 className="break-words text-2xl font-semibold tracking-tight text-foreground sm:text-4xl">
                   {product.name}
                 </h1>
                 <div className="mt-3">
-                  <Badge className="border-card-border text-muted">
+                  <Badge className="max-w-full border-card-border text-muted">
                     {product.color}
                   </Badge>
                 </div>
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted">
                   Precio
                 </p>
-                <p className="mt-1 flex items-baseline gap-1.5">
+                <p className="mt-1 flex min-w-0 flex-wrap items-baseline gap-1.5">
                   <span className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
                     {Math.round(product.salePrice)
                       .toString()
@@ -138,7 +138,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
+            <div className="w-full min-w-0 max-w-full rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
               <p className="text-sm font-semibold text-emerald-500">
                 Garantía de 90 días
               </p>
@@ -147,39 +147,41 @@ export default async function UsadosProductPage({ params }: PageProps) {
               </p>
             </div>
 
-            <div className="grid gap-3 rounded-2xl border border-card-border bg-card p-4">
-              <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="text-muted">Capacidad</span>
-                <Badge className="border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
+            <div className="grid w-full min-w-0 max-w-full gap-3 rounded-2xl border border-card-border bg-card p-4">
+              <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
+                <span className="shrink-0 text-muted">Capacidad</span>
+                <Badge className="min-w-0 max-w-[70%] truncate border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
                   {product.storage}
                 </Badge>
               </div>
-              <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="text-muted">Batería</span>
-                <Badge className="border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
+              <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
+                <span className="shrink-0 text-muted">Batería</span>
+                <Badge className="min-w-0 max-w-[70%] truncate border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
                   {product.batteryCondition != null
                     ? `${product.batteryCondition}%`
                     : "—"}
                 </Badge>
               </div>
-              <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="text-muted">Chip</span>
-                <Badge className="border-card-border text-muted">
+              <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
+                <span className="shrink-0 text-muted">Chip</span>
+                <Badge className="min-w-0 max-w-[70%] truncate border-card-border text-muted">
                   {product.chip ? CHIP_TYPE_LABELS[product.chip] : "—"}
                 </Badge>
               </div>
-              <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="text-muted">Estado</span>
-                <Badge className={CONDITION_COLORS[product.physicalCondition]}>
+              <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
+                <span className="shrink-0 text-muted">Estado</span>
+                <Badge
+                  className={`min-w-0 max-w-[70%] truncate ${CONDITION_COLORS[product.physicalCondition]}`}
+                >
                   {PHYSICAL_CONDITION_LABELS[product.physicalCondition]}
                 </Badge>
               </div>
             </div>
 
             {product.description ? (
-              <div>
+              <div className="min-w-0 max-w-full">
                 <h2 className="text-sm font-medium text-muted">Descripción</h2>
-                <p className="mt-2 text-sm leading-relaxed text-foreground">
+                <p className="mt-2 break-words text-sm leading-relaxed text-foreground">
                   {product.description}
                 </p>
               </div>
@@ -195,15 +197,15 @@ export default async function UsadosProductPage({ params }: PageProps) {
         {prev || next ? (
           <nav
             aria-label="Otros equipos"
-            className="mt-12 flex items-stretch gap-3 border-t border-card-border pt-8"
+            className="mt-12 flex min-w-0 items-stretch gap-3 border-t border-card-border pt-8"
           >
             {prev && prevHref ? (
               <Link
                 href={prevHref}
-                className="group flex min-w-0 flex-1 flex-col gap-1 rounded-2xl border border-card-border bg-card px-4 py-3 transition-colors hover:border-accent/35"
+                className="group flex min-w-0 flex-1 flex-col gap-1 rounded-2xl border border-card-border bg-card px-3 py-3 transition-colors hover:border-accent/35 sm:px-4"
               >
                 <span className="inline-flex items-center gap-1 text-xs text-muted">
-                  <ChevronLeft className="h-3.5 w-3.5" />
+                  <ChevronLeft className="h-3.5 w-3.5 shrink-0" />
                   Anterior
                 </span>
                 <span className="truncate text-sm font-medium text-foreground group-hover:text-accent">
@@ -211,24 +213,25 @@ export default async function UsadosProductPage({ params }: PageProps) {
                 </span>
               </Link>
             ) : (
-              <div className="flex-1" />
+              <div className="hidden flex-1 sm:block" />
             )}
             {next && nextHref ? (
               <Link
                 href={nextHref}
-                className="group flex min-w-0 flex-1 flex-col items-end gap-1 rounded-2xl border border-card-border bg-card px-4 py-3 text-right transition-colors hover:border-accent/35"
+                className="group flex min-w-0 flex-1 flex-col items-end gap-1 rounded-2xl border border-card-border bg-card px-3 py-3 text-right transition-colors hover:border-accent/35 sm:px-4"
               >
                 <span className="inline-flex items-center gap-1 text-xs text-muted">
                   Siguiente
-                  <ChevronRight className="h-3.5 w-3.5" />
+                  <ChevronRight className="h-3.5 w-3.5 shrink-0" />
                 </span>
                 <span className="truncate text-sm font-medium text-foreground group-hover:text-accent">
                   {next.name} {next.storage}
                 </span>
               </Link>
             ) : (
-              <div className="flex-1" />
-            )}          </nav>
+              <div className="hidden flex-1 sm:block" />
+            )}
+          </nav>
         ) : null}
       </div>
 

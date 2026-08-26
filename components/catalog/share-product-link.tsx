@@ -36,7 +36,7 @@ export function ShareProductLink({
     <Button
       type="button"
       variant="secondary"
-      className="w-full"
+      className="w-full min-h-11 max-w-full"
       onClick={handleShare}
     >
       {copied ? (
