@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, Share2 } from "lucide-react";
+import { useCatalogSite } from "@/components/catalog/catalog-site-context";
 import { cn } from "@/components/ui";
 
 export function ShareCatalogButton({
@@ -9,10 +10,11 @@ export function ShareCatalogButton({
 }: {
   className?: string;
 }) {
+  const { homePath } = useCatalogSite();
   const [copied, setCopied] = useState(false);
 
   async function handleShare() {
-    const url = `${window.location.origin}/usados`;
+    const url = `${window.location.origin}${homePath === "/" ? "" : homePath}`;
     const title = "Usados premium";
     const text = "Catálogo de iPhones usados — Usados premium";
 

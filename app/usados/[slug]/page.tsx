@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   CatalogFooter,
@@ -15,6 +16,11 @@ import {
   CHIP_TYPE_LABELS,
 } from "@/lib/constants";
 import { formatUSD } from "@/lib/currency";
+import {
+  catalogEquiposPath,
+  catalogProductPath,
+  isCatalogHost,
+} from "@/lib/domains";
 import { primaryImageUrl } from "@/lib/images";
 import { buildProductSlug, parseProductIdFromSlug } from "@/lib/product-slug";
 import {
@@ -65,6 +71,17 @@ export default async function UsadosProductPage({ params }: PageProps) {
   if (!product) notFound();
 
   const { prev, next } = await getPublishedIphoneNeighbors(product.id);
+  const headerStore = await headers();
+  const isCatalogSite =
+    headerStore.get("x-catalog-site") === "1" ||
+    isCatalogHost(headerStore.get("host"));
+  const equiposHref = catalogEquiposPath(isCatalogSite);
+  const prevHref = prev
+    ? catalogProductPath(buildProductSlug(prev), isCatalogSite)
+    : null;
+  const nextHref = next
+    ? catalogProductPath(buildProductSlug(next), isCatalogSite)
+    : null;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -72,7 +89,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
 
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         <Link
-          href="/usados#equipos"
+          href={equiposHref}
           className="text-sm text-muted transition-colors hover:text-foreground"
         >
           ← Volver al catálogo
@@ -179,9 +196,9 @@ export default async function UsadosProductPage({ params }: PageProps) {
             aria-label="Otros equipos"
             className="mt-12 flex items-stretch gap-3 border-t border-card-border pt-8"
           >
-            {prev ? (
+            {prev && prevHref ? (
               <Link
-                href={`/usados/${buildProductSlug(prev)}`}
+                href={prevHref}
                 className="group flex min-w-0 flex-1 flex-col gap-1 rounded-2xl border border-card-border bg-card px-4 py-3 transition-colors hover:border-accent/35"
               >
                 <span className="inline-flex items-center gap-1 text-xs text-muted">
@@ -195,9 +212,9 @@ export default async function UsadosProductPage({ params }: PageProps) {
             ) : (
               <div className="flex-1" />
             )}
-            {next ? (
+            {next && nextHref ? (
               <Link
-                href={`/usados/${buildProductSlug(next)}`}
+                href={nextHref}
                 className="group flex min-w-0 flex-1 flex-col items-end gap-1 rounded-2xl border border-card-border bg-card px-4 py-3 text-right transition-colors hover:border-accent/35"
               >
                 <span className="inline-flex items-center gap-1 text-xs text-muted">
@@ -210,8 +227,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
               </Link>
             ) : (
               <div className="flex-1" />
-            )}
-          </nav>
+            )}          </nav>
         ) : null}
       </div>
 

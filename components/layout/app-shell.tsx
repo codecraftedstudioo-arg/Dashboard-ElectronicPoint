@@ -8,9 +8,16 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button, Select } from "@/components/ui";
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({
+  children,
+  isCatalogSite = false,
+}: {
+  children: ReactNode;
+  isCatalogSite?: boolean;
+}) {
   const pathname = usePathname();
-  const isPublicCatalog = pathname.startsWith("/usados");
+  const isPublicCatalog =
+    isCatalogSite || pathname.startsWith("/usados");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {

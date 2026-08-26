@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useCatalogSite } from "@/components/catalog/catalog-site-context";
 import { Badge, cn } from "@/components/ui";
 import {
   CONDITION_COLORS,
@@ -14,7 +15,8 @@ import type { PublicCatalogProduct } from "@/lib/public-catalog";
 
 export function CatalogProductCard({ product }: { product: PublicCatalogProduct }) {
   const img = primaryImageUrl(product.images);
-  const href = `/usados/${buildProductSlug(product)}`;
+  const { productPath } = useCatalogSite();
+  const href = productPath(buildProductSlug(product));
   const [loaded, setLoaded] = useState(false);
 
   return (

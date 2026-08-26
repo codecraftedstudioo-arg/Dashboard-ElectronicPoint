@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { CatalogSiteProvider } from "@/components/catalog/catalog-site-context";
 import { AppShell } from "@/components/layout/app-shell";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { isCatalogHost } from "@/lib/domains";
 import { parseTheme, THEME_COOKIE } from "@/lib/theme";
 import "./globals.css";
 
@@ -27,7 +29,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
+  const headerStore = await headers();
   const theme = parseTheme(cookieStore.get(THEME_COOKIE)?.value);
+  const isCatalogSite =
+    headerStore.get("x-catalog-site") === "1" ||
+    isCatalogHost(headerStore.get("host"));
 
   return (
     <html
@@ -38,7 +44,9 @@ export default async function RootLayout({
     >
       <body className="min-h-full bg-background font-sans text-foreground">
         <ThemeProvider initialTheme={theme}>
-          <AppShell>{children}</AppShell>
+          <CatalogSiteProvider isCatalogSite={isCatalogSite}>
+            <AppShell isCatalogSite={isCatalogSite}>{children}</AppShell>
+          </CatalogSiteProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { useCatalogSite } from "@/components/catalog/catalog-site-context";
 import { ShareCatalogButton } from "@/components/catalog/share-catalog-button";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 function AppleLogo({ className }: { className?: string }) {
   return (
@@ -21,14 +22,18 @@ function AppleLogo({ className }: { className?: string }) {
 
 export function CatalogHeader() {
   const pathname = usePathname();
-  const isCatalogHome = pathname === "/usados";
-  const isProductPage = pathname.startsWith("/usados/");
+  const { isCatalogSite, homePath } = useCatalogSite();
+  const isCatalogHome =
+    pathname === "/usados" || (isCatalogSite && pathname === "/");
+  const isProductPage =
+    pathname.startsWith("/usados/") ||
+    (isCatalogSite && pathname !== "/" && !pathname.startsWith("/usados"));
 
   return (
     <header className="sticky top-0 z-40 border-b border-card-border/80 bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-[4.5rem] sm:px-6 lg:h-20 lg:px-8">
         <Link
-          href="/usados"
+          href={homePath}
           aria-current={isCatalogHome ? "page" : undefined}
           aria-label={isProductPage ? "Volver al catálogo" : undefined}
           title={isProductPage ? "Volver al catálogo" : undefined}
