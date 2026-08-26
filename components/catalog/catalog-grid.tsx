@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { CatalogProductCard } from "@/components/catalog/catalog-product-card";
-import { Input, Select } from "@/components/ui";
+import { Button, Input, Select } from "@/components/ui";
 import { compareIphoneModelsDesc } from "@/lib/iphone-model-sort";
 import type { PublicCatalogProduct } from "@/lib/public-catalog";
 
@@ -22,6 +22,19 @@ export function CatalogGrid({
   const [model, setModel] = useState("ALL");
   const [storage, setStorage] = useState("ALL");
   const [sort, setSort] = useState<SortOption>("newest");
+
+  const hasActiveFilters =
+    search.trim() !== "" ||
+    model !== "ALL" ||
+    storage !== "ALL" ||
+    sort !== "newest";
+
+  function clearFilters() {
+    setSearch("");
+    setModel("ALL");
+    setStorage("ALL");
+    setSort("newest");
+  }
 
   const filtered = useMemo(() => {
     let list = [...products];
@@ -105,6 +118,24 @@ export function CatalogGrid({
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted">
+          Mostrando {filtered.length} de {products.length} equipo
+          {products.length === 1 ? "" : "s"}
+        </p>
+        {hasActiveFilters ? (
+          <Button
+            type="button"
+            variant="ghost"
+            className="!px-2 !py-1.5 text-xs"
+            onClick={clearFilters}
+          >
+            <X className="h-3.5 w-3.5" />
+            Limpiar filtros
+          </Button>
+        ) : null}
+      </div>
+
       {filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-card-border bg-card/50 px-6 py-16 text-center">
           <h3 className="text-lg font-semibold text-foreground">
@@ -113,6 +144,16 @@ export function CatalogGrid({
           <p className="mt-2 text-sm text-muted">
             Probá ajustar los filtros o volvé más tarde.
           </p>
+          {hasActiveFilters ? (
+            <Button
+              type="button"
+              variant="secondary"
+              className="mt-6"
+              onClick={clearFilters}
+            >
+              Limpiar filtros
+            </Button>
+          ) : null}
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

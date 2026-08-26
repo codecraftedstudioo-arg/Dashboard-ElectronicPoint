@@ -108,6 +108,31 @@ export async function getPublishedIphoneById(
   });
 }
 
+export type CatalogNeighbor = {
+  id: string;
+  name: string;
+  storage: string;
+};
+
+export async function getPublishedIphoneNeighbors(
+  id: string,
+): Promise<{ prev: CatalogNeighbor | null; next: CatalogNeighbor | null }> {
+  const products = await getPublishedIphones();
+  const index = products.findIndex((p) => p.id === id);
+  if (index < 0) return { prev: null, next: null };
+
+  const toNeighbor = (p: PublicCatalogProduct): CatalogNeighbor => ({
+    id: p.id,
+    name: p.name,
+    storage: p.storage,
+  });
+
+  return {
+    prev: index > 0 ? toNeighbor(products[index - 1]) : null,
+    next: index < products.length - 1 ? toNeighbor(products[index + 1]) : null,
+  };
+}
+
 export async function getPublishedModelNames(): Promise<string[]> {
   const rows = await prisma.product.findMany({
     where: {

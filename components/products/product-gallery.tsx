@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { cn } from "@/components/ui";
 
 export type GalleryImage = {
@@ -21,6 +21,7 @@ const SWIPE_THRESHOLD = 50;
 export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [index, setIndex] = useState(0);
   const [loaded, setLoaded] = useState<Record<string, boolean>>({});
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -39,6 +40,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
   const prev = useCallback(() => goTo(index - 1), [goTo, index]);
   const next = useCallback(() => goTo(index + 1), [goTo, index]);
+  const closeLightbox = useCallback(() => setLightboxOpen(false), []);
 
   useEffect(() => {
     thumbRefs.current[index]?.scrollIntoView({
@@ -50,12 +52,26 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
+      if (lightboxOpen && e.key === "Escape") {
+        e.preventDefault();
+        closeLightbox();
+        return;
+      }
       if (e.key === "ArrowLeft") prev();
       if (e.key === "ArrowRight") next();
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [prev, next]);
+  }, [prev, next, lightboxOpen, closeLightbox]);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [lightboxOpen]);
 
   if (!total || !current) {
     return (
@@ -83,7 +99,17 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     <div className="space-y-3">
       <div className="relative">
         <div
-          className="relative aspect-square overflow-hidden rounded-2xl bg-input sm:aspect-[4/3]"
+          role="button"
+          tabIndex={0}
+          aria-label="Ampliar imagen"
+          className="relative aspect-square cursor-zoom-in overflow-hidden rounded-2xl bg-input sm:aspect-[4/3]"
+          onClick={() => setLightboxOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setLightboxOpen(true);
+            }
+          }}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
@@ -110,7 +136,10 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             <>
               <button
                 type="button"
-                onClick={prev}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prev();
+                }}
                 disabled={!canPrev}
                 aria-label="Foto anterior"
                 className={cn(
@@ -122,7 +151,10 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               </button>
               <button
                 type="button"
-                onClick={next}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  next();
+                }}
                 disabled={!canNext}
                 aria-label="Foto siguiente"
                 className={cn(
@@ -137,7 +169,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
         </div>
 
         {total > 1 ? (
-          <div className="absolute right-3 top-3 rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium tabular-nums text-foreground backdrop-blur">
+          <div className="pointer-events-none absolute right-3 top-3 rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium tabular-nums text-foreground backdrop-blur">
             {index + 1} / {total}
           </div>
         ) : null}
@@ -171,6 +203,77 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               />
             </button>
           ))}
+        </div>
+      ) : null}
+
+      {lightboxOpen ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${productName} — foto ampliada`}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          onClick={closeLightbox}
+        >
+          <button
+            type="button"
+            onClick={closeLightbox}
+            aria-label="Cerrar"
+            className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          {total > 1 ? (
+            <div className="absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium tabular-nums text-white backdrop-blur">
+              {index + 1} / {total}
+            </div>
+          ) : null}
+
+          {total > 1 ? (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prev();
+                }}
+                disabled={!canPrev}
+                aria-label="Foto anterior"
+                className="absolute left-3 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30 sm:left-6"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  next();
+                }}
+                disabled={!canNext}
+                aria-label="Foto siguiente"
+                className="absolute right-3 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30 sm:right-6"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </button>
+            </>
+          ) : null}
+
+          <div
+            className="relative h-full max-h-[85vh] w-full max-w-5xl"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            <Image
+              key={`lightbox-${current.id}`}
+              src={current.url}
+              alt={`${productName} — foto ${index + 1}`}
+              fill
+              sizes="100vw"
+              className="object-contain"
+              priority
+            />
+          </div>
         </div>
       ) : null}
     </div>

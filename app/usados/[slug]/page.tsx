@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   CatalogFooter,
   CatalogHeader,
 } from "@/components/catalog/catalog-chrome";
 import { ProductGallery } from "@/components/products/product-gallery";
+import { ShareProductLink } from "@/components/catalog/share-product-link";
 import { Badge } from "@/components/ui";
 import {
   CONDITION_COLORS,
@@ -14,8 +16,11 @@ import {
 } from "@/lib/constants";
 import { formatUSD } from "@/lib/currency";
 import { primaryImageUrl } from "@/lib/images";
-import { parseProductIdFromSlug } from "@/lib/product-slug";
-import { getPublishedIphoneById } from "@/lib/public-catalog";
+import { buildProductSlug, parseProductIdFromSlug } from "@/lib/product-slug";
+import {
+  getPublishedIphoneById,
+  getPublishedIphoneNeighbors,
+} from "@/lib/public-catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -59,13 +64,15 @@ export default async function UsadosProductPage({ params }: PageProps) {
   const product = await getPublishedIphoneById(id);
   if (!product) notFound();
 
+  const { prev, next } = await getPublishedIphoneNeighbors(product.id);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <CatalogHeader />
 
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         <Link
-          href="/usados"
+          href="/usados#equipos"
           className="text-sm text-muted transition-colors hover:text-foreground"
         >
           ← Volver al catálogo
@@ -83,16 +90,43 @@ export default async function UsadosProductPage({ params }: PageProps) {
             />
           </div>
 
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-                {product.name}
-              </h1>
-              <p className="mt-2 text-sm text-muted">{product.color}</p>
+          <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+            <div className="space-y-4">
+              <div>
+                <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                  {product.name}
+                </h1>
+                <div className="mt-3">
+                  <Badge className="border-card-border text-muted">
+                    {product.color}
+                  </Badge>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted">
+                  Precio
+                </p>
+                <p className="mt-1 flex items-baseline gap-1.5">
+                  <span className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+                    {Math.round(product.salePrice)
+                      .toString()
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                  </span>
+                  <span className="text-base font-medium text-muted sm:text-lg">
+                    USD
+                  </span>
+                </p>
+              </div>
             </div>
 
-            <div className="text-3xl font-semibold text-foreground">
-              {formatUSD(product.salePrice)}
+            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
+              <p className="text-sm font-semibold text-emerald-500">
+                Garantía de 90 días
+              </p>
+              <p className="mt-0.5 text-xs text-muted">
+                Equipo revisado y respaldado.
+              </p>
             </div>
 
             <div className="grid gap-3 rounded-2xl border border-card-border bg-card p-4">
@@ -110,10 +144,12 @@ export default async function UsadosProductPage({ params }: PageProps) {
                     : "—"}
                 </Badge>
               </div>
-              <InfoRow
-                label="Chip"
-                value={product.chip ? CHIP_TYPE_LABELS[product.chip] : "—"}
-              />
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-muted">Chip</span>
+                <Badge className="border-card-border text-muted">
+                  {product.chip ? CHIP_TYPE_LABELS[product.chip] : "—"}
+                </Badge>
+              </div>
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span className="text-muted">Estado</span>
                 <Badge className={CONDITION_COLORS[product.physicalCondition]}>
@@ -130,20 +166,56 @@ export default async function UsadosProductPage({ params }: PageProps) {
                 </p>
               </div>
             ) : null}
+
+            <ShareProductLink
+              title={`${product.name} ${product.storage}`}
+              text={`${product.name} ${product.storage} — ${formatUSD(product.salePrice)}`}
+            />
           </div>
         </div>
+
+        {prev || next ? (
+          <nav
+            aria-label="Otros equipos"
+            className="mt-12 flex items-stretch gap-3 border-t border-card-border pt-8"
+          >
+            {prev ? (
+              <Link
+                href={`/usados/${buildProductSlug(prev)}`}
+                className="group flex min-w-0 flex-1 flex-col gap-1 rounded-2xl border border-card-border bg-card px-4 py-3 transition-colors hover:border-accent/35"
+              >
+                <span className="inline-flex items-center gap-1 text-xs text-muted">
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                  Anterior
+                </span>
+                <span className="truncate text-sm font-medium text-foreground group-hover:text-accent">
+                  {prev.name} {prev.storage}
+                </span>
+              </Link>
+            ) : (
+              <div className="flex-1" />
+            )}
+            {next ? (
+              <Link
+                href={`/usados/${buildProductSlug(next)}`}
+                className="group flex min-w-0 flex-1 flex-col items-end gap-1 rounded-2xl border border-card-border bg-card px-4 py-3 text-right transition-colors hover:border-accent/35"
+              >
+                <span className="inline-flex items-center gap-1 text-xs text-muted">
+                  Siguiente
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </span>
+                <span className="truncate text-sm font-medium text-foreground group-hover:text-accent">
+                  {next.name} {next.storage}
+                </span>
+              </Link>
+            ) : (
+              <div className="flex-1" />
+            )}
+          </nav>
+        ) : null}
       </div>
 
       <CatalogFooter />
-    </div>
-  );
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-3 text-sm">
-      <span className="text-muted">{label}</span>
-      <span className="font-medium text-foreground">{value}</span>
     </div>
   );
 }
