@@ -1,42 +1,51 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import {
+  hostFromHeaders,
   isCatalogHost,
   isDashboardPath,
+  isUsadosPath,
 } from "@/lib/domains";
 
 /**
- * Hostname-based routing for dual domains:
- * - Dashboard host → unchanged (electronicpoint-inventario.com.ar, localhost, etc.)
- * - Catalog host (usadospremium.com.ar) → public /usados mapped to /
+ * Hostname-based routing:
+ * - Dashboard host (electronicpoint-inventario.com.ar, localhost, …)
+ *   → admin app. /usados is never visible; it redirects home.
+ * - Catalog host (usadospremium.com.ar)
+ *   → public catalog via internal rewrite to /usados.
  */
+function redirectHome(request: NextRequest, status: 307 | 308) {
+  const url = request.nextUrl.clone();
+  url.pathname = "/";
+  return NextResponse.redirect(url, status);
+}
+
 export function proxy(request: NextRequest) {
-  const host = request.headers.get("host");
+  const host = hostFromHeaders(request.headers) || request.nextUrl.host;
+  const { pathname } = request.nextUrl;
+
   if (!isCatalogHost(host)) {
+    if (isUsadosPath(pathname)) {
+      return redirectHome(request, 308);
+    }
     return NextResponse.next();
   }
 
-  const { pathname } = request.nextUrl;
-
   // Keep /usados out of the public URL: /usados → /
   if (pathname === "/usados" || pathname === "/usados/") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
-    return NextResponse.redirect(url);
+    return redirectHome(request, 308);
   }
 
   // /usados/:slug → /:slug
   if (pathname.startsWith("/usados/")) {
     const url = request.nextUrl.clone();
     url.pathname = pathname.slice("/usados".length) || "/";
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, 308);
   }
 
   // Do not expose the admin dashboard on the catalog domain
   if (isDashboardPath(pathname)) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
-    return NextResponse.redirect(url);
+    return redirectHome(request, 307);
   }
 
   const requestHeaders = new Headers(request.headers);

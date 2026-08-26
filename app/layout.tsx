@@ -4,7 +4,7 @@ import { cookies, headers } from "next/headers";
 import { CatalogSiteProvider } from "@/components/catalog/catalog-site-context";
 import { AppShell } from "@/components/layout/app-shell";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { isCatalogHost } from "@/lib/domains";
+import { hostFromHeaders, isCatalogHost } from "@/lib/domains";
 import { parseTheme, THEME_COOKIE } from "@/lib/theme";
 import "./globals.css";
 
@@ -33,7 +33,7 @@ export default async function RootLayout({
   const theme = parseTheme(cookieStore.get(THEME_COOKIE)?.value);
   const isCatalogSite =
     headerStore.get("x-catalog-site") === "1" ||
-    isCatalogHost(headerStore.get("host"));
+    isCatalogHost(hostFromHeaders(headerStore));
 
   return (
     <html

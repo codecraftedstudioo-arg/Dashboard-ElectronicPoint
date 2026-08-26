@@ -19,6 +19,7 @@ import { formatUSD } from "@/lib/currency";
 import {
   catalogEquiposPath,
   catalogProductPath,
+  hostFromHeaders,
   isCatalogHost,
 } from "@/lib/domains";
 import { primaryImageUrl } from "@/lib/images";
@@ -74,7 +75,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
   const headerStore = await headers();
   const isCatalogSite =
     headerStore.get("x-catalog-site") === "1" ||
-    isCatalogHost(headerStore.get("host"));
+    isCatalogHost(hostFromHeaders(headerStore));
   const equiposHref = catalogEquiposPath(isCatalogSite);
   const prevHref = prev
     ? catalogProductPath(buildProductSlug(prev), isCatalogSite)
