@@ -4,29 +4,16 @@ import {
   CatalogHeader,
 } from "@/components/catalog/catalog-chrome";
 import { CatalogGrid } from "@/components/catalog/catalog-grid";
-import {
-  getPublishedIphones,
-  getPublishedModelNames,
-} from "@/lib/public-catalog";
+import { getPublishedIphones } from "@/lib/public-catalog";
+import { catalogMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Usados premium — Electronic Point",
-  description: "Equipos seleccionados, revisados y listos para vos.",
-  openGraph: {
-    title: "Usados premium — Electronic Point",
-    description: "Equipos seleccionados, revisados y listos para vos.",
-    type: "website",
-  },
-};
+export const metadata: Metadata = catalogMetadata();
 
 export default async function UsadosPage() {
-  const [products, models] = await Promise.all([
-    getPublishedIphones(),
-    getPublishedModelNames(),
-  ]);
+  const products = await getPublishedIphones();
 
   return (
     <div className="min-h-screen w-full min-w-0 bg-background text-foreground">
@@ -85,17 +72,11 @@ export default async function UsadosPage() {
         </div>
       </section>
 
-      <section id="equipos" className="mx-auto w-full min-w-0 max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            Equipos disponibles
-          </h2>
-          <p className="mt-1 text-sm text-muted">
-            {products.length} equipo{products.length === 1 ? "" : "s"} publicado
-            {products.length === 1 ? "" : "s"}
-          </p>
-        </div>
-        <CatalogGrid products={products} models={models} />
+      <section
+        id="equipos"
+        className="mx-auto w-full min-w-0 max-w-6xl scroll-mt-20 px-4 py-8 sm:scroll-mt-24 sm:px-6 sm:py-10"
+      >
+        <CatalogGrid products={products} />
       </section>
 
       <CatalogFooter />

@@ -147,3 +147,40 @@ export async function getPublishedModelNames(): Promise<string[]> {
     .map((r) => r.name)
     .sort(compareIphoneModelsDesc);
 }
+
+export type CatalogModelGroup = {
+  model: string;
+  products: PublicCatalogProduct[];
+};
+
+function storageRank(storage: string): number {
+  const s = storage.replace(/\s/g, "").toUpperCase();
+  const n = parseFloat(s);
+  if (Number.isNaN(n)) return 0;
+  return s.includes("TB") ? n * 1024 : n;
+}
+
+/** Group published units by model name, newest models first. Each product appears once. */
+export function groupPublishedIphonesByModel(
+  products: PublicCatalogProduct[],
+): CatalogModelGroup[] {
+  const map = new Map<string, PublicCatalogProduct[]>();
+  for (const product of products) {
+    const list = map.get(product.name);
+    if (list) list.push(product);
+    else map.set(product.name, [product]);
+  }
+
+  return [...map.keys()]
+    .sort(compareIphoneModelsDesc)
+    .map((model) => {
+      const units = [...(map.get(model) ?? [])].sort((a, b) => {
+        const byStorage = storageRank(a.storage) - storageRank(b.storage);
+        if (byStorage !== 0) return byStorage;
+        const byColor = a.color.localeCompare(b.color, "es");
+        if (byColor !== 0) return byColor;
+        return a.salePrice - b.salePrice;
+      });
+      return { model, products: units };
+    });
+}

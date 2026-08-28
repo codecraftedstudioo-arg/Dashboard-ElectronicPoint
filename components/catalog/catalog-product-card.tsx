@@ -13,7 +13,13 @@ import { primaryImageUrl } from "@/lib/images";
 import { buildProductSlug } from "@/lib/product-slug";
 import type { PublicCatalogProduct } from "@/lib/public-catalog";
 
-export function CatalogProductCard({ product }: { product: PublicCatalogProduct }) {
+export function CatalogProductCard({
+  product,
+  className,
+}: {
+  product: PublicCatalogProduct;
+  className?: string;
+}) {
   const img = primaryImageUrl(product.images);
   const { productPath } = useCatalogSite();
   const href = productPath(buildProductSlug(product));
@@ -22,7 +28,10 @@ export function CatalogProductCard({ product }: { product: PublicCatalogProduct 
   return (
     <Link
       href={href}
-      className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-card-border bg-card shadow-[var(--shadow)] transition-all duration-300 hover:-translate-y-1 hover:border-accent/35 hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)]"
+      className={cn(
+        "group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-card-border bg-card shadow-[var(--shadow)] transition-all duration-300 hover:-translate-y-1 hover:border-accent/35 hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)]",
+        className,
+      )}
     >
       <div className="relative aspect-[4/5] bg-input">
         {img ? (
@@ -34,7 +43,7 @@ export function CatalogProductCard({ product }: { product: PublicCatalogProduct 
               src={img}
               alt={product.name}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 25vw"
               className={cn(
                 "object-cover transition-all duration-500 group-hover:scale-[1.02]",
                 loaded ? "scale-100 opacity-100 blur-0" : "scale-105 opacity-0 blur-sm",

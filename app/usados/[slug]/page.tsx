@@ -21,6 +21,7 @@ import {
   catalogProductPath,
   hostFromHeaders,
   isCatalogHost,
+  PUBLIC_CATALOG_ORIGIN,
 } from "@/lib/domains";
 import { primaryImageUrl } from "@/lib/images";
 import { buildProductSlug, parseProductIdFromSlug } from "@/lib/product-slug";
@@ -28,6 +29,11 @@ import {
   getPublishedIphoneById,
   getPublishedIphoneNeighbors,
 } from "@/lib/public-catalog";
+import {
+  CATALOG_DESCRIPTION,
+  CATALOG_TITLE,
+  catalogProductMetadata,
+} from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -40,27 +46,33 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const id = parseProductIdFromSlug(slug);
-  if (!id) return { title: "Equipo no encontrado — Electronic Point" };
+  if (!id) {
+    return catalogProductMetadata({
+      title: `Equipo no encontrado — ${CATALOG_TITLE}`,
+      description: CATALOG_DESCRIPTION,
+    });
+  }
 
   const product = await getPublishedIphoneById(id);
-  if (!product) return { title: "Equipo no encontrado — Electronic Point" };
+  if (!product) {
+    return catalogProductMetadata({
+      title: `Equipo no encontrado — ${CATALOG_TITLE}`,
+      description: CATALOG_DESCRIPTION,
+    });
+  }
 
-  const title = `${product.name} ${product.storage} usado — Electronic Point`;
+  const title = `${product.name} ${product.storage} usado — ${CATALOG_TITLE}`;
   const description =
     product.description ||
     `${product.name} ${product.storage} en estado ${PHYSICAL_CONDITION_LABELS[product.physicalCondition]}. Precio ${formatUSD(product.salePrice)}.`;
   const image = primaryImageUrl(product.images);
 
-  return {
+  return catalogProductMetadata({
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: "website",
-      ...(image ? { images: [{ url: image }] } : {}),
-    },
-  };
+    image,
+    url: `${PUBLIC_CATALOG_ORIGIN}/${buildProductSlug(product)}`,
+  });
 }
 
 export default async function UsadosProductPage({ params }: PageProps) {

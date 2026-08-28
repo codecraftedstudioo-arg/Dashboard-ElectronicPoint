@@ -98,13 +98,14 @@ html.light ::-webkit-scrollbar-thumb {
   background: transparent;
 }
 
-/* Horizontal thumb strip in the catalog gallery — hide the bar, keep swipe/scroll. */
-.catalog-thumb-scroll {
+.catalog-thumb-scroll,
+.catalog-h-scroll {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-.catalog-thumb-scroll::-webkit-scrollbar {
+.catalog-thumb-scroll::-webkit-scrollbar,
+.catalog-h-scroll::-webkit-scrollbar {
   display: none;
   height: 0;
   width: 0;

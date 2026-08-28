@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { cn } from "@/components/ui";
+import { PUBLIC_CATALOG_ORIGIN } from "@/lib/domains";
 
 const nav = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -22,7 +23,7 @@ const nav = [
   { href: "/agregar", label: "Agregar equipo", icon: PlusCircle },
   { href: "/vendidos", label: "Vendidos", icon: ShoppingBag },
   { href: "/listas", label: "Listas", icon: List },
-  { href: "/usados", label: "Publicados", icon: Store },
+  { href: PUBLIC_CATALOG_ORIGIN, label: "Publicados", icon: Store, external: true },
   { href: "/configuracion", label: "Configuración", icon: Settings },
 ];
 
@@ -78,22 +79,40 @@ export function Sidebar({
 
         <nav className="flex flex-1 flex-col gap-1">
           {nav.map((item) => {
+            const external = "external" in item && item.external;
             const active =
-              item.href === "/"
+              !external &&
+              (item.href === "/"
                 ? pathname === "/"
-                : pathname.startsWith(item.href);
+                : pathname.startsWith(item.href));
             const Icon = item.icon;
+            const className = cn(
+              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+              active
+                ? "bg-accent-dim text-accent"
+                : "text-muted hover:bg-hover hover:text-foreground",
+            );
+            if (external) {
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={onClose}
+                  className={className}
+                >
+                  <Icon className="h-4.5 w-4.5" />
+                  {item.label}
+                </a>
+              );
+            }
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
-                className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-accent-dim text-accent"
-                    : "text-muted hover:bg-hover hover:text-foreground",
-                )}
+                className={className}
               >
                 <Icon className="h-4.5 w-4.5" />
                 {item.label}

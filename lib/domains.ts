@@ -2,6 +2,8 @@
 const CATALOG_HOSTS = new Set([
   "usadospremium.com.ar",
   "www.usadospremium.com.ar",
+  // Local preview without DNS: browsers resolve *.localhost to 127.0.0.1
+  "usados.localhost",
 ]);
 
 /** Hostnames that must always serve the admin dashboard. */
@@ -78,6 +80,8 @@ export function isDashboardPath(pathname: string): boolean {
 export function catalogHomePath(isCatalogSite: boolean): string {
   return isCatalogSite ? "/" : "/usados";
 }
+
+export const PUBLIC_CATALOG_ORIGIN = "https://usadospremium.com.ar";
 
 export function catalogProductPath(
   slug: string,

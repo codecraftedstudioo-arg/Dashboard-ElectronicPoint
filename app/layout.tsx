@@ -5,6 +5,7 @@ import { CatalogSiteProvider } from "@/components/catalog/catalog-site-context";
 import { AppShell } from "@/components/layout/app-shell";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { hostFromHeaders, isCatalogHost } from "@/lib/domains";
+import { catalogMetadata, dashboardMetadata } from "@/lib/seo";
 import { parseTheme, THEME_COOKIE } from "@/lib/theme";
 import "./globals.css";
 
@@ -18,10 +19,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Stock Apple USADOS",
-  description: "Dashboard interno de inventario de equipos Apple usados",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const headerStore = await headers();
+  const isCatalogSite =
+    headerStore.get("x-catalog-site") === "1" ||
+    isCatalogHost(hostFromHeaders(headerStore));
+  return isCatalogSite ? catalogMetadata() : dashboardMetadata();
+}
 
 export const viewport: Viewport = {
   width: "device-width",
