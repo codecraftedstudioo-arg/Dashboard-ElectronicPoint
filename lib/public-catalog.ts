@@ -163,12 +163,20 @@ function storageRank(storage: string): number {
 /** Group published units by model name, newest models first. Each product appears once. */
 export function groupPublishedIphonesByModel(
   products: PublicCatalogProduct[],
+  options?: { preserveOrder?: boolean },
 ): CatalogModelGroup[] {
   const map = new Map<string, PublicCatalogProduct[]>();
   for (const product of products) {
     const list = map.get(product.name);
     if (list) list.push(product);
     else map.set(product.name, [product]);
+  }
+
+  if (options?.preserveOrder) {
+    return [...map.entries()].map(([model, units]) => ({
+      model,
+      products: units,
+    }));
   }
 
   return [...map.keys()]

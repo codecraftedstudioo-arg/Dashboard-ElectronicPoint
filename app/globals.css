@@ -104,6 +104,11 @@ html.light ::-webkit-scrollbar-thumb {
   -ms-overflow-style: none;
 }
 
+.catalog-h-scroll {
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+}
+
 .catalog-thumb-scroll::-webkit-scrollbar,
 .catalog-h-scroll::-webkit-scrollbar {
   display: none;

@@ -6,9 +6,11 @@ export function CatalogModels({ groups }: { groups: CatalogModelGroup[] }) {
     return (
       <div className="rounded-2xl border border-dashed border-card-border bg-card/50 px-6 py-16 text-center">
         <h3 className="text-lg font-semibold text-foreground">
-          No hay equipos publicados en este momento.
+          No encontramos equipos
         </h3>
-        <p className="mt-2 text-sm text-muted">Volvé más tarde para ver el catálogo.</p>
+        <p className="mt-2 text-sm text-muted">
+          Probá cambiar los filtros o realizar otra búsqueda.
+        </p>
       </div>
     );
   }
