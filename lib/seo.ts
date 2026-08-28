@@ -3,7 +3,7 @@ import { PUBLIC_CATALOG_ORIGIN } from "@/lib/domains";
 
 export const CATALOG_TITLE = "Usados premium";
 export const CATALOG_DESCRIPTION =
-  "Catálogo de iPhones usados seleccionados, revisados y con garantía de 90 días.";
+  "Catálogo de iPhones usados seleccionados, revisados y con garantía de 30 días.";
 export const CATALOG_OG_IMAGE = "/catalog/hero-iphone-pro.jpg";
 
 export const DASHBOARD_TITLE = "Stock Apple USADOS";

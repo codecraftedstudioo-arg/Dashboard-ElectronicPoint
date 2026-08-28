@@ -34,7 +34,7 @@ export default async function UsadosPage() {
                 Equipos seleccionados, revisados y listos para vos.
               </p>
               <p className="text-base text-muted sm:text-lg">
-                Garantía de 90 días.
+                Garantía de 30 días.
               </p>
             </div>
             <a

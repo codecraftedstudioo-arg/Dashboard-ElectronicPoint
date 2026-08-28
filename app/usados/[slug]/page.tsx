@@ -152,7 +152,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
 
             <div className="w-full min-w-0 max-w-full rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
               <p className="text-sm font-semibold text-emerald-500">
-                Garantía de 90 días
+                Garantía de 30 días
               </p>
               <p className="mt-0.5 text-xs text-muted">
                 Equipo revisado y respaldado.

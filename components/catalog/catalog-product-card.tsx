@@ -82,7 +82,7 @@ export function CatalogProductCard({
             {PHYSICAL_CONDITION_LABELS[product.physicalCondition]}
           </Badge>
           <Badge className="border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
-            Garantía 90 días
+            Garantía 30 días
           </Badge>
         </div>
         <div className="mt-auto flex items-baseline gap-1.5 pt-3">
