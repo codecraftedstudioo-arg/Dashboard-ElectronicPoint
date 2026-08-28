@@ -4,6 +4,7 @@ import {
   CatalogHeader,
 } from "@/components/catalog/catalog-chrome";
 import { CatalogGrid } from "@/components/catalog/catalog-grid";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 import { getPublishedIphones } from "@/lib/public-catalog";
 import { catalogMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -14,6 +15,11 @@ export const metadata: Metadata = catalogMetadata();
 
 export default async function UsadosPage() {
   const products = await getPublishedIphones();
+  const availableCount = products.length;
+  const availableLabel =
+    availableCount === 1
+      ? "1 equipo disponible"
+      : `${availableCount} equipos disponibles`;
 
   return (
     <div className="min-h-screen w-full min-w-0 bg-background text-foreground">
@@ -26,7 +32,7 @@ export default async function UsadosPage() {
         />
         <div className="relative mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-8 px-4 py-16 sm:px-6 sm:py-24 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl space-y-4">
-        <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+            <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
               Usados premium
             </h1>
             <div className="space-y-1">
@@ -44,30 +50,39 @@ export default async function UsadosPage() {
               Ver equipos disponibles
             </a>
           </div>
-          <div
-            aria-hidden
-            className="grid w-full min-w-0 max-w-md grid-cols-2 gap-3 lg:w-[420px]"
-          >
-            <div className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
-              <Image
-                src="/catalog/hero-iphone-pro.jpg"
-                alt=""
-                fill
-                priority
-                sizes="(max-width: 1024px) 45vw, 210px"
-                className="object-cover"
-              />
+          <div className="relative w-full min-w-0 max-w-md lg:w-[420px]">
+            <div
+              aria-hidden
+              className="grid w-full min-w-0 grid-cols-2 gap-3"
+            >
+              <div className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
+                <Image
+                  src="/catalog/hero-iphone-pro.jpg"
+                  alt=""
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 45vw, 210px"
+                  className="object-cover"
+                />
+              </div>
+              <div className="relative mt-8 aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
+                <Image
+                  src="/catalog/hero-iphone.jpg"
+                  alt=""
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 45vw, 210px"
+                  className="object-cover"
+                />
+              </div>
             </div>
-            <div className="relative mt-8 aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
-              <Image
-                src="/catalog/hero-iphone.jpg"
-                alt=""
-                fill
-                priority
-                sizes="(max-width: 1024px) 45vw, 210px"
-                className="object-cover"
-              />
-            </div>
+            <LiquidButton
+              href="#equipos"
+              size="xl"
+              className="absolute top-1/2 left-1/2 z-10 max-w-[calc(100%-1.5rem)] -translate-x-1/2 -translate-y-1/2 text-white sm:h-16 sm:px-10 sm:text-lg"
+            >
+              {availableLabel}
+            </LiquidButton>
           </div>
         </div>
       </section>
