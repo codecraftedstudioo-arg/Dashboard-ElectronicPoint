@@ -7,6 +7,7 @@ const sizes = {
   lg: "h-10 px-8 text-sm",
   xl: "h-12 px-8 text-sm",
   xxl: "h-16 px-10 text-lg",
+  cta: "px-5 py-3 text-sm",
 } as const;
 
 type Size = keyof typeof sizes;

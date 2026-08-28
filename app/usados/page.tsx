@@ -43,46 +43,44 @@ export default async function UsadosPage() {
                 Garantía de 30 días.
               </p>
             </div>
-            <a
-              href="#equipos"
-              className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover"
-            >
-              Ver equipos disponibles
-            </a>
-          </div>
-          <div className="relative w-full min-w-0 max-w-md lg:w-[420px]">
-            <div
-              aria-hidden
-              className="grid w-full min-w-0 grid-cols-2 gap-3"
-            >
-              <div className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
-                <Image
-                  src="/catalog/hero-iphone-pro.jpg"
-                  alt=""
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 45vw, 210px"
-                  className="object-cover"
-                />
-              </div>
-              <div className="relative mt-8 aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
-                <Image
-                  src="/catalog/hero-iphone.jpg"
-                  alt=""
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 45vw, 210px"
-                  className="object-cover"
-                />
+            <div className="flex w-full justify-center">
+              <div className="inline-flex min-w-[220px] flex-col items-stretch gap-3">
+                <a
+                  href="#equipos"
+                  className="inline-flex items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover"
+                >
+                  Ver equipos disponibles
+                </a>
+                <LiquidButton href="#equipos" size="cta" className="w-full">
+                  {availableLabel}
+                </LiquidButton>
               </div>
             </div>
-            <LiquidButton
-              href="#equipos"
-              size="xl"
-              className="absolute top-1/2 left-1/2 z-10 max-w-[calc(100%-1.5rem)] -translate-x-1/2 -translate-y-1/2 text-white sm:h-16 sm:px-10 sm:text-lg"
-            >
-              {availableLabel}
-            </LiquidButton>
+          </div>
+          <div
+            aria-hidden
+            className="grid w-full min-w-0 max-w-md grid-cols-2 gap-3 lg:w-[420px]"
+          >
+            <div className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
+              <Image
+                src="/catalog/hero-iphone-pro.jpg"
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 1024px) 45vw, 210px"
+                className="object-cover"
+              />
+            </div>
+            <div className="relative mt-8 aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
+              <Image
+                src="/catalog/hero-iphone.jpg"
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 1024px) 45vw, 210px"
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
