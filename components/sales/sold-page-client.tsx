@@ -13,6 +13,7 @@ import {
 } from "@/lib/constants";
 import { primaryImageUrl } from "@/lib/images";
 import { ChannelSalesChart } from "@/components/dashboard/charts";
+import { EditSaleModal } from "@/components/sales/edit-sale-modal";
 import type { SaleChannel, ProductType } from "@prisma/client";
 import { DollarSign, Package, TrendingUp, ChartPie } from "lucide-react";
 import { StatCard as MetricCard } from "@/components/dashboard/stat-card";
@@ -153,8 +154,14 @@ export function SoldPageClient({
           const img = primaryImageUrl(sale.product.images);
           const realProfit = calcProfit(sale.soldPrice, sale.product.cost);
           return (
-            <Link key={sale.id} href={`/equipos/${sale.product.id}`}>
-              <Card className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Card
+              key={sale.id}
+              className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center"
+            >
+              <Link
+                href={`/equipos/${sale.product.id}`}
+                className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center"
+              >
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-input">
                     {img ? (
@@ -190,8 +197,9 @@ export function SoldPageClient({
                     <div className="text-accent">{formatUSD(realProfit)}</div>
                   </div>
                 </div>
-              </Card>
-            </Link>
+              </Link>
+              <EditSaleModal saleId={sale.id} soldPrice={sale.soldPrice} />
+            </Card>
           );
         })}
       </div>

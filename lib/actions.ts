@@ -382,3 +382,32 @@ export async function markAsSold(formData: FormData) {
   revalidatePath("/usados");
   redirect("/vendidos");
 }
+
+export async function updateSalePrice(formData: FormData) {
+  const saleId = String(formData.get("saleId"));
+  const soldPrice = parseNumber(formData.get("soldPrice"));
+
+  if (!saleId) {
+    throw new Error("Venta no encontrada.");
+  }
+  if (!Number.isFinite(soldPrice) || soldPrice < 0) {
+    throw new Error("Precio de venta inválido.");
+  }
+
+  const sale = await prisma.sale.findUnique({
+    where: { id: saleId },
+    select: { productId: true },
+  });
+  if (!sale) {
+    throw new Error("Venta no encontrada.");
+  }
+
+  await prisma.sale.update({
+    where: { id: saleId },
+    data: { soldPrice },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/vendidos");
+  revalidatePath(`/equipos/${sale.productId}`);
+}
