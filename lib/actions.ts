@@ -411,3 +411,66 @@ export async function updateSalePrice(formData: FormData) {
   revalidatePath("/vendidos");
   revalidatePath(`/equipos/${sale.productId}`);
 }
+
+export type RepublishSoldProductResult =
+  | { ok: true; message: string }
+  | { ok: false; message: string };
+
+export async function republishSoldProduct(
+  saleId: string,
+): Promise<RepublishSoldProductResult> {
+  const errorMessage =
+    "No se pudo volver a publicar el equipo. No se realizaron cambios.";
+
+  if (!saleId) {
+    return { ok: false, message: errorMessage };
+  }
+
+  let productId: string | null = null;
+
+  try {
+    productId = await prisma.$transaction(async (tx) => {
+      const sale = await tx.sale.findUnique({
+        where: { id: saleId },
+        include: {
+          product: {
+            select: { id: true, status: true },
+          },
+        },
+      });
+
+      if (!sale) {
+        throw new Error("SALE_NOT_FOUND");
+      }
+      if (sale.product.status !== "SOLD") {
+        throw new Error("PRODUCT_NOT_SOLD");
+      }
+
+      await tx.sale.delete({ where: { id: saleId } });
+      await tx.product.update({
+        where: { id: sale.productId },
+        data: {
+          status: "AVAILABLE",
+          isPublished: true,
+        },
+      });
+
+      return sale.productId;
+    });
+
+    revalidatePath("/");
+    revalidatePath("/inventario");
+    revalidatePath("/vendidos");
+    revalidatePath("/listas");
+    revalidatePath("/usados");
+    revalidatePath(`/equipos/${productId}`);
+    revalidatePath(`/equipos/${productId}/editar`);
+
+    return {
+      ok: true,
+      message: "Equipo vuelto a publicar correctamente.",
+    };
+  } catch {
+    return { ok: false, message: errorMessage };
+  }
+}

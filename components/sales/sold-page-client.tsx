@@ -198,7 +198,11 @@ export function SoldPageClient({
                   </div>
                 </div>
               </Link>
-              <EditSaleModal saleId={sale.id} soldPrice={sale.soldPrice} />
+              <EditSaleModal
+                saleId={sale.id}
+                soldPrice={sale.soldPrice}
+                productLabel={`${sale.product.name} ${sale.product.storage}`}
+              />
             </Card>
           );
         })}
