@@ -27,6 +27,7 @@ type InventoryItem = {
   physicalCondition: PhysicalCondition;
   cost: number;
   salePrice: number;
+  isPublished: boolean;
   createdAt: Date | string;
   images: { url: string; isPrimary: boolean }[];
 };
@@ -190,6 +191,23 @@ export function InventoryGrid({ products }: { products: InventoryItem[] }) {
                       </Badge>
                       <Badge className={CONDITION_COLORS[product.physicalCondition]}>
                         {PHYSICAL_CONDITION_LABELS[product.physicalCondition]}
+                      </Badge>
+                      <Badge
+                        className={
+                          product.isPublished
+                            ? "gap-1.5 border-emerald-500/30 bg-emerald-500/15 text-emerald-400"
+                            : "gap-1.5 border-zinc-500/30 bg-zinc-500/15 text-zinc-400"
+                        }
+                      >
+                        <span
+                          aria-hidden
+                          className={
+                            product.isPublished
+                              ? "h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400"
+                              : "h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400"
+                          }
+                        />
+                        {product.isPublished ? "Publicado" : "Oculto"}
                       </Badge>
                     </div>
                   </div>
