@@ -24,6 +24,7 @@ export default async function EditProductPage({
         mode="edit"
         initial={{
           id: product.id,
+          internalCode: product.internalCode,
           type: product.type,
           name: product.name,
           storage: product.storage,
@@ -36,6 +37,7 @@ export default async function EditProductPage({
           salePrice: product.salePrice,
           description: product.description,
           isPublished: product.isPublished,
+          status: product.status,
           images: product.images.map((img) => ({
             id: img.id,
             url: img.url,

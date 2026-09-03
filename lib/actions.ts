@@ -474,3 +474,73 @@ export async function republishSoldProduct(
     return { ok: false, message: errorMessage };
   }
 }
+
+export type DeleteProductResult =
+  | { ok: true; message: string }
+  | { ok: false; message: string };
+
+export async function deleteProduct(
+  productId: string,
+): Promise<DeleteProductResult> {
+  const genericError = "No se pudo eliminar el equipo. Intentá nuevamente.";
+  const soldError =
+    "No se puede eliminar este equipo porque tiene una venta asociada. Si la venta fue cargada por error, utilizá 'Editar venta' → 'Volver a publicar equipo'.";
+
+  if (!productId) {
+    return { ok: false, message: genericError };
+  }
+
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        sale: { select: { id: true } },
+        images: { select: { url: true } },
+      },
+    });
+
+    if (!product) {
+      return { ok: false, message: genericError };
+    }
+
+    if (product.sale) {
+      return { ok: false, message: soldError };
+    }
+
+    const imageUrls = product.images.map((img) => img.url);
+
+    await prisma.$transaction(async (tx) => {
+      const current = await tx.product.findUnique({
+        where: { id: productId },
+        include: { sale: { select: { id: true } } },
+      });
+
+      if (!current) {
+        throw new Error("PRODUCT_NOT_FOUND");
+      }
+      if (current.sale) {
+        throw new Error("PRODUCT_HAS_SALE");
+      }
+
+      await tx.product.delete({ where: { id: productId } });
+    });
+
+    await Promise.all(imageUrls.map((url) => deleteStoredImage(url)));
+
+    revalidatePath("/");
+    revalidatePath("/inventario");
+    revalidatePath("/vendidos");
+    revalidatePath("/listas");
+    revalidatePath("/usados");
+    revalidatePath(`/equipos/${productId}`);
+    revalidatePath(`/equipos/${productId}/editar`);
+
+    return { ok: true, message: "Equipo eliminado correctamente." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "PRODUCT_HAS_SALE") {
+      return { ok: false, message: soldError };
+    }
+    console.error("[deleteProduct]", productId, error);
+    return { ok: false, message: genericError };
+  }
+}

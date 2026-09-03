@@ -32,7 +32,13 @@ import {
   uploadSingleProductImage,
 } from "@/lib/actions";
 import { compressImageFile } from "@/lib/compress-image";
-import type { ChipType, PhysicalCondition, ProductType } from "@prisma/client";
+import { DeleteProductPanel } from "@/components/products/delete-product-panel";
+import type {
+  ChipType,
+  PhysicalCondition,
+  ProductStatus,
+  ProductType,
+} from "@prisma/client";
 
 function isNextRedirect(error: unknown): boolean {
   return (
@@ -53,6 +59,8 @@ type ExistingImage = {
 
 type ProductFormValues = {
   id?: string;
+  internalCode?: string;
+  status?: ProductStatus;
   type: ProductType;
   name: string;
   storage: string;
@@ -293,6 +301,7 @@ export function ProductForm({
       : images.findIndex((img) => img.isPrimary);
 
   return (
+    <>
     <form onSubmit={handleSubmit} className="space-y-5">
       <input
         type="hidden"
@@ -712,5 +721,17 @@ export function ProductForm({
             : "Agregar equipo"}
       </Button>
     </form>
+
+      {mode === "edit" && initial?.id ? (
+        <DeleteProductPanel
+          productId={initial.id}
+          name={initial.name}
+          storage={initial.storage}
+          internalCode={initial.internalCode ?? ""}
+          cost={initial.cost}
+          status={initial.status ?? "AVAILABLE"}
+        />
+      ) : null}
+    </>
   );
 }
