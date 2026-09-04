@@ -60,6 +60,7 @@ export function SellModal({
               <option value="FACEBOOK_MARKETPLACE">Facebook Marketplace</option>
               <option value="INSTAGRAM">Instagram</option>
               <option value="REFERIDO">Referido</option>
+              <option value="GREMIO">Gremio</option>
               <option value="OTRO">Otro</option>
             </Select>
           </div>

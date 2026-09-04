@@ -383,15 +383,36 @@ export async function markAsSold(formData: FormData) {
   redirect("/vendidos");
 }
 
+function parseSaleChannel(
+  value: FormDataEntryValue | null,
+): SaleChannel | null {
+  const channel = String(value ?? "").trim();
+  if (
+    channel === "CLIENTE" ||
+    channel === "FACEBOOK_MARKETPLACE" ||
+    channel === "INSTAGRAM" ||
+    channel === "REFERIDO" ||
+    channel === "GREMIO" ||
+    channel === "OTRO"
+  ) {
+    return channel;
+  }
+  return null;
+}
+
 export async function updateSalePrice(formData: FormData) {
   const saleId = String(formData.get("saleId"));
   const soldPrice = parseNumber(formData.get("soldPrice"));
+  const channel = parseSaleChannel(formData.get("channel"));
 
   if (!saleId) {
     throw new Error("Venta no encontrada.");
   }
   if (!Number.isFinite(soldPrice) || soldPrice < 0) {
     throw new Error("Precio de venta inválido.");
+  }
+  if (!channel) {
+    throw new Error("Canal de venta inválido.");
   }
 
   const sale = await prisma.sale.findUnique({
@@ -404,7 +425,7 @@ export async function updateSalePrice(formData: FormData) {
 
   await prisma.sale.update({
     where: { id: saleId },
-    data: { soldPrice },
+    data: { soldPrice, channel },
   });
 
   revalidatePath("/");

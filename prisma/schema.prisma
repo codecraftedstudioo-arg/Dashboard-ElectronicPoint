@@ -38,6 +38,7 @@ enum SaleChannel {
   FACEBOOK_MARKETPLACE
   INSTAGRAM
   REFERIDO
+  GREMIO
   OTRO
 }
 

@@ -12,7 +12,14 @@ import { formatUSD } from "@/lib/currency";
 import { SALE_CHANNEL_LABELS, CHANNEL_CHART_ORDER } from "@/lib/constants";
 
 const FINANCIAL_COLORS = ["#22c55e", "#86efac", "#f472b6", "#3b82f6"];
-const CHANNEL_COLORS = ["#14b8a6", "#3b82f6", "#f97316", "#8b5cf6", "#a1a1aa"];
+const CHANNEL_COLORS = [
+  "#3b82f6",
+  "#f97316",
+  "#14b8a6",
+  "#8b5cf6",
+  "#06b6d4",
+  "#a1a1aa",
+];
 
 export function FinancialSummaryChart({
   totalCost,

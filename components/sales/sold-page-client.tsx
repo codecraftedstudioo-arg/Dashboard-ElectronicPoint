@@ -201,6 +201,7 @@ export function SoldPageClient({
               <EditSaleModal
                 saleId={sale.id}
                 soldPrice={sale.soldPrice}
+                channel={sale.channel}
                 productLabel={`${sale.product.name} ${sale.product.storage}`}
               />
             </Card>

@@ -121,10 +121,11 @@ export async function getDashboardStats() {
   const recentSales = sales.filter((s) => s.soldAt >= thirtyDaysAgo);
 
   const channelCounts: Record<string, number> = {
-    INSTAGRAM: 0,
     CLIENTE: 0,
     FACEBOOK_MARKETPLACE: 0,
+    INSTAGRAM: 0,
     REFERIDO: 0,
+    GREMIO: 0,
     OTRO: 0,
   };
   for (const sale of recentSales) {

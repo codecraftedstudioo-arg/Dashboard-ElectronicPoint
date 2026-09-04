@@ -4,23 +4,37 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Pencil, RotateCcw } from "lucide-react";
 import { republishSoldProduct, updateSalePrice } from "@/lib/actions";
-import { Button, Input, Label, cn } from "@/components/ui";
+import { Button, Input, Label, Select, cn } from "@/components/ui";
+import { SALE_CHANNEL_LABELS } from "@/lib/constants";
+import type { SaleChannel } from "@prisma/client";
 
 type ModalView = "edit" | "confirm-republish";
+
+const SALE_CHANNEL_OPTIONS = [
+  "CLIENTE",
+  "FACEBOOK_MARKETPLACE",
+  "INSTAGRAM",
+  "REFERIDO",
+  "GREMIO",
+  "OTRO",
+] as const satisfies ReadonlyArray<SaleChannel>;
 
 export function EditSaleModal({
   saleId,
   soldPrice,
+  channel,
   productLabel,
 }: {
   saleId: string;
   soldPrice: number;
+  channel: SaleChannel;
   productLabel: string;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<ModalView>("edit");
   const [price, setPrice] = useState(String(soldPrice));
+  const [selectedChannel, setSelectedChannel] = useState<SaleChannel>(channel);
   const [feedback, setFeedback] = useState<{
     type: "success" | "error";
     message: string;
@@ -31,6 +45,7 @@ export function EditSaleModal({
     setView("edit");
     setFeedback(null);
     setPrice(String(soldPrice));
+    setSelectedChannel(channel);
   }
 
   function openModal() {
@@ -54,7 +69,7 @@ export function EditSaleModal({
         setFeedback({
           type: "error",
           message:
-            "No se pudo actualizar el precio de venta. No se realizaron cambios.",
+            "No se pudo actualizar la venta. No se realizaron cambios.",
         });
       }
     });
@@ -99,7 +114,7 @@ export function EditSaleModal({
             <p className="text-sm text-muted">
               {view === "edit" ? (
                 <>
-                  Actualizá el precio final al que se vendió{" "}
+                  Actualizá el precio o el canal de{" "}
                   <span className="font-medium text-foreground">{productLabel}</span>.
                 </>
               ) : (
@@ -151,6 +166,24 @@ export function EditSaleModal({
                   onChange={(e) => setPrice(e.target.value)}
                   disabled={pending}
                 />
+              </div>
+              <div>
+                <Label>Canal</Label>
+                <Select
+                  name="channel"
+                  required
+                  value={selectedChannel}
+                  onChange={(e) =>
+                    setSelectedChannel(e.target.value as SaleChannel)
+                  }
+                  disabled={pending}
+                >
+                  {SALE_CHANNEL_OPTIONS.map((value) => (
+                    <option key={value} value={value}>
+                      {SALE_CHANNEL_LABELS[value]}
+                    </option>
+                  ))}
+                </Select>
               </div>
               <div className="flex gap-2">
                 <Button
