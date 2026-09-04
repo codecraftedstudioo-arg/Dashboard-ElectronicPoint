@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { Badge, Card, Input, Select } from "@/components/ui";
-import { formatUSD } from "@/lib/currency";
+import { Money } from "@/components/currency/currency-toggle";
 import { calcProfit, formatMargin } from "@/lib/calculations";
 import {
   CONDITION_COLORS,
@@ -215,11 +215,15 @@ export function InventoryGrid({ products }: { products: InventoryItem[] }) {
                 <div className="mt-4 grid grid-cols-3 gap-2 border-t border-card-border pt-3 text-sm">
                   <div>
                     <div className="text-xs text-muted">Venta</div>
-                    <div className="font-medium">{formatUSD(product.salePrice)}</div>
+                    <div className="font-medium">
+                      <Money amount={product.salePrice} />
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted">Ganancia</div>
-                    <div className="font-medium text-accent">{formatUSD(profit)}</div>
+                    <div className="font-medium text-accent">
+                      <Money amount={profit} />
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted">Margen</div>

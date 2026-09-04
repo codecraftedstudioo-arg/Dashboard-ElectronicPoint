@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { Trash2 } from "lucide-react";
 import { deleteProduct } from "@/lib/actions";
 import { Button, cn } from "@/components/ui";
-import { formatUSD } from "@/lib/currency";
+import { Money } from "@/components/currency/currency-toggle";
 import type { ProductStatus } from "@prisma/client";
 
 const STATUS_LABELS: Record<ProductStatus, string> = {
@@ -129,7 +129,7 @@ export function DeleteProductPanel({
               <div className="flex justify-between gap-3">
                 <dt className="text-muted">Precio de costo</dt>
                 <dd className="text-right font-medium text-foreground">
-                  {formatUSD(cost)}
+                  <Money amount={cost} />
                 </dd>
               </div>
               <div className="flex justify-between gap-3">

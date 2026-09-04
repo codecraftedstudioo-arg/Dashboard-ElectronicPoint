@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useCatalogSite } from "@/components/catalog/catalog-site-context";
+import { Money } from "@/components/currency/currency-toggle";
 import { Badge, cn } from "@/components/ui";
 import {
   CONDITION_COLORS,
@@ -85,13 +86,11 @@ export function CatalogProductCard({
             Garantía 30 días
           </Badge>
         </div>
-        <div className="mt-auto flex items-baseline gap-1.5 pt-3">
-          <span className="text-xl font-semibold tracking-tight text-foreground">
-            {Math.round(product.salePrice)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
-          </span>
-          <span className="text-sm font-medium text-muted">USD</span>
+        <div className="mt-auto pt-3">
+          <Money
+            amount={product.salePrice}
+            className="text-xl font-semibold tracking-tight text-foreground"
+          />
         </div>
         <span className="mt-1 inline-flex w-full items-center justify-center text-sm font-medium text-muted transition-colors group-hover:text-accent">
           Ver equipo →

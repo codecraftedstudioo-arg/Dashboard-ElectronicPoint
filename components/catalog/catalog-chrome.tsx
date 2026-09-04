@@ -5,6 +5,10 @@ import { usePathname } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { useCatalogSite } from "@/components/catalog/catalog-site-context";
 import { ShareCatalogButton } from "@/components/catalog/share-catalog-button";
+import {
+  CurrencyToggle,
+  ExchangeRateBadge,
+} from "@/components/currency/currency-toggle";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 function AppleLogo({ className }: { className?: string }) {
@@ -48,9 +52,16 @@ export function CatalogHeader() {
           <AppleLogo className="h-5 w-5 shrink-0 sm:h-6 sm:w-6 lg:h-7 lg:w-7" />
           <span className="truncate">Usados premium</span>
         </Link>
-        <div className="flex shrink-0 items-center">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <div className="hidden flex-col items-end sm:flex">
+            <CurrencyToggle compact />
+            <ExchangeRateBadge className="mt-0.5 max-w-[11rem] truncate text-right" />
+          </div>
+          <div className="sm:hidden">
+            <CurrencyToggle compact />
+          </div>
           <ShareCatalogButton />
-          <div className="ml-2 flex items-center border-l border-card-border pl-2 sm:ml-4 sm:pl-4 lg:ml-6 lg:pl-6">
+          <div className="ml-0 flex items-center border-l border-card-border pl-2 sm:ml-1 sm:pl-3 lg:ml-2 lg:pl-4">
             <ThemeToggle />
           </div>
         </div>
@@ -63,9 +74,12 @@ export function CatalogFooter() {
   return (
     <footer id="contacto" className="border-t border-card-border bg-card/40">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 pt-10 pb-[max(2.5rem,calc(2.5rem+env(safe-area-inset-bottom)))] sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <p className="text-sm text-muted">
-          iPhones usados seleccionados y revisados.
-        </p>
+        <div className="space-y-1">
+          <p className="text-sm text-muted">
+            iPhones usados seleccionados y revisados.
+          </p>
+          <ExchangeRateBadge />
+        </div>
         <p
           className="text-xs font-medium tracking-wide text-muted/50 sm:text-sm"
           aria-label="Desarrollado por CodeCraftedStudio"

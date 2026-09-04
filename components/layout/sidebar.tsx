@@ -14,6 +14,10 @@ import {
   X,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import {
+  CurrencyToggle,
+  ExchangeRateBadge,
+} from "@/components/currency/currency-toggle";
 import { cn } from "@/components/ui";
 import { PUBLIC_CATALOG_ORIGIN } from "@/lib/domains";
 
@@ -127,15 +131,18 @@ export function Sidebar({
             <ThemeToggle />
           </div>
           <div className="rounded-2xl border border-card-border bg-card p-4">
-            <div className="text-xs text-muted">Moneda actual</div>
-            <div className="mt-3 flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-contrast">
-                $
-              </div>
+            <div className="text-xs text-muted">Moneda</div>
+            <div className="mt-3 flex items-start justify-between gap-3">
               <div>
-                <div className="text-sm font-semibold text-foreground">USD</div>
-                <div className="text-xs text-muted">Dólar estadounidense</div>
+                <div className="text-sm font-semibold text-foreground">
+                  Base USD
+                </div>
+                <div className="text-xs text-muted">
+                  Visualización opcional en ARS
+                </div>
+                <ExchangeRateBadge className="mt-1" />
               </div>
+              <CurrencyToggle compact />
             </div>
           </div>
         </div>

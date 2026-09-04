@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Card, Input, Select, Badge } from "@/components/ui";
-import { formatUSD } from "@/lib/currency";
+import { useCurrency } from "@/components/currency/currency-provider";
+import { Money } from "@/components/currency/currency-toggle";
 import { calcProfit } from "@/lib/calculations";
 import {
   CHANNEL_COLORS,
@@ -47,6 +48,7 @@ export function SoldPageClient({
   const [search, setSearch] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const { currency } = useCurrency();
 
   const filtered = useMemo(() => {
     return sales.filter((sale) => {
@@ -91,21 +93,21 @@ export function SoldPageClient({
         />
         <MetricCard
           title="Facturación total"
-          value={formatUSD(revenue)}
+          value={<Money amount={revenue} />}
           subtitle="Suma de ventas"
           icon={<DollarSign className="h-5 w-5" />}
           iconClassName="bg-blue-500/15 text-blue-400"
         />
         <MetricCard
           title="Ganancia total"
-          value={formatUSD(profit)}
+          value={<Money amount={profit} />}
           subtitle="Ganancia real"
           icon={<TrendingUp className="h-5 w-5" />}
           iconClassName="bg-violet-500/15 text-violet-400"
         />
         <MetricCard
           title="Ganancia promedio"
-          value={formatUSD(avg)}
+          value={<Money amount={avg} />}
           subtitle="Por equipo"
           icon={<ChartPie className="h-5 w-5" />}
           iconClassName="bg-pink-500/15 text-pink-400"
@@ -113,6 +115,13 @@ export function SoldPageClient({
       </div>
 
       <ChannelSalesChart channelCounts={channelCounts} total={channelTotal} />
+
+      {currency === "ARS" ? (
+        <p className="text-xs text-muted">
+          Los montos en pesos usan el dólar blue venta actual. El precio
+          histórico de cada venta permanece almacenado en USD.
+        </p>
+      ) : null}
 
       <Card className="space-y-3">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -186,15 +195,21 @@ export function SoldPageClient({
                 <div className="grid grid-cols-3 gap-3 text-sm sm:w-[320px]">
                   <div>
                     <div className="text-xs text-muted">Costo</div>
-                    <div>{formatUSD(sale.product.cost)}</div>
+                    <div>
+                      <Money amount={sale.product.cost} />
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted">Final</div>
-                    <div>{formatUSD(sale.soldPrice)}</div>
+                    <div>
+                      <Money amount={sale.soldPrice} />
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted">Ganancia</div>
-                    <div className="text-accent">{formatUSD(realProfit)}</div>
+                    <div className="text-accent">
+                      <Money amount={realProfit} />
+                    </div>
                   </div>
                 </div>
               </Link>

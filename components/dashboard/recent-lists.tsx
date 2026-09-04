@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Battery } from "lucide-react";
 import { Badge, Card } from "@/components/ui";
-import { formatUSD } from "@/lib/currency";
+import { Money } from "@/components/currency/currency-toggle";
 import { calcProfit } from "@/lib/calculations";
 import {
   CONDITION_COLORS,
@@ -95,11 +95,11 @@ export function RecentProductsCard({
               </div>
               <div className="shrink-0 text-right">
                 <div className="text-sm font-medium text-foreground">
-                  {formatUSD(product.salePrice)}
+                  <Money amount={product.salePrice} />
                 </div>
                 <div className="mt-0.5 text-[11px] text-muted">Venta</div>
                 <div className="mt-1 text-xs font-medium text-accent">
-                  {formatUSD(profit)}
+                  <Money amount={profit} />
                 </div>
                 <div className="text-[11px] text-muted">Ganancia</div>
               </div>
@@ -181,10 +181,10 @@ export function RecentSalesCard({
               </div>
               <div className="shrink-0 text-right">
                 <div className="text-sm font-medium text-foreground">
-                  {formatUSD(sale.soldPrice)}
+                  <Money amount={sale.soldPrice} />
                 </div>
                 <div className="mt-1 text-xs font-medium text-accent">
-                  {formatUSD(profit)}
+                  <Money amount={profit} />
                 </div>
               </div>
             </Link>

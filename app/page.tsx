@@ -13,7 +13,7 @@ import {
   ChannelSalesChart,
 } from "@/components/dashboard/charts";
 import { ListGenerator } from "@/components/lists/list-generator";
-import { formatUSD } from "@/lib/currency";
+import { Money } from "@/components/currency/currency-toggle";
 import {
   getAvailableProducts,
   getDashboardStats,
@@ -71,21 +71,21 @@ export default async function DashboardPage() {
         />
         <StatCard
           title="Costo total del stock"
-          value={formatUSD(stats.totalCost)}
+          value={<Money amount={stats.totalCost} />}
           subtitle="Dinero invertido"
           icon={<DollarSign className="h-5 w-5" />}
           iconClassName="bg-accent-dim text-accent"
         />
         <StatCard
           title="Valor total de venta"
-          value={formatUSD(stats.totalSaleValue)}
+          value={<Money amount={stats.totalSaleValue} />}
           subtitle="Precio de venta total"
           icon={<Tag className="h-5 w-5" />}
           iconClassName="bg-blue-500/15 text-blue-400"
         />
         <StatCard
           title="Ganancia potencial"
-          value={formatUSD(stats.potentialProfit)}
+          value={<Money amount={stats.potentialProfit} />}
           subtitle="Podrías ganar"
           icon={<TrendingUp className="h-5 w-5" />}
           iconClassName="bg-violet-500/15 text-violet-400"

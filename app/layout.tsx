@@ -2,9 +2,12 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import { CatalogSiteProvider } from "@/components/catalog/catalog-site-context";
+import { CurrencyProvider } from "@/components/currency/currency-provider";
 import { AppShell } from "@/components/layout/app-shell";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { parseCurrency, CURRENCY_COOKIE } from "@/lib/currency";
 import { hostFromHeaders, isCatalogHost } from "@/lib/domains";
+import { getBlueVentaRate } from "@/lib/exchange-rate";
 import { catalogMetadata, dashboardMetadata } from "@/lib/seo";
 import { parseTheme, THEME_COOKIE } from "@/lib/theme";
 import "./globals.css";
@@ -41,6 +44,8 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const headerStore = await headers();
   const theme = parseTheme(cookieStore.get(THEME_COOKIE)?.value);
+  const currency = parseCurrency(cookieStore.get(CURRENCY_COOKIE)?.value);
+  const exchangeRate = await getBlueVentaRate();
   const isCatalogSite =
     headerStore.get("x-catalog-site") === "1" ||
     isCatalogHost(hostFromHeaders(headerStore));
@@ -54,9 +59,14 @@ export default async function RootLayout({
     >
       <body className="min-h-full bg-background font-sans text-foreground">
         <ThemeProvider initialTheme={theme}>
-          <CatalogSiteProvider isCatalogSite={isCatalogSite}>
-            <AppShell isCatalogSite={isCatalogSite}>{children}</AppShell>
-          </CatalogSiteProvider>
+          <CurrencyProvider
+            initialCurrency={currency}
+            initialRate={exchangeRate}
+          >
+            <CatalogSiteProvider isCatalogSite={isCatalogSite}>
+              <AppShell isCatalogSite={isCatalogSite}>{children}</AppShell>
+            </CatalogSiteProvider>
+          </CurrencyProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import { Badge, Button, Card, PageHeader } from "@/components/ui";
+import { Money } from "@/components/currency/currency-toggle";
 import { ProductGallery } from "@/components/products/product-gallery";
 import { SellModal } from "@/components/products/sell-modal";
-import { formatUSD } from "@/lib/currency";
 import { calcProfit, formatMargin } from "@/lib/calculations";
 import {
   CONDITION_COLORS,
@@ -102,11 +103,14 @@ export default async function ProductDetailPage({
           </Card>
 
           <Card className="grid grid-cols-2 gap-4">
-            <Metric label="Costo" value={formatUSD(product.cost)} />
-            <Metric label="Precio venta" value={formatUSD(product.salePrice)} />
+            <Metric label="Costo" value={<Money amount={product.cost} />} />
+            <Metric
+              label="Precio venta"
+              value={<Money amount={product.salePrice} />}
+            />
             <Metric
               label="Ganancia potencial"
-              value={formatUSD(profit)}
+              value={<Money amount={profit} />}
               accent
             />
             <Metric
@@ -118,7 +122,10 @@ export default async function ProductDetailPage({
           {product.sale ? (
             <Card className="space-y-3">
               <h3 className="font-semibold text-foreground">Venta registrada</h3>
-              <Row label="Precio final" value={formatUSD(product.sale.soldPrice)} />
+              <Row
+                label="Precio final"
+                value={<Money amount={product.sale.soldPrice} />}
+              />
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted">Canal</span>
                 <Badge className={CHANNEL_COLORS[product.sale.channel]}>
@@ -130,11 +137,19 @@ export default async function ProductDetailPage({
                 value={product.sale.soldAt.toLocaleDateString("es-AR")}
               />
               {realProfit != null ? (
-                <Row label="Ganancia real" value={formatUSD(realProfit)} accent />
+                <Row
+                  label="Ganancia real"
+                  value={<Money amount={realProfit} />}
+                  accent
+                />
               ) : null}
               {product.sale.notes ? (
                 <p className="text-sm text-muted">{product.sale.notes}</p>
               ) : null}
+              <p className="text-[11px] text-muted">
+                En ARS se muestra el equivalente con el dólar blue venta actual
+                (no el valor histórico en pesos).
+              </p>
             </Card>
           ) : null}
         </div>
@@ -149,7 +164,7 @@ function Row({
   accent,
 }: {
   label: string;
-  value: string;
+  value: ReactNode;
   accent?: boolean;
 }) {
   return (
@@ -168,7 +183,7 @@ function Metric({
   accent,
 }: {
   label: string;
-  value: string;
+  value: ReactNode;
   accent?: boolean;
 }) {
   return (

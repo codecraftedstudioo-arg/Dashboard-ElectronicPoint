@@ -8,7 +8,8 @@ import {
   Tooltip,
 } from "recharts";
 import { Card } from "@/components/ui";
-import { formatUSD } from "@/lib/currency";
+import { useCurrency } from "@/components/currency/currency-provider";
+import { Money } from "@/components/currency/currency-toggle";
 import { SALE_CHANNEL_LABELS, CHANNEL_CHART_ORDER } from "@/lib/constants";
 
 const FINANCIAL_COLORS = ["#22c55e", "#86efac", "#f472b6", "#3b82f6"];
@@ -32,6 +33,7 @@ export function FinancialSummaryChart({
   realizedProfit: number;
   totalRevenue: number;
 }) {
+  const { format } = useCurrency();
   const data = [
     { name: "Capital invertido", value: totalCost },
     { name: "Ganancia potencial", value: Math.max(potentialProfit, 0) },
@@ -61,7 +63,7 @@ export function FinancialSummaryChart({
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value) => formatUSD(Number(value ?? 0))}
+                formatter={(value) => format(Number(value ?? 0))}
                 contentStyle={{
                   background: "#161616",
                   border: "1px solid #262626",
@@ -81,7 +83,9 @@ export function FinancialSummaryChart({
                 />
                 {item.name}
               </div>
-              <div className="font-medium text-foreground">{formatUSD(item.value)}</div>
+              <div className="font-medium text-foreground">
+                <Money amount={item.value} />
+              </div>
             </div>
           ))}
         </div>

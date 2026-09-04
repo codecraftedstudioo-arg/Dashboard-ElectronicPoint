@@ -20,9 +20,11 @@ export default function ConfiguracionPage() {
       <Card>
         <h2 className="text-base font-semibold text-foreground">Moneda</h2>
         <p className="mt-2 text-sm text-muted">
-          El sistema trabaja internamente en <strong className="text-foreground">USD</strong>.
-          La arquitectura está preparada para agregar otras monedas más adelante
-          sin cambiar los cálculos actuales.
+          El sistema trabaja y almacena precios en{" "}
+          <strong className="text-foreground">USD</strong>. Podés visualizar
+          equivalentes en <strong className="text-foreground">ARS</strong> con
+          el selector USD/ARS, usando el dólar blue venta (DolarHoy) de forma
+          dinámica. Los cálculos de costo, venta y ganancia siguen en dólares.
         </p>
       </Card>
       <Card>

@@ -9,7 +9,7 @@ export function StatCard({
   iconClassName,
 }: {
   title: string;
-  value: string;
+  value: ReactNode;
   subtitle: string;
   icon: ReactNode;
   iconClassName?: string;

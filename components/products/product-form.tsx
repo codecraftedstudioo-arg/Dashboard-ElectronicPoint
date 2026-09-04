@@ -22,7 +22,7 @@ import {
 } from "@/components/ui";
 import { STORAGE_OPTIONS, PHYSICAL_CONDITION_LABELS, CHIP_TYPE_LABELS } from "@/lib/constants";
 import { calcProfit, formatMargin } from "@/lib/calculations";
-import { formatUSD } from "@/lib/currency";
+import { Money } from "@/components/currency/currency-toggle";
 import {
   createProduct,
   updateProduct,
@@ -440,7 +440,7 @@ export function ProductForm({
           <div>
             <div className="text-xs text-muted">Ganancia (auto)</div>
             <div className="mt-1 text-lg font-semibold text-accent">
-              {formatUSD(profit)}
+              <Money amount={profit} />
             </div>
           </div>
           <div>

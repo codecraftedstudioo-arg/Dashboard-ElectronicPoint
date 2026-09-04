@@ -3,9 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import { Menu, Plus } from "lucide-react";
+import {
+  CurrencyToggle,
+  ExchangeRateBadge,
+} from "@/components/currency/currency-toggle";
 import { Sidebar } from "@/components/layout/sidebar";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Button, Select } from "@/components/ui";
+import { Button } from "@/components/ui";
 
 export function AppShell({
   children,
@@ -44,8 +48,12 @@ export function AppShell({
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div className="text-sm font-semibold">Stock Apple</div>
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-semibold">Stock Apple</div>
+            <ExchangeRateBadge className="truncate" />
+          </div>
           <div className="ml-auto flex items-center gap-2">
+            <CurrencyToggle compact />
             <ThemeToggle />
             <Link href="/agregar">
               <Button className="!px-3 !py-2 text-xs">
@@ -63,18 +71,12 @@ export function AppShell({
   );
 }
 
+/** Alias used by the dashboard header. */
 export function CurrencySelector() {
   return (
-    <div className="flex items-center gap-2 rounded-xl border border-card-border bg-card px-3 py-2 text-sm">
-      <span className="text-muted">Tipo de cambio</span>
-      <span className="text-muted">|</span>
-      <Select
-        defaultValue="USD"
-        aria-label="Moneda"
-        className="!w-auto !border-0 !bg-transparent !px-1 !py-0 font-semibold text-foreground !ring-0"
-      >
-        <option value="USD">USD</option>
-      </Select>
+    <div className="flex flex-col items-end gap-1">
+      <CurrencyToggle />
+      <ExchangeRateBadge />
     </div>
   );
 }

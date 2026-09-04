@@ -7,6 +7,7 @@ import {
   CatalogFooter,
   CatalogHeader,
 } from "@/components/catalog/catalog-chrome";
+import { Money } from "@/components/currency/currency-toggle";
 import { ProductGallery } from "@/components/products/product-gallery";
 import { ShareProductLink } from "@/components/catalog/share-product-link";
 import { Badge } from "@/components/ui";
@@ -137,15 +138,11 @@ export default async function UsadosProductPage({ params }: PageProps) {
                 <p className="text-xs font-medium uppercase tracking-wide text-muted">
                   Precio
                 </p>
-                <p className="mt-1 flex min-w-0 flex-wrap items-baseline gap-1.5">
-                  <span className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-                    {Math.round(product.salePrice)
-                      .toString()
-                      .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
-                  </span>
-                  <span className="text-base font-medium text-muted sm:text-lg">
-                    USD
-                  </span>
+                <p className="mt-1">
+                  <Money
+                    amount={product.salePrice}
+                    className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"
+                  />
                 </p>
               </div>
             </div>
