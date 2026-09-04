@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { nextInternalCode } from "@/lib/queries";
 import { deleteStoredImage, uploadProductImage } from "@/lib/storage";
+import { extractImei, isValidImeiFormat } from "@/lib/imei";
 import type {
   ChipType,
   PhysicalCondition,
@@ -89,8 +90,28 @@ export async function uploadSingleProductImage(formData: FormData): Promise<stri
 }
 
 function parseImei(value: FormDataEntryValue | null): string | null {
-  const imei = String(value ?? "").trim();
-  return imei || null;
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+  const digits = extractImei(raw);
+  if (digits && isValidImeiFormat(digits)) return digits;
+  return raw;
+}
+
+async function assertImeiAvailable(
+  imei: string | null,
+  excludeProductId?: string,
+) {
+  if (!imei) return;
+  const existing = await prisma.product.findFirst({
+    where: {
+      imei,
+      ...(excludeProductId ? { id: { not: excludeProductId } } : {}),
+    },
+    select: { id: true },
+  });
+  if (existing) {
+    throw new Error("Este IMEI ya está registrado en otro equipo.");
+  }
 }
 
 function parseChip(value: FormDataEntryValue | null): ChipType | null {
@@ -125,6 +146,8 @@ export async function createProduct(formData: FormData) {
   if (!name || !storage || !color) {
     throw new Error("Completá modelo, capacidad y color.");
   }
+
+  await assertImeiAvailable(imei);
 
   const internalCode = await nextInternalCode();
   const imageUrls = await collectImages(formData);
@@ -201,6 +224,8 @@ export async function updateProduct(productId: string, formData: FormData) {
     _max: { sortOrder: true },
   });
   const startOrder = (maxOrder._max.sortOrder ?? -1) + 1;
+
+  await assertImeiAvailable(imei, productId);
 
   await prisma.product.update({
     where: { id: productId },

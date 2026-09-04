@@ -33,6 +33,7 @@ import {
 } from "@/lib/actions";
 import { compressImageFile } from "@/lib/compress-image";
 import { DeleteProductPanel } from "@/components/products/delete-product-panel";
+import { ImeiField } from "@/components/imei/imei-field";
 import type {
   ChipType,
   PhysicalCondition,
@@ -359,13 +360,11 @@ export function ProductForm({
             />
           </div>
           <div>
-            <Label>IMEI</Label>
-            <Input
-              name="imei"
+            <ImeiField
               defaultValue={initial?.imei ?? ""}
-              placeholder="356938035643809"
-              inputMode="numeric"
-              maxLength={17}
+              scanLabel={
+                mode === "edit" ? "Escanear nuevamente" : "Escanear IMEI"
+              }
             />
           </div>
           {type === "IPHONE" ? (

@@ -126,12 +126,13 @@ export function Textarea({
 export function Label({
   children,
   className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+  ...props
+}: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return (
-    <label className={cn("mb-1.5 block text-sm font-medium text-muted", className)}>
+    <label
+      className={cn("mb-1.5 block text-sm font-medium text-muted", className)}
+      {...props}
+    >
       {children}
     </label>
   );
