@@ -7,7 +7,7 @@ import {
   CatalogFooter,
   CatalogHeader,
 } from "@/components/catalog/catalog-chrome";
-import { Money } from "@/components/currency/currency-toggle";
+import { DualPrice } from "@/components/currency/currency-toggle";
 import { ProductGallery } from "@/components/products/product-gallery";
 import { ShareProductLink } from "@/components/catalog/share-product-link";
 import { Badge } from "@/components/ui";
@@ -138,12 +138,11 @@ export default async function UsadosProductPage({ params }: PageProps) {
                 <p className="text-xs font-medium uppercase tracking-wide text-muted">
                   Precio
                 </p>
-                <p className="mt-1">
-                  <Money
-                    amount={product.salePrice}
-                    className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"
-                  />
-                </p>
+                <DualPrice
+                  amount={product.salePrice}
+                  className="mt-1 text-4xl sm:text-5xl"
+                  arsClassName="text-[0.45em] sm:text-[0.4em]"
+                />
               </div>
             </div>
 

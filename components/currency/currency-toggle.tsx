@@ -2,8 +2,9 @@
 
 import { useCurrency } from "@/components/currency/currency-provider";
 import { cn } from "@/components/ui";
-import type { CurrencyCode } from "@/lib/currency";
+import { formatUSD, type CurrencyCode } from "@/lib/currency";
 import {
+  convertUsdToArs,
   formatBlueRate,
   formatRateUpdatedAt,
 } from "@/lib/exchange-rate";
@@ -100,4 +101,54 @@ export function Money({
 }) {
   const { format } = useCurrency();
   return <span className={className}>{format(amount)}</span>;
+}
+
+/** Always show USD primary + ARS secondary when blue venta rate is available. */
+export function DualPrice({
+  amount,
+  className,
+  usdClassName,
+  arsClassName,
+}: {
+  amount: number;
+  className?: string;
+  usdClassName?: string;
+  arsClassName?: string;
+}) {
+  const { rate, canShowArs } = useCurrency();
+
+  const arsDisplay =
+    canShowArs && rate
+      ? (() => {
+          const ars = Math.round(convertUsdToArs(amount, rate.usdToArs));
+          const formatted = Math.abs(ars)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          const sign = ars < 0 ? "-" : "";
+          return `${sign}$${formatted} ARS`;
+        })()
+      : null;
+
+  return (
+    <div className={cn("min-w-0", className)}>
+      <p
+        className={cn(
+          "truncate font-semibold tracking-tight text-foreground",
+          usdClassName,
+        )}
+      >
+        {formatUSD(amount)}
+      </p>
+      {arsDisplay ? (
+        <p
+          className={cn(
+            "mt-0.5 truncate font-medium leading-snug text-muted",
+            arsClassName,
+          )}
+        >
+          {arsDisplay}
+        </p>
+      ) : null}
+    </div>
+  );
 }

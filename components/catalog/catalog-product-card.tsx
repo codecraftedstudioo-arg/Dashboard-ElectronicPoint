@@ -4,27 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useCatalogSite } from "@/components/catalog/catalog-site-context";
-import { useCurrency } from "@/components/currency/currency-provider";
+import { DualPrice } from "@/components/currency/currency-toggle";
 import { Badge, cn } from "@/components/ui";
 import {
   CONDITION_COLORS,
   PHYSICAL_CONDITION_LABELS,
 } from "@/lib/constants";
-import { formatUSD } from "@/lib/currency";
-import { convertUsdToArs } from "@/lib/exchange-rate";
 import { primaryImageUrl } from "@/lib/images";
 import { buildProductSlug } from "@/lib/product-slug";
 import type { PublicCatalogProduct } from "@/lib/public-catalog";
-
-/** Catalog secondary line: $1.344.150 ARS */
-function formatCatalogArs(usdAmount: number, usdToArs: number): string {
-  const ars = Math.round(convertUsdToArs(usdAmount, usdToArs));
-  const formatted = Math.abs(ars)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  const sign = ars < 0 ? "-" : "";
-  return `${sign}$${formatted} ARS`;
-}
 
 export function CatalogProductCard({
   product,
@@ -35,13 +23,8 @@ export function CatalogProductCard({
 }) {
   const img = primaryImageUrl(product.images);
   const { productPath } = useCatalogSite();
-  const { rate, canShowArs } = useCurrency();
   const href = productPath(buildProductSlug(product));
   const [loaded, setLoaded] = useState(false);
-  const arsLabel =
-    canShowArs && rate
-      ? formatCatalogArs(product.salePrice, rate.usdToArs)
-      : null;
 
   return (
     <Link
@@ -103,16 +86,11 @@ export function CatalogProductCard({
             Garantía 30 días
           </Badge>
         </div>
-        <div className="mt-auto min-w-0 pt-3 text-xl">
-          <p className="truncate font-semibold tracking-tight text-foreground">
-            {formatUSD(product.salePrice)}
-          </p>
-          {arsLabel ? (
-            <p className="mt-0.5 truncate text-[0.55em] font-medium leading-snug text-muted">
-              {arsLabel}
-            </p>
-          ) : null}
-        </div>
+        <DualPrice
+          amount={product.salePrice}
+          className="mt-auto pt-3 text-xl"
+          arsClassName="text-[0.55em]"
+        />
         <span className="mt-1 inline-flex w-full items-center justify-center text-sm font-medium text-muted transition-colors group-hover:text-accent">
           Ver equipo →
         </span>
