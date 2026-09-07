@@ -524,6 +524,7 @@ export function ProductForm({
                         src={img.url}
                         alt="Imagen del equipo"
                         fill
+                        unoptimized
                         sizes="(max-width: 640px) 50vw, 160px"
                         className="object-cover"
                       />

@@ -44,6 +44,7 @@ export function CatalogProductCard({
               src={img}
               alt={product.name}
               fill
+              unoptimized
               sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 25vw"
               className={cn(
                 "object-cover transition-all duration-500 group-hover:scale-[1.02]",

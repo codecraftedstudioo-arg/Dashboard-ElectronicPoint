@@ -123,6 +123,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             src={current.url}
             alt={`${productName} — foto ${index + 1}`}
             fill
+            unoptimized
             priority={index === 0}
             sizes="(max-width: 768px) 100vw, 640px"
             className={cn(
@@ -203,6 +204,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 src={img.url}
                 alt=""
                 fill
+                unoptimized
                 sizes="64px"
                 className="object-cover"
               />
@@ -274,6 +276,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               src={current.url}
               alt={`${productName} — foto ${index + 1}`}
               fill
+              unoptimized
               sizes="100vw"
               className="object-contain"
               priority

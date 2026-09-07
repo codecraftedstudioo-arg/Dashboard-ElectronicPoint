@@ -13,8 +13,13 @@ const nextConfig: NextConfig = {
     proxyClientMaxBodySize: "10mb",
   },
   images: {
+    // Product photos are already compressed client-side. Vercel Image
+    // Optimization returns 402 (OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED)
+    // on this plan, which broke every next/image except cached ones.
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "placehold.co" },
+      { protocol: "https", hostname: "**.supabase.co" },
       { protocol: "https", hostname: "*.supabase.co" },
     ],
   },
