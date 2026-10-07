@@ -85,7 +85,7 @@ export function ProductGallery({
     if (!autoPlay || total < 2 || lightboxOpen || paused) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    let timer = window.setTimeout(advance, 4000);
+    let timer = window.setTimeout(advance, 2670);
 
     function advance() {
       if (!document.hidden) {
@@ -95,7 +95,7 @@ export function ProductGallery({
 
     function onVisibility() {
       window.clearTimeout(timer);
-      if (!document.hidden) timer = window.setTimeout(advance, 4000);
+      if (!document.hidden) timer = window.setTimeout(advance, 2670);
     }
 
     document.addEventListener("visibilitychange", onVisibility);

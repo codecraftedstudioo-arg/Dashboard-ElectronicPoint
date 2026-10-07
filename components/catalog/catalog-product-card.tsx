@@ -14,7 +14,7 @@ import { sortProductImages } from "@/lib/images";
 import { buildProductSlug } from "@/lib/product-slug";
 import type { PublicCatalogProduct } from "@/lib/public-catalog";
 
-const SLIDE_MS = 3800;
+const SLIDE_MS = 2530;
 
 export function CatalogProductCard({
   product,
