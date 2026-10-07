@@ -15,6 +15,9 @@ export function CatalogModelCarousel({
 }) {
   const headingId = useId();
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const pausedRef = useRef(false);
+  const hoverRef = useRef(false);
+  const pointerRef = useRef(false);
   const [overflows, setOverflows] = useState(false);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
@@ -50,8 +53,48 @@ export function CatalogModelCarousel({
     const item = el.querySelector<HTMLElement>("[data-carousel-item]");
     const gap = parseFloat(getComputedStyle(el).columnGap || getComputedStyle(el).gap) || 12;
     const amount = (item?.offsetWidth ?? el.clientWidth * 0.8) + gap;
+    const max = el.scrollWidth - el.clientWidth;
+    if (direction === 1 && el.scrollLeft >= max - 4) {
+      el.scrollTo({ left: 0, behavior: "smooth" });
+      return;
+    }
+    if (direction === -1 && el.scrollLeft <= 4) {
+      el.scrollTo({ left: max, behavior: "smooth" });
+      return;
+    }
     el.scrollBy({ left: direction * amount, behavior: "smooth" });
   }, []);
+
+  useEffect(() => {
+    if (products.length < 2 || !overflows) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let timer = 0;
+    const tick = () => {
+      if (!pausedRef.current && !document.hidden) {
+        scrollByCard(1);
+      }
+      timer = window.setTimeout(tick, 4200);
+    };
+    timer = window.setTimeout(tick, 4200);
+
+    const onVisibility = () => {
+      if (!document.hidden && !pausedRef.current) {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(tick, 4200);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [overflows, products.length, scrollByCard]);
+
+  function syncPause() {
+    pausedRef.current = hoverRef.current || pointerRef.current;
+  }
 
   const countLabel =
     products.length === 1
@@ -65,6 +108,23 @@ export function CatalogModelCarousel({
     <section
       aria-labelledby={headingId}
       className="w-full min-w-0 max-w-full"
+      onMouseEnter={() => {
+        hoverRef.current = true;
+        syncPause();
+      }}
+      onMouseLeave={() => {
+        hoverRef.current = false;
+        syncPause();
+      }}
+      onFocusCapture={() => {
+        hoverRef.current = true;
+        syncPause();
+      }}
+      onBlurCapture={(event) => {
+        if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
+        hoverRef.current = false;
+        syncPause();
+      }}
       onKeyDown={(event) => {
         if (event.key === "ArrowLeft") {
           event.preventDefault();
@@ -114,6 +174,18 @@ export function CatalogModelCarousel({
         ref={scrollerRef}
         tabIndex={showControls ? 0 : undefined}
         aria-label={showControls ? `Carrusel de ${model}` : undefined}
+        onPointerDown={() => {
+          pointerRef.current = true;
+          syncPause();
+        }}
+        onPointerUp={() => {
+          pointerRef.current = false;
+          syncPause();
+        }}
+        onPointerCancel={() => {
+          pointerRef.current = false;
+          syncPause();
+        }}
         className={cn(
           "catalog-h-scroll flex w-full min-w-0 max-w-full gap-3 py-1",
           single
