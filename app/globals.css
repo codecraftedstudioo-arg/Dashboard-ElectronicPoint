@@ -115,3 +115,24 @@ html.light ::-webkit-scrollbar-thumb {
   height: 0;
   width: 0;
 }
+
+@keyframes hero-phones-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero-phones {
+  animation: hero-phones-in 640ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-phones {
+    animation: none;
+  }
+}

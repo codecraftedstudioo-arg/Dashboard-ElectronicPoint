@@ -24,21 +24,21 @@ export default async function UsadosPage() {
     <div className="min-h-screen w-full min-w-0 bg-background text-foreground">
       <CatalogHeader />
 
-      <section className="relative overflow-hidden border-b border-card-border">
+      <section className="relative overflow-hidden border-b border-black/5 bg-[#f4f6f8] text-[#111827]">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_color-mix(in_srgb,var(--accent)_18%,transparent),_transparent_55%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_78%_18%,rgba(186,199,214,0.45),transparent_54%)]"
         />
-        <div className="relative mx-auto grid w-full min-w-0 max-w-6xl grid-cols-1 gap-8 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,36rem)_420px] lg:items-end lg:justify-between lg:gap-x-8">
+        <div className="relative mx-auto grid w-full min-w-0 max-w-6xl grid-cols-1 items-center gap-8 px-4 py-14 sm:gap-10 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,48%)] lg:gap-x-12 lg:py-20">
           <div className="flex max-w-xl flex-col items-start text-left">
-            <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
               Usados premium
             </h1>
             <div className="mt-2 space-y-1">
-              <p className="text-base text-muted sm:text-lg">
+              <p className="text-base text-[#6b7280] sm:text-lg">
                 Equipos seleccionados, revisados y listos para vos.
               </p>
-              <p className="text-base text-muted sm:text-lg">
+              <p className="text-base text-[#6b7280] sm:text-lg">
                 Garantía de 30 días.
               </p>
             </div>
@@ -48,7 +48,7 @@ export default async function UsadosPage() {
             >
               Ver equipos disponibles
             </a>
-            <p className="mt-4 flex min-w-0 items-center gap-2 text-base text-muted sm:text-lg">
+            <p className="mt-4 flex min-w-0 items-center gap-2 text-base text-[#6b7280] sm:text-lg">
               <span
                 aria-hidden
                 className="h-2 w-2 shrink-0 rounded-full bg-[#34c759]"
@@ -56,30 +56,17 @@ export default async function UsadosPage() {
               <span className="min-w-0 leading-snug">{availableLabel}</span>
             </p>
           </div>
-          <div
-            aria-hidden
-            className="grid w-full min-w-0 max-w-md grid-cols-2 gap-3 lg:w-[420px]"
-          >
-            <div className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
-              <Image
-                src="/catalog/hero-iphone-pro.jpg"
-                alt=""
-                fill
-                priority
-                sizes="(max-width: 1024px) 45vw, 210px"
-                className="object-cover"
-              />
-            </div>
-            <div className="relative mt-8 aspect-[3/4] overflow-hidden rounded-3xl bg-input ring-1 ring-card-border">
-              <Image
-                src="/catalog/hero-iphone.jpg"
-                alt=""
-                fill
-                priority
-                sizes="(max-width: 1024px) 45vw, 210px"
-                className="object-cover"
-              />
-            </div>
+          <div className="mx-auto w-full min-w-0 max-w-[17.5rem] sm:max-w-sm md:max-w-md lg:mx-0 lg:max-w-none">
+            <Image
+              src="/catalog/hero-iphone-17-pro.png"
+              alt=""
+              width={1149}
+              height={1169}
+              priority
+              unoptimized
+              sizes="(max-width: 640px) 70vw, (max-width: 1024px) 28rem, 48vw"
+              className="hero-phones h-auto w-full object-contain"
+            />
           </div>
         </div>
       </section>
