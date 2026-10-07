@@ -14,14 +14,20 @@ export type GalleryImage = {
 type ProductGalleryProps = {
   images: GalleryImage[];
   productName: string;
+  autoPlay?: boolean;
 };
 
 const SWIPE_THRESHOLD = 50;
 
-export function ProductGallery({ images, productName }: ProductGalleryProps) {
+export function ProductGallery({
+  images,
+  productName,
+  autoPlay = false,
+}: ProductGalleryProps) {
   const [index, setIndex] = useState(0);
   const [loaded, setLoaded] = useState<Record<string, boolean>>({});
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [paused, setPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const thumbsRef = useRef<HTMLDivElement>(null);
   const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -75,6 +81,30 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     };
   }, [lightboxOpen]);
 
+  useEffect(() => {
+    if (!autoPlay || total < 2 || lightboxOpen || paused) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let timer = window.setTimeout(advance, 4000);
+
+    function advance() {
+      if (!document.hidden) {
+        setIndex((current) => (current + 1) % total);
+      }
+    }
+
+    function onVisibility() {
+      window.clearTimeout(timer);
+      if (!document.hidden) timer = window.setTimeout(advance, 4000);
+    }
+
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [autoPlay, index, lightboxOpen, paused, total]);
+
   if (!total || !current) {
     return (
       <div className="flex aspect-square w-full max-w-full items-center justify-center rounded-2xl bg-input text-muted sm:aspect-[4/3]">
@@ -98,7 +128,14 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   }
 
   return (
-    <div className="w-full min-w-0 max-w-full space-y-3">
+    <div
+      className="w-full min-w-0 max-w-full space-y-3"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={() => setPaused(true)}
+      onTouchEnd={() => setPaused(false)}
+      onTouchCancel={() => setPaused(false)}
+    >
       <div className="relative w-full min-w-0 max-w-full">
         <div
           role="button"

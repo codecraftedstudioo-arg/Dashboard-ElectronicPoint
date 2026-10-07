@@ -112,6 +112,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
         <div className="mt-6 grid min-w-0 gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
           <div className="w-full min-w-0 max-w-full rounded-2xl border border-card-border bg-card p-2 sm:p-4">
             <ProductGallery
+              autoPlay
               images={product.images.map((img) => ({
                 id: img.id,
                 url: img.url,
