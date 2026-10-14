@@ -9,6 +9,7 @@ import {
 } from "@/components/catalog/catalog-chrome";
 import { DualPrice } from "@/components/currency/currency-toggle";
 import { ProductGallery } from "@/components/products/product-gallery";
+import { MercadoPagoCheckout } from "@/components/catalog/mercadopago-checkout";
 import { ShareProductLink } from "@/components/catalog/share-product-link";
 import { Badge } from "@/components/ui";
 import {
@@ -146,6 +147,8 @@ export default async function UsadosProductPage({ params }: PageProps) {
                 />
               </div>
             </div>
+
+            <MercadoPagoCheckout productId={product.id} />
 
             <div className="w-full min-w-0 max-w-full rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
               <p className="text-sm font-semibold text-emerald-500">
