@@ -13,6 +13,7 @@ export type PublicCatalogProduct = {
   chip: ChipType | null;
   salePrice: number;
   description: string | null;
+  isReserved: boolean;
   images: {
     id: string;
     url: string;
@@ -31,6 +32,7 @@ const publicProductSelect = {
   chip: true,
   salePrice: true,
   description: true,
+  isReserved: true,
   images: {
     select: {
       id: true,

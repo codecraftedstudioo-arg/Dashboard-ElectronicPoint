@@ -120,6 +120,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
                 isPrimary: img.isPrimary,
               }))}
               productName={product.name}
+              reserved={product.isReserved}
             />
           </div>
 

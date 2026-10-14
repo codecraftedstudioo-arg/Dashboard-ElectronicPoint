@@ -11,6 +11,7 @@ import {
   PHYSICAL_CONDITION_LABELS,
 } from "@/lib/constants";
 import { sortProductImages } from "@/lib/images";
+import { ReservedOverlay } from "@/components/products/reserved-overlay";
 import { buildProductSlug } from "@/lib/product-slug";
 import type { PublicCatalogProduct } from "@/lib/public-catalog";
 
@@ -74,6 +75,7 @@ export function CatalogProductCard({
   const slots =
     images.length < 2 ? [0] : [...new Set([previous, index, upcoming])];
   const activeReady = Boolean(images[index] && loaded[images[index].id]);
+  const reserved = product.isReserved;
 
   return (
     <Link
@@ -110,10 +112,14 @@ export function CatalogProductCard({
                     "object-cover transition-opacity duration-700",
                     active
                       ? ready
-                        ? "z-10 opacity-100"
+                        ? reserved
+                          ? "z-10 opacity-50"
+                          : "z-10 opacity-100"
                         : "z-10 opacity-0"
                       : slot === previous && !activeReady
-                        ? "z-0 opacity-100"
+                        ? reserved
+                          ? "z-0 opacity-50"
+                          : "z-0 opacity-100"
                         : "z-0 opacity-0",
                   )}
                   onLoad={() =>
@@ -132,6 +138,7 @@ export function CatalogProductCard({
             Sin imagen
           </div>
         )}
+        <ReservedOverlay active={reserved} className="z-20" />
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <h3 className="break-words text-lg font-semibold tracking-tight text-foreground">

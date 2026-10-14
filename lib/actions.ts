@@ -506,6 +506,7 @@ export async function setProductReservation(
   revalidatePath("/");
   revalidatePath("/inventario");
   revalidatePath("/listas");
+  revalidatePath("/usados", "layout");
   revalidatePath(`/equipos/${productId}`);
   revalidatePath(`/equipos/${productId}/editar`);
 
