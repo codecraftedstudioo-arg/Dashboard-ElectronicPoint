@@ -11,6 +11,7 @@ import {
   SALE_CHANNEL_LABELS,
 } from "@/lib/constants";
 import { primaryImageUrl } from "@/lib/images";
+import { ReservedOverlay } from "@/components/products/reserved-overlay";
 import type { PhysicalCondition, SaleChannel } from "@prisma/client";
 
 function relativeDate(date: Date) {
@@ -37,6 +38,7 @@ export function RecentProductsCard({
     physicalCondition: PhysicalCondition;
     cost: number;
     salePrice: number;
+    isReserved: boolean;
     images: { url: string; isPrimary: boolean }[];
   }>;
 }) {
@@ -69,10 +71,15 @@ export function RecentProductsCard({
                     src={img}
                     alt={product.name}
                     fill
-                    className="object-cover"
                     unoptimized
+                    className={
+                      product.isReserved
+                        ? "object-cover opacity-50"
+                        : "object-cover"
+                    }
                   />
                 ) : null}
+                <ReservedOverlay active={product.isReserved} compact />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-medium text-foreground">

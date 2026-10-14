@@ -5,6 +5,7 @@ import { Badge, Button, Card, PageHeader } from "@/components/ui";
 import { Money } from "@/components/currency/currency-toggle";
 import { ProductGallery } from "@/components/products/product-gallery";
 import { SellModal } from "@/components/products/sell-modal";
+import { ReserveProductButton } from "@/components/products/reserve-product-button";
 import { calcProfit, formatMargin } from "@/lib/calculations";
 import {
   CONDITION_COLORS,
@@ -43,6 +44,10 @@ export default async function ProductDetailPage({
               <Link href={`/equipos/${product.id}/editar`}>
                 <Button variant="secondary">Editar</Button>
               </Link>
+              <ReserveProductButton
+                productId={product.id}
+                isReserved={product.isReserved}
+              />
               <SellModal productId={product.id} defaultPrice={product.salePrice} />
             </>
           ) : (
@@ -62,6 +67,7 @@ export default async function ProductDetailPage({
               isPrimary: img.isPrimary,
             }))}
             productName={product.name}
+            reserved={product.status === "AVAILABLE" && product.isReserved}
           />
         </Card>
 

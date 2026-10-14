@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { cn } from "@/components/ui";
+import { ReservedOverlay } from "@/components/products/reserved-overlay";
 
 export type GalleryImage = {
   id: string;
@@ -15,6 +16,7 @@ type ProductGalleryProps = {
   images: GalleryImage[];
   productName: string;
   autoPlay?: boolean;
+  reserved?: boolean;
 };
 
 const SWIPE_THRESHOLD = 50;
@@ -23,6 +25,7 @@ export function ProductGallery({
   images,
   productName,
   autoPlay = false,
+  reserved = false,
 }: ProductGalleryProps) {
   const [index, setIndex] = useState(0);
   const [loaded, setLoaded] = useState<Record<string, boolean>>({});
@@ -165,7 +168,11 @@ export function ProductGallery({
             sizes="(max-width: 768px) 100vw, 640px"
             className={cn(
               "object-contain p-2 transition-opacity duration-200 sm:p-4",
-              loaded[current.id] ? "opacity-100" : "opacity-0",
+              loaded[current.id]
+                ? reserved
+                  ? "opacity-50"
+                  : "opacity-100"
+                : "opacity-0",
             )}
             onLoad={() =>
               setLoaded((prev) => ({ ...prev, [current.id]: true }))
@@ -183,7 +190,7 @@ export function ProductGallery({
                 disabled={!canPrev}
                 aria-label="Foto anterior"
                 className={cn(
-                  "absolute left-1.5 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-card-border bg-background/90 text-foreground shadow-sm backdrop-blur transition-colors touch-manipulation sm:left-2 sm:h-11 sm:w-11",
+                  "absolute left-1.5 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-card-border bg-background/90 text-foreground shadow-sm backdrop-blur transition-colors touch-manipulation sm:left-2 sm:h-11 sm:w-11",
                   "hover:bg-hover disabled:pointer-events-none disabled:opacity-30",
                 )}
               >
@@ -198,7 +205,7 @@ export function ProductGallery({
                 disabled={!canNext}
                 aria-label="Foto siguiente"
                 className={cn(
-                  "absolute right-1.5 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-card-border bg-background/90 text-foreground shadow-sm backdrop-blur transition-colors touch-manipulation sm:right-2 sm:h-11 sm:w-11",
+                  "absolute right-1.5 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-card-border bg-background/90 text-foreground shadow-sm backdrop-blur transition-colors touch-manipulation sm:right-2 sm:h-11 sm:w-11",
                   "hover:bg-hover disabled:pointer-events-none disabled:opacity-30",
                 )}
               >
@@ -207,8 +214,10 @@ export function ProductGallery({
             </>
           ) : null}
 
+          <ReservedOverlay active={reserved} />
+
           {total > 1 ? (
-            <div className="pointer-events-none absolute right-2 top-2 max-w-[calc(100%-1rem)] truncate rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium tabular-nums text-foreground backdrop-blur sm:right-3 sm:top-3">
+            <div className="pointer-events-none absolute right-2 top-2 z-20 max-w-[calc(100%-1rem)] truncate rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium tabular-nums text-foreground backdrop-blur sm:right-3 sm:top-3">
               {index + 1} / {total}
             </div>
           ) : null}

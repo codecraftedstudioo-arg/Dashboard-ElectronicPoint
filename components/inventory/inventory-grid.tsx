@@ -13,6 +13,8 @@ import {
   PRODUCT_TYPE_LABELS,
 } from "@/lib/constants";
 import { primaryImageUrl } from "@/lib/images";
+import { ReserveProductButton } from "@/components/products/reserve-product-button";
+import { ReservedOverlay } from "@/components/products/reserved-overlay";
 import type { PhysicalCondition, ProductType } from "@prisma/client";
 
 type InventoryItem = {
@@ -28,6 +30,7 @@ type InventoryItem = {
   cost: number;
   salePrice: number;
   isPublished: boolean;
+  isReserved: boolean;
   createdAt: Date | string;
   images: { url: string; isPrimary: boolean }[];
 };
@@ -169,13 +172,24 @@ export function InventoryGrid({ products }: { products: InventoryItem[] }) {
           const img = primaryImageUrl(product.images);
           const profit = calcProfit(product.salePrice, product.cost);
           return (
-            <Link key={product.id} href={`/equipos/${product.id}`}>
-              <Card className="h-full transition-colors hover:border-accent/30">
+            <Card key={product.id} className="h-full">
+              <Link href={`/equipos/${product.id}`} className="block">
                 <div className="flex gap-3">
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-input">
                     {img ? (
-                      <Image src={img} alt={product.name} fill className="object-cover" unoptimized />
+                      <Image
+                        src={img}
+                        alt={product.name}
+                        fill
+                        unoptimized
+                        className={
+                          product.isReserved
+                            ? "object-cover opacity-50"
+                            : "object-cover"
+                        }
+                      />
                     ) : null}
+                    <ReservedOverlay active={product.isReserved} compact />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-xs text-muted">{product.internalCode}</div>
@@ -235,8 +249,13 @@ export function InventoryGrid({ products }: { products: InventoryItem[] }) {
                     </div>
                   </div>
                 </div>
-              </Card>
-            </Link>
+              </Link>
+              <ReserveProductButton
+                productId={product.id}
+                isReserved={product.isReserved}
+                className="mt-3"
+              />
+            </Card>
           );
         })}
       </div>

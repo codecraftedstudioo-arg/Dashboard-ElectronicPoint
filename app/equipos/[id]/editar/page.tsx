@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/ui";
 import { ProductForm } from "@/components/products/product-form";
+import { ReserveProductButton } from "@/components/products/reserve-product-button";
 import { getProductById } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,14 @@ export default async function EditProductPage({
       <PageHeader
         title="Editar equipo"
         subtitle={product.internalCode}
+        actions={
+          product.status === "AVAILABLE" ? (
+            <ReserveProductButton
+              productId={product.id}
+              isReserved={product.isReserved}
+            />
+          ) : null
+        }
       />
       <ProductForm
         mode="edit"
@@ -37,6 +46,7 @@ export default async function EditProductPage({
           salePrice: product.salePrice,
           description: product.description,
           isPublished: product.isPublished,
+          isReserved: product.isReserved,
           status: product.status,
           images: product.images.map((img) => ({
             id: img.id,

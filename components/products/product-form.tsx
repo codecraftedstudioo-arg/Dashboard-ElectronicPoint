@@ -33,6 +33,7 @@ import {
 } from "@/lib/actions";
 import { compressImageFile } from "@/lib/compress-image";
 import { DeleteProductPanel } from "@/components/products/delete-product-panel";
+import { ReservedOverlay } from "@/components/products/reserved-overlay";
 import { ImeiField } from "@/components/imei/imei-field";
 import type {
   ChipType,
@@ -74,6 +75,7 @@ type ProductFormValues = {
   salePrice: number;
   description: string | null;
   isPublished?: boolean;
+  isReserved?: boolean;
   images?: ExistingImage[];
 };
 
@@ -526,14 +528,25 @@ export function ProductForm({
                         fill
                         unoptimized
                         sizes="(max-width: 640px) 50vw, 160px"
-                        className="object-cover"
+                        className={cn(
+                          "object-cover",
+                          initial?.isReserved &&
+                            initial.status !== "SOLD" &&
+                            "opacity-50",
+                        )}
+                      />
+                      <ReservedOverlay
+                        active={
+                          Boolean(initial?.isReserved) &&
+                          initial?.status !== "SOLD"
+                        }
                       />
                       {img.isPrimary ? (
-                        <span className="absolute left-2 top-2 rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-accent-contrast">
+                        <span className="absolute left-2 top-2 z-20 rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-accent-contrast">
                           Principal
                         </span>
                       ) : null}
-                      <div className="absolute left-2 top-2 flex flex-col gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
+                      <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
                         <button
                           type="button"
                           disabled={index === 0 || busy || pending}
@@ -553,7 +566,7 @@ export function ProductForm({
                           <ArrowDown className="h-3.5 w-3.5" />
                         </button>
                       </div>
-                      <div className="absolute inset-x-0 bottom-0 flex gap-1 bg-gradient-to-t from-black/80 to-transparent p-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
+                      <div className="absolute inset-x-0 bottom-0 z-20 flex gap-1 bg-gradient-to-t from-black/80 to-transparent p-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
                         {!img.isPrimary ? (
                           <button
                             type="button"

@@ -396,7 +396,7 @@ export async function markAsSold(formData: FormData) {
     }),
     prisma.product.update({
       where: { id: productId },
-      data: { status: "SOLD" },
+      data: { status: "SOLD", isReserved: false },
     }),
   ]);
 
@@ -458,6 +458,65 @@ export async function updateSalePrice(formData: FormData) {
   revalidatePath(`/equipos/${sale.productId}`);
 }
 
+export type ReservationResult =
+  | { ok: true; message: string }
+  | { ok: false; message: string };
+
+export async function setProductReservation(
+  productId: string,
+  reserved: boolean,
+): Promise<ReservationResult> {
+  if (!productId) {
+    return { ok: false, message: "No se encontró el equipo." };
+  }
+
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    select: { id: true, status: true },
+  });
+
+  if (!product) {
+    return { ok: false, message: "No se encontró el equipo." };
+  }
+  if (product.status === "SOLD") {
+    return {
+      ok: false,
+      message: "No se puede reservar un equipo que ya está vendido.",
+    };
+  }
+  if (product.status !== "AVAILABLE") {
+    return {
+      ok: false,
+      message: "Solo se pueden reservar equipos disponibles.",
+    };
+  }
+
+  try {
+    await prisma.product.update({
+      where: { id: productId },
+      data: { isReserved: reserved },
+    });
+  } catch {
+    return {
+      ok: false,
+      message: "No se pudo guardar la reserva. Intentá de nuevo.",
+    };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/inventario");
+  revalidatePath("/listas");
+  revalidatePath(`/equipos/${productId}`);
+  revalidatePath(`/equipos/${productId}/editar`);
+
+  return {
+    ok: true,
+    message: reserved
+      ? "Equipo reservado."
+      : "Se quitó la reserva.",
+  };
+}
+
 export type RepublishSoldProductResult =
   | { ok: true; message: string }
   | { ok: false; message: string };
@@ -498,6 +557,7 @@ export async function republishSoldProduct(
         data: {
           status: "AVAILABLE",
           isPublished: true,
+          isReserved: false,
         },
       });
 
