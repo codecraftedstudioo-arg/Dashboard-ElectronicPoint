@@ -121,7 +121,7 @@ describe("quote publication against the database", () => {
     assert.equal(draftQuote.ok, true);
     if (!draftQuote.ok) return;
     assert.equal(draftQuote.demo, true);
-    assert.equal(draftQuote.finalPrice, 420);
+    assert.equal(draftQuote.finalPrice, 370);
     assert.equal(draftQuote.basePrice, 420);
 
     const activated = await activateStoredRevision(first.id, "prueba");
@@ -131,7 +131,7 @@ describe("quote publication against the database", () => {
     if (!commercial.ok) return;
     assert.equal(commercial.demo, false);
     assert.equal(commercial.basePrice, 999);
-    assert.equal(commercial.finalPrice, 1000);
+    assert.equal(commercial.finalPrice, 950);
 
     const second = await createTestRevision(430);
     const switched = await activateStoredRevision(second.id, "prueba");
@@ -148,7 +148,7 @@ describe("quote publication against the database", () => {
     assert.equal(previous?.status, "DRAFT");
     assert.equal(previous?.publishedBy, "prueba");
     const switchedQuote = await createQuote(answers);
-    assert.equal(switchedQuote.ok && switchedQuote.finalPrice, 430);
+    assert.equal(switchedQuote.ok && switchedQuote.finalPrice, 380);
 
     const invalid = await prisma.quotePricingRevision.create({
       data: {
@@ -171,7 +171,7 @@ describe("quote publication against the database", () => {
     assert.deepEqual(stillCurrent.map((row) => row.id), [second.id]);
     const unchanged = await createQuote(answers);
     assert.equal(unchanged.ok && unchanged.demo, false);
-    assert.equal(unchanged.ok && unchanged.finalPrice, 430);
+    assert.equal(unchanged.ok && unchanged.finalPrice, 380);
 
     const deactivated = await deactivateStoredRevision(second.id);
     assert.equal(deactivated.ok, true);
@@ -179,7 +179,7 @@ describe("quote publication against the database", () => {
     assert.equal(restored.ok, true);
     if (!restored.ok) return;
     assert.equal(restored.demo, true);
-    assert.equal(restored.finalPrice, 420);
+    assert.equal(restored.finalPrice, 370);
 
     const stored = await prisma.quotePricingRevision.findUnique({
       where: { id: first.id },

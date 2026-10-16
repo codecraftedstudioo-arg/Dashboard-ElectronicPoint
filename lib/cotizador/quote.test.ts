@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { calculatePrice } from "@/lib/cotizador/pricing-engine";
+import { applySellOnlyDiscount, SELL_ONLY_DISCOUNT_USD } from "@/lib/cotizador/quote";
 import { toPublicTradeTarget } from "@/lib/cotizador/trade-target";
 import { parseQuoteInput } from "@/lib/cotizador/validate";
 import type { QuoteAnswers } from "@/lib/cotizador/types";
@@ -116,5 +117,17 @@ describe("quote answers stay independent of client amounts", () => {
     if (!parsed.ok) return;
     const answers: QuoteAnswers = parsed.value.answers;
     assert.equal(calculatePrice(answers)?.basePrice, 420);
+  });
+});
+
+describe("sell-only discount", () => {
+  it("subtracts 50 USD when selling without Plan Canje", () => {
+    assert.equal(SELL_ONLY_DISCOUNT_USD, 50);
+    assert.equal(applySellOnlyDiscount(420, false), 370);
+    assert.equal(applySellOnlyDiscount(40, false), 0);
+  });
+
+  it("keeps the full take value for Plan Canje", () => {
+    assert.equal(applySellOnlyDiscount(420, true), 420);
   });
 });

@@ -4,6 +4,9 @@ import { resolveTradeTarget } from "@/lib/cotizador/trade-target";
 import { parseQuoteInput } from "@/lib/cotizador/validate";
 import type { PriceResult, PublicTradeTarget } from "@/lib/cotizador/types";
 
+/** Applied only to “Solo quiero vender”. Plan Canje keeps the full take value. */
+export const SELL_ONLY_DISCOUNT_USD = 50;
+
 export type QuoteSuccess = PriceResult & {
   ok: true;
   demo: boolean;
@@ -12,6 +15,14 @@ export type QuoteSuccess = PriceResult & {
 };
 
 export type QuoteFailure = { ok: false; message: string };
+
+export function applySellOnlyDiscount(
+  finalPrice: number,
+  isPlanCanje: boolean,
+): number {
+  if (isPlanCanje) return finalPrice;
+  return Math.max(0, finalPrice - SELL_ONLY_DISCOUNT_USD);
+}
 
 export async function createQuote(body: unknown): Promise<QuoteSuccess | QuoteFailure> {
   const parsed = parseQuoteInput(body);
@@ -29,12 +40,15 @@ export async function createQuote(body: unknown): Promise<QuoteSuccess | QuoteFa
   }
 
   const target = await resolveTradeTarget(parsed.value.equipo);
-  const difference = target ? target.salePrice - price.finalPrice : null;
+  const isPlanCanje = target !== null;
+  const finalPrice = applySellOnlyDiscount(price.finalPrice, isPlanCanje);
+  const difference = target ? target.salePrice - finalPrice : null;
 
   return {
     ok: true,
     demo: active.demo,
     ...price,
+    finalPrice,
     target,
     difference,
   };
