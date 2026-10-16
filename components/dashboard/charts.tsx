@@ -97,9 +97,11 @@ export function FinancialSummaryChart({
 export function ChannelSalesChart({
   channelCounts,
   total,
+  title = "Ventas por canal (30 días)",
 }: {
   channelCounts: Record<string, number>;
   total: number;
+  title?: string;
 }) {
   const data = CHANNEL_CHART_ORDER.map((key) => ({
     key,
@@ -112,7 +114,7 @@ export function ChannelSalesChart({
   return (
     <Card>
       <h2 className="text-base font-semibold text-foreground md:text-lg">
-        Ventas por canal (30 días)
+        {title}
       </h2>
       <div className="mt-4 grid gap-4 md:grid-cols-[180px_1fr] md:items-center">
         <div className="mx-auto h-44 w-44">

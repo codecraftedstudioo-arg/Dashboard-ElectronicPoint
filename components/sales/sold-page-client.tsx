@@ -8,6 +8,7 @@ import { useCurrency } from "@/components/currency/currency-provider";
 import { Money } from "@/components/currency/currency-toggle";
 import { calcProfit } from "@/lib/calculations";
 import {
+  CHANNEL_CHART_ORDER,
   CHANNEL_COLORS,
   SALE_CHANNEL_LABELS,
   PRODUCT_TYPE_LABELS,
@@ -18,6 +19,27 @@ import { EditSaleModal } from "@/components/sales/edit-sale-modal";
 import type { SaleChannel, ProductType } from "@prisma/client";
 import { DollarSign, Package, TrendingUp, ChartPie } from "lucide-react";
 import { StatCard as MetricCard } from "@/components/dashboard/stat-card";
+
+type Period = "all" | "week" | "month";
+
+const PERIODS: { id: Period; label: string; detail: string }[] = [
+  { id: "all", label: "Todos", detail: "Historial completo" },
+  { id: "week", label: "Semanal", detail: "Esta semana" },
+  { id: "month", label: "Mensual", detail: "Este mes" },
+];
+
+function startOfWeek(now = new Date()) {
+  const start = new Date(now);
+  start.setHours(0, 0, 0, 0);
+  const day = start.getDay();
+  const daysSinceMonday = day === 0 ? 6 : day - 1;
+  start.setDate(start.getDate() - daysSinceMonday);
+  return start;
+}
+
+function startOfMonth(now = new Date()) {
+  return new Date(now.getFullYear(), now.getMonth(), 1);
+}
 
 type SaleRow = {
   id: string;
@@ -34,15 +56,8 @@ type SaleRow = {
   };
 };
 
-export function SoldPageClient({
-  sales,
-  channelCounts,
-  channelTotal,
-}: {
-  sales: SaleRow[];
-  channelCounts: Record<string, number>;
-  channelTotal: number;
-}) {
+export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
+  const [period, setPeriod] = useState<Period>("all");
   const [channel, setChannel] = useState("ALL");
   const [type, setType] = useState("ALL");
   const [search, setSearch] = useState("");
@@ -51,14 +66,17 @@ export function SoldPageClient({
   const { currency } = useCurrency();
 
   const filtered = useMemo(() => {
+    const periodStart =
+      period === "week" ? startOfWeek() : period === "month" ? startOfMonth() : null;
     return sales.filter((sale) => {
+      const soldAt = new Date(sale.soldAt);
+      if (periodStart && soldAt < periodStart) return false;
       if (channel !== "ALL" && sale.channel !== channel) return false;
       if (type !== "ALL" && sale.product.type !== type) return false;
       if (search.trim()) {
         const q = search.toLowerCase();
         if (!sale.product.name.toLowerCase().includes(q)) return false;
       }
-      const soldAt = new Date(sale.soldAt);
       if (dateFrom) {
         const from = new Date(dateFrom);
         from.setHours(0, 0, 0, 0);
@@ -71,7 +89,15 @@ export function SoldPageClient({
       }
       return true;
     });
-  }, [sales, channel, type, search, dateFrom, dateTo]);
+  }, [sales, period, channel, type, search, dateFrom, dateTo]);
+
+  const periodLabel = PERIODS.find((item) => item.id === period)?.detail ?? "Historial completo";
+  const channelCounts = Object.fromEntries(
+    CHANNEL_CHART_ORDER.map((key) => [
+      key,
+      filtered.filter((sale) => sale.channel === key).length,
+    ]),
+  );
 
   const soldCount = filtered.length;
   const revenue = filtered.reduce((s, sale) => s + sale.soldPrice, 0);
@@ -83,38 +109,70 @@ export function SoldPageClient({
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Período de ventas">
+        {PERIODS.map((item) => {
+          const selected = period === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              onClick={() => setPeriod(item.id)}
+              className={
+                selected
+                  ? "rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast"
+                  : "rounded-full border border-card-border bg-card px-4 py-2 text-sm font-medium text-muted hover:text-foreground"
+              }
+            >
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           title="Equipos vendidos"
           value={`${soldCount}`}
-          subtitle="Historial filtrado"
+          subtitle={periodLabel}
           icon={<Package className="h-5 w-5" />}
           iconClassName="bg-accent-dim text-accent"
         />
         <MetricCard
           title="Facturación total"
           value={<Money amount={revenue} />}
-          subtitle="Suma de ventas"
+          subtitle={periodLabel}
           icon={<DollarSign className="h-5 w-5" />}
           iconClassName="bg-blue-500/15 text-blue-400"
         />
         <MetricCard
           title="Ganancia total"
           value={<Money amount={profit} />}
-          subtitle="Ganancia real"
+          subtitle={periodLabel}
           icon={<TrendingUp className="h-5 w-5" />}
           iconClassName="bg-violet-500/15 text-violet-400"
         />
         <MetricCard
           title="Ganancia promedio"
           value={<Money amount={avg} />}
-          subtitle="Por equipo"
+          subtitle={periodLabel}
           icon={<ChartPie className="h-5 w-5" />}
           iconClassName="bg-pink-500/15 text-pink-400"
         />
       </div>
 
-      <ChannelSalesChart channelCounts={channelCounts} total={channelTotal} />
+      <ChannelSalesChart
+        channelCounts={channelCounts}
+        total={soldCount}
+        title={
+          period === "week"
+            ? "Ventas por canal (esta semana)"
+            : period === "month"
+              ? "Ventas por canal (este mes)"
+              : "Ventas por canal"
+        }
+      />
 
       {currency === "ARS" ? (
         <p className="text-xs text-muted">
@@ -222,6 +280,9 @@ export function SoldPageClient({
             </Card>
           );
         })}
+        {!filtered.length ? (
+          <p className="text-sm text-muted">No hay ventas en este período.</p>
+        ) : null}
       </div>
     </div>
   );
