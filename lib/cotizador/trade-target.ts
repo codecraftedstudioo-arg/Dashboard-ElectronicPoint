@@ -81,6 +81,7 @@ export async function listEligibleTradeOptions(): Promise<TradeOption[]> {
       color: true,
       salePrice: true,
       batteryCondition: true,
+      isReserved: true,
       images: {
         select: { url: true, isPrimary: true, sortOrder: true },
         orderBy: { sortOrder: "asc" },
@@ -94,7 +95,7 @@ export async function listEligibleTradeOptions(): Promise<TradeOption[]> {
         type: "IPHONE",
         status: "AVAILABLE",
         isPublished: true,
-        isReserved: false,
+        isReserved: product.isReserved,
         name: product.name,
         storage: product.storage,
         color: product.color,

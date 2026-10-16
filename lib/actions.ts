@@ -517,6 +517,8 @@ export async function setProductReservation(
   revalidatePath("/inventario");
   revalidatePath("/listas");
   revalidatePath("/usados", "layout");
+  revalidatePath("/usados/cotizar-iphone");
+  revalidatePath("/cotizar-iphone");
   revalidatePath(`/equipos/${productId}`);
   revalidatePath(`/equipos/${productId}/editar`);
 
