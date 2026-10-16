@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Card, Input, Select, Badge } from "@/components/ui";
 import { useCurrency } from "@/components/currency/currency-provider";
 import { Money } from "@/components/currency/currency-toggle";
@@ -20,12 +20,28 @@ import type { SaleChannel, ProductType } from "@prisma/client";
 import { DollarSign, Package, TrendingUp, ChartPie } from "lucide-react";
 import { StatCard as MetricCard } from "@/components/dashboard/stat-card";
 
-type Period = "all" | "week" | "month";
+type Period = "all" | "week" | "month" | "history";
 
 const PERIODS: { id: Period; label: string; detail: string }[] = [
   { id: "all", label: "Todos", detail: "Historial completo" },
   { id: "week", label: "Semanal", detail: "Esta semana" },
   { id: "month", label: "Mensual", detail: "Este mes" },
+  { id: "history", label: "Historial", detail: "Mes a mes" },
+];
+
+const MONTH_NAMES = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 
 function startOfWeek(now = new Date()) {
@@ -91,7 +107,43 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
     });
   }, [sales, period, channel, type, search, dateFrom, dateTo]);
 
+  const monthGroups = useMemo(() => {
+    const groups = new Map<string, { label: string; sales: SaleRow[] }>();
+    for (const sale of filtered) {
+      const soldAt = new Date(sale.soldAt);
+      const key = `${soldAt.getFullYear()}-${String(soldAt.getMonth() + 1).padStart(2, "0")}`;
+      const current = groups.get(key);
+      if (current) {
+        current.sales.push(sale);
+      } else {
+        groups.set(key, {
+          label: `${MONTH_NAMES[soldAt.getMonth()]} ${soldAt.getFullYear()}`,
+          sales: [sale],
+        });
+      }
+    }
+    return [...groups.entries()]
+      .sort(([a], [b]) => b.localeCompare(a))
+      .map(([key, group]) => {
+        const revenue = group.sales.reduce((sum, sale) => sum + sale.soldPrice, 0);
+        const monthProfit = group.sales.reduce(
+          (sum, sale) => sum + calcProfit(sale.soldPrice, sale.product.cost),
+          0,
+        );
+        return {
+          key,
+          label: group.label,
+          count: group.sales.length,
+          revenue,
+          profit: monthProfit,
+          avg: group.sales.length ? monthProfit / group.sales.length : 0,
+          sales: group.sales,
+        };
+      });
+  }, [filtered]);
+
   const periodLabel = PERIODS.find((item) => item.id === period)?.detail ?? "Historial completo";
+  const showingHistory = period === "history";
   const channelCounts = Object.fromEntries(
     CHANNEL_CHART_ORDER.map((key) => [
       key,
@@ -131,6 +183,26 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
         })}
       </div>
 
+      {showingHistory ? (
+        <div className="space-y-4">
+          {monthGroups.map((group) => (
+            <Card key={group.key} className="space-y-4">
+              <h2 className="text-base font-semibold text-foreground md:text-lg">{group.label}</h2>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <MonthStat label="Equipos vendidos" value={String(group.count)} />
+                <MonthStat label="Facturación" value={<Money amount={group.revenue} />} />
+                <MonthStat label="Ganancia" value={<Money amount={group.profit} />} accent />
+                <MonthStat label="Ganancia promedio" value={<Money amount={group.avg} />} />
+              </div>
+            </Card>
+          ))}
+          {!monthGroups.length ? (
+            <p className="text-sm text-muted">No hay ventas en este período.</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {!showingHistory ? (
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           title="Equipos vendidos"
@@ -161,7 +233,9 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
           iconClassName="bg-pink-500/15 text-pink-400"
         />
       </div>
+      ) : null}
 
+      {!showingHistory ? (
       <ChannelSalesChart
         channelCounts={channelCounts}
         total={soldCount}
@@ -173,6 +247,7 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
               : "Ventas por canal"
         }
       />
+      ) : null}
 
       {currency === "ARS" ? (
         <p className="text-xs text-muted">
@@ -216,6 +291,7 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
         </div>
       </Card>
 
+      {!showingHistory ? (
       <div className="space-y-3">
         {filtered.map((sale) => {
           const img = primaryImageUrl(sale.product.images);
@@ -283,6 +359,26 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
         {!filtered.length ? (
           <p className="text-sm text-muted">No hay ventas en este período.</p>
         ) : null}
+      </div>
+      ) : null}
+    </div>
+  );
+}
+
+function MonthStat({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: ReactNode;
+  accent?: boolean;
+}) {
+  return (
+    <div>
+      <div className="text-xs text-muted">{label}</div>
+      <div className={`mt-1 text-lg font-semibold ${accent ? "text-accent" : "text-foreground"}`}>
+        {value}
       </div>
     </div>
   );
