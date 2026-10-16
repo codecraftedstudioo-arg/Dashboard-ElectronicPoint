@@ -20,6 +20,7 @@ export type ServerQuote = {
   finalPrice: number;
   target: PublicTradeTarget | null;
   difference: number | null;
+  deductions: { label: string; amount: number }[];
 };
 
 type WizardState = {
@@ -188,6 +189,7 @@ async function requestQuote(
       finalPrice: data.finalPrice,
       target: data.target,
       difference: data.difference,
+      deductions: readDeductions(data.deductions),
     });
     setState((current) => ({
       ...current,
@@ -200,6 +202,17 @@ async function requestQuote(
   } finally {
     setPending(false);
   }
+}
+
+function readDeductions(value: unknown): { label: string; amount: number }[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((line) => {
+    if (!line || typeof line !== "object") return [];
+    const label = "label" in line && typeof line.label === "string" ? line.label : "";
+    const amount = "amount" in line && typeof line.amount === "number" ? line.amount : NaN;
+    if (!label || !Number.isFinite(amount) || amount <= 0) return [];
+    return [{ label, amount }];
+  });
 }
 
 function toAnswers(state: WizardState): QuoteAnswers | null {

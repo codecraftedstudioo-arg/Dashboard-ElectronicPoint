@@ -1,18 +1,33 @@
-import { calculatePrice } from "@/lib/cotizador/pricing-engine";
+import { calculatePrice, DEDUCTION_LABELS } from "@/lib/cotizador/pricing-engine";
 import { loadActiveQuoteConfig } from "@/lib/cotizador/pricing-source";
 import { resolveTradeTarget } from "@/lib/cotizador/trade-target";
 import { parseQuoteInput } from "@/lib/cotizador/validate";
-import type { PriceResult, PublicTradeTarget } from "@/lib/cotizador/types";
+import type { DeductionLine, PriceResult, PublicTradeTarget } from "@/lib/cotizador/types";
 
 /** Applied only to “Solo quiero vender”. Plan Canje keeps the full take value. */
 export const SELL_ONLY_DISCOUNT_USD = 50;
+
+export type PublicDeduction = {
+  label: string;
+  amount: number;
+};
 
 export type QuoteSuccess = PriceResult & {
   ok: true;
   demo: boolean;
   target: PublicTradeTarget | null;
   difference: number | null;
+  deductions: PublicDeduction[];
 };
+
+export function toPublicDeductions(lines: DeductionLine[]): PublicDeduction[] {
+  return lines
+    .filter((line) => line.amount > 0)
+    .map((line) => ({
+      label: DEDUCTION_LABELS[line.reason] ?? line.reason,
+      amount: line.amount,
+    }));
+}
 
 export type QuoteFailure = { ok: false; message: string };
 
@@ -51,5 +66,6 @@ export async function createQuote(body: unknown): Promise<QuoteSuccess | QuoteFa
     finalPrice,
     target,
     difference,
+    deductions: toPublicDeductions(price.deductionBreakdown),
   };
 }

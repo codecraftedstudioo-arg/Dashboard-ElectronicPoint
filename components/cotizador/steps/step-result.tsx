@@ -255,6 +255,8 @@ export function StepResult() {
         </div>
       )}
 
+      <DeductionList deductions={quote.deductions} />
+
       <button
         type="button"
         data-share-exclude
@@ -284,6 +286,32 @@ export function StepResult() {
         Cotizar otro iPhone
       </button>
     </Card>
+  );
+}
+
+function DeductionList({
+  deductions,
+}: {
+  deductions: { label: string; amount: number }[];
+}) {
+  return (
+    <div className="mb-4 rounded-xl border border-line bg-bg-subtle px-4 py-3 text-left">
+      <p className="text-xs font-semibold tracking-wide text-fg-subtle">
+        Penalizaciones descontadas
+      </p>
+      {deductions.length === 0 ? (
+        <p className="mt-2 text-sm text-fg-muted">Sin penalizaciones.</p>
+      ) : (
+        <ul className="mt-2 space-y-1.5">
+          {deductions.map((line) => (
+            <li key={line.label} className="flex items-baseline justify-between gap-3 text-sm">
+              <span className="text-fg">{line.label}</span>
+              <span className="shrink-0 font-semibold text-fg">−{formatUsd(line.amount)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

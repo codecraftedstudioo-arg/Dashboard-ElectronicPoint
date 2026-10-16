@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { calculatePrice } from "@/lib/cotizador/pricing-engine";
-import { applySellOnlyDiscount, SELL_ONLY_DISCOUNT_USD } from "@/lib/cotizador/quote";
+import { applySellOnlyDiscount, SELL_ONLY_DISCOUNT_USD, toPublicDeductions } from "@/lib/cotizador/quote";
 import { toPublicTradeTarget } from "@/lib/cotizador/trade-target";
 import { parseQuoteInput } from "@/lib/cotizador/validate";
 import type { QuoteAnswers } from "@/lib/cotizador/types";
@@ -117,6 +117,33 @@ describe("quote answers stay independent of client amounts", () => {
     if (!parsed.ok) return;
     const answers: QuoteAnswers = parsed.value.answers;
     assert.equal(calculatePrice(answers)?.basePrice, 420);
+  });
+});
+
+describe("public deductions", () => {
+  it("names the penalties that were deducted", () => {
+    const parsed = parseQuoteInput({
+      ...validBody,
+      screenCondition: "cracked",
+      hasOriginalBox: false,
+    });
+    assert.equal(parsed.ok, true);
+    if (!parsed.ok) return;
+    const price = calculatePrice(parsed.value.answers);
+    assert.ok(price);
+    assert.deepEqual(toPublicDeductions(price.deductionBreakdown), [
+      { label: "Pantalla rajada/rota", amount: 210 },
+      { label: "Sin caja original", amount: 20 },
+    ]);
+  });
+
+  it("returns an empty list when nothing was deducted", () => {
+    const parsed = parseQuoteInput(validBody);
+    assert.equal(parsed.ok, true);
+    if (!parsed.ok) return;
+    const price = calculatePrice(parsed.value.answers);
+    assert.ok(price);
+    assert.deepEqual(toPublicDeductions(price.deductionBreakdown), []);
   });
 });
 
