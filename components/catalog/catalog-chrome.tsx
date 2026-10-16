@@ -22,12 +22,15 @@ function AppleLogo({ className }: { className?: string }) {
 
 export function CatalogHeader() {
   const pathname = usePathname();
-  const { isCatalogSite, homePath } = useCatalogSite();
+  const { isCatalogSite, homePath, quotePath } = useCatalogSite();
   const isCatalogHome =
     pathname === "/usados" || (isCatalogSite && pathname === "/");
+  const isQuotePage =
+    pathname === "/cotizar-iphone" || pathname === "/usados/cotizar-iphone";
   const isProductPage =
-    pathname.startsWith("/usados/") ||
-    (isCatalogSite && pathname !== "/" && !pathname.startsWith("/usados"));
+    !isQuotePage &&
+    (pathname.startsWith("/usados/") ||
+      (isCatalogSite && pathname !== "/" && !pathname.startsWith("/usados")));
 
   return (
     <header className="sticky top-0 z-40 border-b border-card-border/80 bg-background/90 pt-[env(safe-area-inset-top)] backdrop-blur-md">
@@ -48,7 +51,28 @@ export function CatalogHeader() {
           <AppleLogo className="h-5 w-5 shrink-0 sm:h-6 sm:w-6 lg:h-7 lg:w-7" />
           <span className="truncate">Usados premium</span>
         </Link>
-        <div className="flex shrink-0 items-center">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <Link
+            href={quotePath()}
+            className="inline-flex items-center gap-1.5 rounded-full border border-green-500 bg-[#0e2a1a] px-3 py-1.5 text-xs font-medium text-white shadow-[0_0_16px_-6px_rgba(34,197,94,0.45)] transition-colors hover:bg-[#143522] sm:text-sm light:border-transparent light:bg-accent light:shadow-md light:shadow-accent/30 light:hover:bg-accent-hover"
+          >
+            <svg
+              className="h-3.5 w-3.5 shrink-0 text-green-400 light:text-white"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              viewBox="0 0 24 24"
+              aria-hidden
+            >
+              <path d="M21 12a9 9 0 0 0-15-6.7L3 8" />
+              <path d="M3 3v5h5" />
+              <path d="M3 12a9 9 0 0 0 15 6.7l3-2.7" />
+              <path d="M16 16h5v5" />
+            </svg>
+            Cotizar
+          </Link>
           <ShareCatalogButton />
           <div className="ml-2 flex items-center border-l border-card-border pl-2 sm:ml-4 sm:pl-4 lg:ml-6 lg:pl-6">
             <ThemeToggle />

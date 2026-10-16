@@ -1,10 +1,12 @@
 import { PageHeader } from "@/components/ui";
 import { ListGenerator } from "@/components/lists/list-generator";
 import { getAvailableProducts } from "@/lib/queries";
+import { requireDashboardPage } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function ListasPage() {
+  await requireDashboardPage();
   const available = await getAvailableProducts();
   const listProducts = available.map((p) => ({
     id: p.id,

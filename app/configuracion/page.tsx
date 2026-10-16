@@ -1,7 +1,11 @@
 import { Card, PageHeader } from "@/components/ui";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { requireDashboardPage } from "@/lib/auth/session";
 
-export default function ConfiguracionPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ConfiguracionPage() {
+  await requireDashboardPage();
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <PageHeader

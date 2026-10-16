@@ -16,6 +16,7 @@ import {
   SALE_CHANNEL_LABELS,
 } from "@/lib/constants";
 import { getProductById } from "@/lib/queries";
+import { requireDashboardPage } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function ProductDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireDashboardPage();
   const { id } = await params;
   const product = await getProductById(id);
   if (!product) notFound();

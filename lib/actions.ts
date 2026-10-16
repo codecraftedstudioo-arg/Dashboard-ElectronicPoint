@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { nextInternalCode } from "@/lib/queries";
 import { deleteStoredImage, uploadProductImage } from "@/lib/storage";
@@ -71,6 +72,7 @@ async function collectImages(formData: FormData) {
 
 /** Upload one image at a time to avoid Vercel/Next body size limits with multi-photo forms. */
 export async function uploadSingleProductImage(formData: FormData): Promise<string> {
+  await requireAdmin();
   const file = formData.get("image");
   if (!isUploadableFile(file)) {
     throw new Error("No se recibió ninguna imagen válida.");
@@ -126,6 +128,7 @@ function parsePrimaryIndex(formData: FormData): number {
 }
 
 export async function createProduct(formData: FormData) {
+  await requireAdmin();
   const type = String(formData.get("type")) as ProductType;
   const name = String(formData.get("name") || "").trim();
   const storage = String(formData.get("storage") || "").trim();
@@ -192,6 +195,7 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function updateProduct(productId: string, formData: FormData) {
+  await requireAdmin();
   const type = String(formData.get("type")) as ProductType;
   const name = String(formData.get("name") || "").trim();
   const storage = String(formData.get("storage") || "").trim();
@@ -295,6 +299,7 @@ export async function updateProduct(productId: string, formData: FormData) {
 }
 
 export async function deleteProductImage(imageId: string, productId: string) {
+  await requireAdmin();
   const image = await prisma.productImage.findUnique({ where: { id: imageId } });
   if (!image || image.productId !== productId) {
     throw new Error("Imagen no encontrada.");
@@ -324,6 +329,7 @@ export async function deleteProductImage(imageId: string, productId: string) {
 }
 
 export async function setPrimaryProductImage(imageId: string, productId: string) {
+  await requireAdmin();
   const image = await prisma.productImage.findUnique({ where: { id: imageId } });
   if (!image || image.productId !== productId) {
     throw new Error("Imagen no encontrada.");
@@ -348,6 +354,7 @@ export async function setPrimaryProductImage(imageId: string, productId: string)
 }
 
 export async function reorderProductImages(productId: string, imageIds: string[]) {
+  await requireAdmin();
   const images = await prisma.productImage.findMany({
     where: { productId },
     select: { id: true },
@@ -374,6 +381,7 @@ export async function reorderProductImages(productId: string, imageIds: string[]
 }
 
 export async function markAsSold(formData: FormData) {
+  await requireAdmin();
   const productId = String(formData.get("productId"));
   const soldPrice = parseNumber(formData.get("soldPrice"));
   const channel = String(formData.get("channel")) as SaleChannel;
@@ -426,6 +434,7 @@ function parseSaleChannel(
 }
 
 export async function updateSalePrice(formData: FormData) {
+  await requireAdmin();
   const saleId = String(formData.get("saleId"));
   const soldPrice = parseNumber(formData.get("soldPrice"));
   const channel = parseSaleChannel(formData.get("channel"));
@@ -466,6 +475,7 @@ export async function setProductReservation(
   productId: string,
   reserved: boolean,
 ): Promise<ReservationResult> {
+  await requireAdmin();
   if (!productId) {
     return { ok: false, message: "No se encontró el equipo." };
   }
@@ -525,6 +535,7 @@ export type RepublishSoldProductResult =
 export async function republishSoldProduct(
   saleId: string,
 ): Promise<RepublishSoldProductResult> {
+  await requireAdmin();
   const errorMessage =
     "No se pudo volver a publicar el equipo. No se realizaron cambios.";
 
@@ -589,6 +600,7 @@ export type DeleteProductResult =
 export async function deleteProduct(
   productId: string,
 ): Promise<DeleteProductResult> {
+  await requireAdmin();
   const genericError = "No se pudo eliminar el equipo. Intentá nuevamente.";
   const soldError =
     "No se puede eliminar este equipo porque tiene una venta asociada. Si la venta fue cargada por error, utilizá 'Editar venta' → 'Volver a publicar equipo'.";

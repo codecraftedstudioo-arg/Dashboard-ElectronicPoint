@@ -95,3 +95,56 @@ model AppCounter {
   id    String @id
   value Int    @default(0)
 }
+
+enum QuoteRevisionStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum QuotePenaltyKind {
+  PERCENTAGE
+  FIXED_USD
+}
+
+/// Commercial quote revisions. Not related to inventory products.
+/// At most one row may be PUBLISHED. The partial unique index
+/// QuotePricingRevision_one_published_idx enforces that in the database.
+model QuotePricingRevision {
+  id          String              @id @default(cuid())
+  status      QuoteRevisionStatus @default(DRAFT)
+  currency    String              @default("USD")
+  note        String?
+  createdBy   String
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  publishedAt DateTime?
+  publishedBy String?
+  basePrices  QuoteBasePrice[]
+  penalties   QuotePenalty[]
+
+  @@index([status, createdAt])
+}
+
+model QuoteBasePrice {
+  id         String               @id @default(cuid())
+  revisionId String
+  model      String
+  storage    String
+  priceUsd   Int
+  revision   QuotePricingRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+
+  @@unique([revisionId, model, storage])
+  @@index([revisionId])
+}
+
+model QuotePenalty {
+  id         String               @id @default(cuid())
+  revisionId String
+  key        String
+  kind       QuotePenaltyKind
+  value      Decimal              @db.Decimal(12, 4)
+  revision   QuotePricingRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+
+  @@unique([revisionId, key])
+  @@index([revisionId])
+}

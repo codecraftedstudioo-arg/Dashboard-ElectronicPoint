@@ -9,10 +9,12 @@ import {
   ShoppingBag,
   List,
   Settings,
+  Calculator,
   Smartphone,
   Store,
   X,
 } from "lucide-react";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import {
   CurrencyToggle,
@@ -29,6 +31,7 @@ const nav = [
   { href: "/listas", label: "Listas", icon: List },
   { href: PUBLIC_CATALOG_ORIGIN, label: "Publicados", icon: Store, external: true },
   { href: "/configuracion", label: "Configuración", icon: Settings },
+  { href: "/cotizador", label: "Cotizador", icon: Calculator },
 ];
 
 export function Sidebar({
@@ -126,6 +129,7 @@ export function Sidebar({
         </nav>
 
         <div className="mt-auto space-y-3">
+          <SignOutButton />
           <div className="flex items-center justify-between px-1">
             <span className="text-xs text-muted">Apariencia</span>
             <ThemeToggle />

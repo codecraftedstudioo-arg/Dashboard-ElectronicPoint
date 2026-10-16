@@ -21,6 +21,7 @@ import { formatUSD } from "@/lib/currency";
 import {
   catalogEquiposPath,
   catalogProductPath,
+  catalogQuotePath,
   hostFromHeaders,
   isCatalogHost,
   PUBLIC_CATALOG_ORIGIN,
@@ -148,6 +149,35 @@ export default async function UsadosProductPage({ params }: PageProps) {
                 />
               </div>
             </div>
+
+            <Link
+              href={catalogQuotePath(isCatalogSite, buildProductSlug(product))}
+              className="flex min-h-20 w-full items-center gap-3 rounded-xl border-2 border-green-500 bg-[#0e2a1a] p-4 text-left shadow-[0_0_25px_-8px_rgba(34,197,94,0.45)] transition-all hover:bg-[#143522] light:border-transparent light:bg-accent light:shadow-lg light:shadow-accent/30 light:hover:bg-accent-hover"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-500/30 light:bg-white/20">
+                <svg
+                  className="h-5 w-5 text-green-400 light:text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <path d="M21 12a9 9 0 0 0-15-6.7L3 8" />
+                  <path d="M3 3v5h5" />
+                  <path d="M3 12a9 9 0 0 0 15 6.7l3-2.7" />
+                  <path d="M16 16h5v5" />
+                </svg>
+              </span>
+              <span className="min-w-0">
+                <span className="block font-semibold text-white">Plan Canje</span>
+                <span className="mt-0.5 block text-xs text-white/60 light:text-white/80">
+                  Usá tu iPhone como parte de pago
+                </span>
+              </span>
+            </Link>
 
             <MercadoPagoCheckout productId={product.id} />
 

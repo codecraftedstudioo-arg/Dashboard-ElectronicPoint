@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/ui";
 import { ProductForm } from "@/components/products/product-form";
 import { ReserveProductButton } from "@/components/products/reserve-product-button";
 import { getProductById } from "@/lib/queries";
+import { requireDashboardPage } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ export default async function EditProductPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireDashboardPage();
   const { id } = await params;
   const product = await getProductById(id);
   if (!product) notFound();

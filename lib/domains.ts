@@ -67,6 +67,7 @@ export const DASHBOARD_PATH_PREFIXES = [
   "/listas",
   "/publicados",
   "/configuracion",
+  "/cotizador",
   "/equipos",
 ] as const;
 
@@ -93,4 +94,13 @@ export function catalogProductPath(
 
 export function catalogEquiposPath(isCatalogSite: boolean): string {
   return isCatalogSite ? "/#equipos" : "/usados#equipos";
+}
+
+export function catalogQuotePath(
+  isCatalogSite: boolean,
+  slug?: string,
+): string {
+  const base = isCatalogSite ? "/cotizar-iphone" : "/usados/cotizar-iphone";
+  if (!slug) return base;
+  return `${base}?equipo=${encodeURIComponent(slug.replace(/^\/+/, ""))}`;
 }

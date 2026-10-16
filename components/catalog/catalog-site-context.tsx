@@ -9,6 +9,7 @@ import {
   catalogEquiposPath,
   catalogHomePath,
   catalogProductPath,
+  catalogQuotePath,
 } from "@/lib/domains";
 
 type CatalogSiteContextValue = {
@@ -16,6 +17,7 @@ type CatalogSiteContextValue = {
   homePath: string;
   equiposPath: string;
   productPath: (slug: string) => string;
+  quotePath: (slug?: string) => string;
 };
 
 const CatalogSiteContext = createContext<CatalogSiteContextValue>({
@@ -23,6 +25,7 @@ const CatalogSiteContext = createContext<CatalogSiteContextValue>({
   homePath: "/usados",
   equiposPath: "/usados#equipos",
   productPath: (slug) => `/usados/${slug.replace(/^\/+/, "")}`,
+  quotePath: (slug) => catalogQuotePath(false, slug),
 });
 
 export function CatalogSiteProvider({
@@ -37,6 +40,7 @@ export function CatalogSiteProvider({
     homePath: catalogHomePath(isCatalogSite),
     equiposPath: catalogEquiposPath(isCatalogSite),
     productPath: (slug) => catalogProductPath(slug, isCatalogSite),
+    quotePath: (slug) => catalogQuotePath(isCatalogSite, slug),
   };
 
   return (

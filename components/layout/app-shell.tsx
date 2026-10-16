@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Menu, Plus } from "lucide-react";
 import {
@@ -18,6 +19,7 @@ export function AppShell({
   children: ReactNode;
   isCatalogSite?: boolean;
 }) {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -29,7 +31,7 @@ export function AppShell({
     };
   }, [open]);
 
-  if (isCatalogSite) {
+  if (isCatalogSite || pathname === "/ingresar") {
     return <>{children}</>;
   }
 

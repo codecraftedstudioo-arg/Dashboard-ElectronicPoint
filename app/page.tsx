@@ -19,10 +19,12 @@ import {
   getDashboardStats,
   getRecentSales,
 } from "@/lib/queries";
+import { requireDashboardPage } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  await requireDashboardPage();
   const [available, sales, stats] = await Promise.all([
     getAvailableProducts(),
     getRecentSales(6),
