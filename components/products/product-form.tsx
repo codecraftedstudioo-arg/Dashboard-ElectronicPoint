@@ -217,7 +217,16 @@ export function ProductForm({
         setUploadProgress(
           selectedFiles.length > 0 ? "Guardando producto..." : "Guardando...",
         );
-        await action(formData);
+        const result = await action(formData);
+        if (
+          result &&
+          typeof result === "object" &&
+          "error" in result &&
+          typeof result.error === "string"
+        ) {
+          setSubmitError(result.error);
+          return;
+        }
         setSubmitSuccess(true);
         setSelectedFiles([]);
       } catch (error) {

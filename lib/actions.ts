@@ -99,11 +99,11 @@ function parseImei(value: FormDataEntryValue | null): string | null {
   return raw;
 }
 
-async function assertImeiAvailable(
+async function imeiConflict(
   imei: string | null,
   excludeProductId?: string,
-) {
-  if (!imei) return;
+): Promise<string | null> {
+  if (!imei) return null;
   const existing = await prisma.product.findFirst({
     where: {
       imei,
@@ -111,9 +111,7 @@ async function assertImeiAvailable(
     },
     select: { id: true },
   });
-  if (existing) {
-    throw new Error("Este IMEI ya está registrado en otro equipo.");
-  }
+  return existing ? "Este IMEI ya está registrado en otro equipo." : null;
 }
 
 function parseChip(value: FormDataEntryValue | null): ChipType | null {
@@ -148,10 +146,11 @@ export async function createProduct(formData: FormData) {
   const isOpportunity = formData.get("isOpportunity") === "true";
 
   if (!name || !storage || !color) {
-    throw new Error("Completá modelo, capacidad y color.");
+    return { error: "Completá modelo, capacidad y color." };
   }
 
-  await assertImeiAvailable(imei);
+  const conflict = await imeiConflict(imei);
+  if (conflict) return { error: conflict };
 
   const internalCode = await nextInternalCode();
   const imageUrls = await collectImages(formData);
@@ -232,7 +231,16 @@ export async function updateProduct(productId: string, formData: FormData) {
   });
   const startOrder = (maxOrder._max.sortOrder ?? -1) + 1;
 
-  await assertImeiAvailable(imei, productId);
+  const current = await prisma.product.findUnique({
+    where: { id: productId },
+    select: { imei: true },
+  });
+  if (!current) return { error: "No se encontró el equipo." };
+  // A pre-existing duplicate must not block edits that keep the same IMEI.
+  if (imei !== current.imei) {
+    const conflict = await imeiConflict(imei, productId);
+    if (conflict) return { error: conflict };
+  }
 
   await prisma.product.update({
     where: { id: productId },
