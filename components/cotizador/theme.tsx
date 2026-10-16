@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 const STORAGE_KEY = "usados-cotizador-theme";
 
 const ThemeContext = createContext<{ isDark: boolean; toggle: () => void }>({
-  isDark: true,
+  isDark: false,
   toggle: () => {},
 });
 
@@ -13,17 +13,16 @@ export function useCotizadorTheme() {
   return useContext(ThemeContext);
 }
 
-/** Dark is the starting theme on this page. The toggle stays inside the cotizador. */
+/** Light is the starting theme. A saved choice still wins. */
 export function CotizadorTheme({ children }: { children: ReactNode }) {
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored === "light") setIsDark(false);
       if (stored === "dark") setIsDark(true);
     } catch {
-      /* keep the dark default */
+      /* keep the light default */
     }
   }, []);
 

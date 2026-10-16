@@ -39,7 +39,7 @@ export function ListGenerator({
   compact?: boolean;
 }) {
   const [title, setTitle] = useState("LISTA IPHONE USADOS 📱");
-  const [subtitle, setSubtitle] = useState("(30 días de Garantía)");
+  const [subtitle, setSubtitle] = useState("(90 días de Garantía)");
   const [select, setSelect] = useState<ListSelectOption>("available");
   const [sort, setSort] = useState<ListSortOption>("newest");
   const [modelFilter, setModelFilter] = useState("");

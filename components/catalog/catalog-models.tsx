@@ -9,7 +9,7 @@ export function CatalogModels({ groups }: { groups: CatalogModelGroup[] }) {
           No encontramos equipos
         </h3>
         <p className="mt-2 text-sm text-muted">
-          Probá cambiar los filtros o realizar otra búsqueda.
+          Cuando haya equipos publicados, van a aparecer acá.
         </p>
       </div>
     );

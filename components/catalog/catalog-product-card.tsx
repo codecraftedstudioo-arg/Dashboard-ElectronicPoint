@@ -165,7 +165,7 @@ export function CatalogProductCard({
             {PHYSICAL_CONDITION_LABELS[product.physicalCondition]}
           </Badge>
           <Badge className="border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
-            Garantía 30 días
+            Garantía 90 días
           </Badge>
         </div>
         <DualPrice
