@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatArs, formatCapacity, formatUsd } from "@/components/cotizador/format";
 import { Card } from "@/components/cotizador/ui/card";
 import { useWizard } from "@/components/cotizador/wizard-context";
@@ -52,12 +52,56 @@ function Confetti() {
   );
 }
 
+const screenshotModule = import("modern-screenshot");
+
+async function createQuoteImage(): Promise<File | null> {
+  const phone = document.querySelector("[data-quote-phone]");
+  if (!(phone instanceof HTMLElement)) return null;
+  const { domToBlob } = await screenshotModule;
+  const blob = await domToBlob(phone, {
+    type: "image/png",
+    scale: 2,
+    backgroundColor: "#ffffff",
+    filter: (node) => !(node instanceof HTMLElement && node.dataset.shareExclude === "true"),
+  });
+  if (!blob || blob.size === 0) return null;
+  return new File([blob], "cotizacion-usados-premium.png", { type: "image/png" });
+}
+
 export function StepResult() {
   const { state, quote, tradeOptions, pending, reset, chooseUpgrade } = useWizard();
   const { rate } = useCurrency();
-  const [shareState, setShareState] = useState<"idle" | "working" | "ready" | "saved" | "error">("idle");
+  const fileRef = useRef<File | null>(null);
+  const previewRef = useRef<string | null>(null);
+  const [shareState, setShareState] = useState<"preparing" | "ready" | "saved" | "error">("preparing");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showCheaper, setShowCheaper] = useState(false);
   const usdToArs = rate?.usdToArs ?? null;
+
+  useEffect(() => {
+    if (!quote) return;
+    let cancelled = false;
+    setShareState("preparing");
+    fileRef.current = null;
+    void createQuoteImage().then((file) => {
+      if (cancelled) return;
+      if (!file) {
+        setShareState("error");
+        return;
+      }
+      fileRef.current = file;
+      setShareState("ready");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [quote]);
+
+  useEffect(() => {
+    return () => {
+      if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+    };
+  }, []);
 
   if (!quote || !state.model || !state.storage) {
     return (
@@ -86,35 +130,54 @@ export function StepResult() {
         .sort((a, b) => a.difference - b.difference)
     : [];
 
-  async function shareQuoteImage() {
-    const phone = document.querySelector("[data-quote-phone]");
-    if (!(phone instanceof HTMLElement) || shareState === "working") return;
-    setShareState("working");
-    try {
-      const { domToBlob } = await import("modern-screenshot");
-      const blob = await domToBlob(phone, {
-        type: "image/png",
-        scale: 2,
-        backgroundColor: null,
-        filter: (node) =>
-          !(node instanceof HTMLElement && node.dataset.shareExclude === "true"),
-      });
-      if (!blob) throw new Error("empty image");
-      const file = new File([blob], "cotizacion-usados-premium.png", { type: "image/png" });
-      if (canShareImage(file)) {
-        await navigator.share({ files: [file], title: "Cotización Usados Premium" });
-        setShareState("ready");
-        return;
-      }
-      downloadImage(blob, file.name);
+  function showImagePreview(file: File) {
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    if (!coarse) {
+      downloadImage(file);
       setShareState("saved");
-    } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") {
-        setShareState("idle");
-        return;
-      }
-      setShareState("error");
+      return;
     }
+    if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+    const url = URL.createObjectURL(file);
+    previewRef.current = url;
+    setPreviewUrl(url);
+    setShareState("saved");
+  }
+
+  function closePreview() {
+    if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+    previewRef.current = null;
+    setPreviewUrl(null);
+    setShareState("ready");
+  }
+
+  function shareQuoteImage() {
+    const file = fileRef.current;
+    if (!file) {
+      if (shareState === "error") {
+        setShareState("preparing");
+        void createQuoteImage().then((next) => {
+          if (!next) {
+            setShareState("error");
+            return;
+          }
+          fileRef.current = next;
+          setShareState("ready");
+        });
+      }
+      return;
+    }
+    if (canShareImage(file)) {
+      void navigator
+        .share({ files: [file], title: "Cotización Usados Premium" })
+        .then(() => setShareState("ready"))
+        .catch((error: unknown) => {
+          if (error instanceof DOMException && error.name === "AbortError") return;
+          showImagePreview(file);
+        });
+      return;
+    }
+    showImagePreview(file);
   }
 
   return (
@@ -260,19 +323,47 @@ export function StepResult() {
       <button
         type="button"
         data-share-exclude
-        onClick={() => void shareQuoteImage()}
-        disabled={shareState === "working"}
+        onClick={shareQuoteImage}
+        disabled={shareState === "preparing"}
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-green-600 disabled:opacity-70"
       >
-        {shareState === "working" ? "Preparando imagen…" : "Compartir cotización"}
+        {shareState === "preparing"
+          ? "Preparando imagen…"
+          : shareState === "error"
+            ? "Reintentar imagen"
+            : "Compartir cotización"}
       </button>
       <p data-share-exclude className="mt-3 text-center text-xs text-fg-subtle">
-        {shareState === "saved"
-          ? "Se descargó la imagen del teléfono. No enviamos estos datos."
-          : shareState === "error"
-            ? "No se pudo crear la imagen. Probá de nuevo."
-            : "Se comparte una imagen del teléfono, tal como se ve. No enviamos estos datos."}
+        {previewUrl
+          ? "Mantené presionada la imagen para enviarla. No enviamos estos datos."
+          : shareState === "saved"
+            ? "Se descargó la imagen. No enviamos estos datos."
+            : shareState === "error"
+              ? "No se pudo crear la imagen. Probá de nuevo."
+              : "Se comparte una imagen del teléfono, tal como se ve. No enviamos estos datos."}
       </p>
+      {previewUrl ? (
+        <div
+          data-share-exclude
+          className="fixed inset-0 z-[80] flex items-end justify-center bg-black/70 p-4 sm:items-center"
+        >
+          <div className="w-full max-w-sm rounded-2xl bg-white p-4 text-center text-neutral-900">
+            <p className="text-sm font-semibold">Mantené presionada la imagen para compartirla</p>
+            <img
+              src={previewUrl}
+              alt="Cotización Usados Premium"
+              className="mt-3 max-h-[70vh] w-full rounded-xl object-contain"
+            />
+            <button
+              type="button"
+              onClick={closePreview}
+              className="mt-3 text-sm text-neutral-600 underline"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <button
         type="button"
@@ -324,11 +415,11 @@ function canShareImage(file: File) {
   }
 }
 
-function downloadImage(blob: Blob, name: string) {
-  const url = URL.createObjectURL(blob);
+function downloadImage(file: File) {
+  const url = URL.createObjectURL(file);
   const link = document.createElement("a");
   link.href = url;
-  link.download = name;
+  link.download = file.name;
   link.click();
   URL.revokeObjectURL(url);
 }
