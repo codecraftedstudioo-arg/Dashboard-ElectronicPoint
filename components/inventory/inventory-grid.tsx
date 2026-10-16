@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Battery, Search } from "lucide-react";
 import { Badge, Card, Input, Select } from "@/components/ui";
 import { DualPrice, Money } from "@/components/currency/currency-toggle";
 import { calcProfit, formatMargin } from "@/lib/calculations";
@@ -207,6 +207,12 @@ export function InventoryGrid({ products }: { products: InventoryItem[] }) {
                       <Badge className={CONDITION_COLORS[product.physicalCondition]}>
                         {PHYSICAL_CONDITION_LABELS[product.physicalCondition]}
                       </Badge>
+                      {product.batteryCondition != null ? (
+                        <Badge className="gap-1 border-card-border text-muted">
+                          <Battery className="h-3 w-3" aria-hidden />
+                          {product.batteryCondition}%
+                        </Badge>
+                      ) : null}
                       <Badge
                         className={
                           product.isPublished
