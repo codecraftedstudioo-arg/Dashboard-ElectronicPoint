@@ -30,6 +30,7 @@ type InventoryItem = {
   cost: number;
   salePrice: number;
   isPublished: boolean;
+  isOpportunity: boolean;
   isReserved: boolean;
   createdAt: Date | string;
   images: { url: string; isPrimary: boolean }[];
@@ -223,6 +224,11 @@ export function InventoryGrid({ products }: { products: InventoryItem[] }) {
                         />
                         {product.isPublished ? "Publicado" : "Oculto"}
                       </Badge>
+                      {product.isOpportunity ? (
+                        <Badge className="border-amber-500/30 bg-amber-500/15 text-amber-500">
+                          Oportunidad
+                        </Badge>
+                      ) : null}
                     </div>
                   </div>
                 </div>

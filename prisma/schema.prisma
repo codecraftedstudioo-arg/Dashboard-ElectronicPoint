@@ -59,6 +59,7 @@ model Product {
   status             ProductStatus      @default(AVAILABLE)
   isReserved         Boolean            @default(false)
   isPublished        Boolean            @default(false)
+  isOpportunity      Boolean            @default(false)
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
   images             ProductImage[]

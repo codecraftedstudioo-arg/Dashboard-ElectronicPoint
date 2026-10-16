@@ -19,10 +19,14 @@ export function CatalogGrid({
     );
     return groupPublishedIphonesByModel(list, { preserveOrder: true });
   }, [products]);
+  const opportunities = useMemo(
+    () => products.filter((product) => product.isOpportunity),
+    [products],
+  );
 
   return (
     <div className="min-w-0">
-      <CatalogModels groups={groups} />
+      <CatalogModels groups={groups} opportunities={opportunities} />
     </div>
   );
 }

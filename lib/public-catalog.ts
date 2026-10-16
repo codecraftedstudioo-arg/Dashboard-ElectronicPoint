@@ -14,6 +14,7 @@ export type PublicCatalogProduct = {
   salePrice: number;
   description: string | null;
   isReserved: boolean;
+  isOpportunity: boolean;
   images: {
     id: string;
     url: string;
@@ -33,6 +34,7 @@ const publicProductSelect = {
   salePrice: true,
   description: true,
   isReserved: true,
+  isOpportunity: true,
   images: {
     select: {
       id: true,

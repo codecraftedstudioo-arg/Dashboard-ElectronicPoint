@@ -75,6 +75,7 @@ type ProductFormValues = {
   salePrice: number;
   description: string | null;
   isPublished?: boolean;
+  isOpportunity?: boolean;
   isReserved?: boolean;
   images?: ExistingImage[];
 };
@@ -101,6 +102,7 @@ export function ProductForm({
   const [newPrimaryIndex, setNewPrimaryIndex] = useState(0);
   const [newPrimaryAmongNew, setNewPrimaryAmongNew] = useState<number | null>(null);
   const [isPublished, setIsPublished] = useState(initial?.isPublished ?? false);
+  const [isOpportunity, setIsOpportunity] = useState(initial?.isOpportunity ?? false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
@@ -493,6 +495,41 @@ export function ProductForm({
             >
               <span className="h-2.5 w-2.5 rounded-full bg-zinc-400" />
               Oculto
+            </button>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-card-border bg-input p-4">
+          <Label>Oportunidades</Label>
+          <p className="mb-3 text-xs text-muted">
+            El equipo publicado aparece en el carrusel Oportunidades, arriba de
+            los modelos. Si queda oculto, no se muestra.
+          </p>
+          <input type="hidden" name="isOpportunity" value={isOpportunity ? "true" : "false"} />
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setIsOpportunity(true)}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
+                isOpportunity
+                  ? "border-accent/40 bg-accent-dim text-foreground"
+                  : "border-card-border bg-card text-muted hover:bg-hover",
+              )}
+            >
+              Oportunidad
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsOpportunity(false)}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
+                !isOpportunity
+                  ? "border-accent/40 bg-accent-dim text-foreground"
+                  : "border-card-border bg-card text-muted hover:bg-hover",
+              )}
+            >
+              No destacar
             </button>
           </div>
         </div>

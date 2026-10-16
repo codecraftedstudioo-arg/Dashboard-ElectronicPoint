@@ -145,6 +145,7 @@ export async function createProduct(formData: FormData) {
   const salePrice = parseNumber(formData.get("salePrice"));
   const description = String(formData.get("description") || "").trim() || null;
   const isPublished = formData.get("isPublished") === "true";
+  const isOpportunity = formData.get("isOpportunity") === "true";
 
   if (!name || !storage || !color) {
     throw new Error("Completá modelo, capacidad y color.");
@@ -171,6 +172,7 @@ export async function createProduct(formData: FormData) {
       salePrice,
       description,
       isPublished,
+      isOpportunity,
       status: "AVAILABLE",
       images: {
         create: imageUrls.map((url, index) => ({
@@ -212,6 +214,7 @@ export async function updateProduct(productId: string, formData: FormData) {
   const salePrice = parseNumber(formData.get("salePrice"));
   const description = String(formData.get("description") || "").trim() || null;
   const isPublished = formData.get("isPublished") === "true";
+  const isOpportunity = formData.get("isOpportunity") === "true";
 
   const imageUrls = await collectImages(formData);
   const primaryIndex = parsePrimaryIndex(formData);
@@ -246,6 +249,7 @@ export async function updateProduct(productId: string, formData: FormData) {
       salePrice,
       description,
       isPublished,
+      isOpportunity,
       ...(imageUrls.length
         ? {
             images: {

@@ -48,6 +48,7 @@ export default async function EditProductPage({
           salePrice: product.salePrice,
           description: product.description,
           isPublished: product.isPublished,
+          isOpportunity: product.isOpportunity,
           isReserved: product.isReserved,
           status: product.status,
           images: product.images.map((img) => ({
