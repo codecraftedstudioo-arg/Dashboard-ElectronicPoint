@@ -21,7 +21,7 @@ export default async function UsadosPage() {
       : `${availableCount} equipos disponibles ahora`;
 
   return (
-    <div className="min-h-screen w-full min-w-0 bg-background text-foreground">
+    <div className="public-page min-h-screen w-full min-w-0 text-foreground">
       <CatalogHeader />
 
       <CatalogHero availableLabel={availableLabel} />

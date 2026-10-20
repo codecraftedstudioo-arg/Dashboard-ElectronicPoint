@@ -12,6 +12,7 @@ import { ProductGallery } from "@/components/products/product-gallery";
 import { MercadoPagoCheckout } from "@/components/catalog/mercadopago-checkout";
 import { ShareProductLink } from "@/components/catalog/share-product-link";
 import { Badge } from "@/components/ui";
+import { deviceColorBadgeStyle } from "@/lib/device-color";
 import {
   CONDITION_COLORS,
   PHYSICAL_CONDITION_LABELS,
@@ -92,6 +93,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
     headerStore.get("x-catalog-site") === "1" ||
     isCatalogHost(hostFromHeaders(headerStore));
   const equiposHref = catalogEquiposPath(isCatalogSite);
+  const colorStyle = deviceColorBadgeStyle(product.color);
   const prevHref = prev
     ? catalogProductPath(buildProductSlug(prev), isCatalogSite)
     : null;
@@ -100,7 +102,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
     : null;
 
   return (
-    <div className="min-h-screen w-full min-w-0 bg-background text-foreground">
+    <div className="public-page min-h-screen w-full min-w-0 text-foreground">
       <CatalogHeader />
 
       <div className="mx-auto w-full min-w-0 max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
@@ -132,7 +134,14 @@ export default async function UsadosProductPage({ params }: PageProps) {
                   {product.name}
                 </h1>
                 <div className="mt-3">
-                  <Badge className="max-w-full border-card-border text-muted">
+                  <Badge
+                    className={
+                      colorStyle
+                        ? "max-w-full border-transparent"
+                        : "max-w-full border-card-border text-muted"
+                    }
+                    style={colorStyle}
+                  >
                     {product.color}
                   </Badge>
                 </div>

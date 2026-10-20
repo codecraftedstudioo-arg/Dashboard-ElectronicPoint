@@ -12,6 +12,7 @@ import {
 } from "@/lib/constants";
 import { sortProductImages } from "@/lib/images";
 import { ReservedOverlay } from "@/components/products/reserved-overlay";
+import { deviceColorBadgeStyle } from "@/lib/device-color";
 import { buildProductSlug } from "@/lib/product-slug";
 import type { PublicCatalogProduct } from "@/lib/public-catalog";
 
@@ -76,6 +77,7 @@ export function CatalogProductCard({
     images.length < 2 ? [0] : [...new Set([previous, index, upcoming])];
   const activeReady = Boolean(images[index] && loaded[images[index].id]);
   const reserved = product.isReserved;
+  const colorStyle = deviceColorBadgeStyle(product.color);
 
   return (
     <Link
@@ -86,7 +88,7 @@ export function CatalogProductCard({
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
       className={cn(
-        "group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-card-border bg-card shadow-[var(--shadow)] transition-all duration-300 hover:-translate-y-1 hover:border-accent/35 hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)]",
+        "group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-white/35 bg-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_18px_40px_rgba(0,0,0,0.18)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/20 light:border-white/80 light:bg-white/25 light:shadow-[inset_0_1px_0_rgba(255,255,255,1),0_16px_40px_rgba(0,123,255,0.12)] light:hover:bg-white/35",
         className,
       )}
     >
@@ -139,8 +141,20 @@ export function CatalogProductCard({
           </div>
         )}
         <ReservedOverlay active={reserved} className="z-20" />
+        {product.isOpportunity ? (
+          <span className="absolute top-3 left-0 z-30 rounded-r-full bg-amber-500 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white shadow-md">
+            Oportunidad
+          </span>
+        ) : null}
+        <div className="absolute bottom-3 left-3 z-30 max-w-[calc(100%-1.5rem)] rounded-2xl border border-white/80 bg-white/30 px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl">
+          <DualPrice
+            amount={product.salePrice}
+            className="text-sm"
+            arsClassName="text-[0.72em]"
+          />
+        </div>
       </div>
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      <div className="flex flex-1 flex-col gap-2 px-4 py-3">
         <h3 className="break-words text-lg font-semibold tracking-tight text-foreground">
           {product.name}
         </h3>
@@ -148,7 +162,14 @@ export function CatalogProductCard({
           <Badge className="border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
             {product.storage}
           </Badge>
-          <Badge className="border-card-border text-muted">
+          <Badge
+            className={
+              colorStyle
+                ? "border-transparent"
+                : "border-card-border text-muted"
+            }
+            style={colorStyle}
+          >
             {product.color}
           </Badge>
           {product.batteryCondition != null ? (
@@ -168,11 +189,6 @@ export function CatalogProductCard({
             Garantía 90 días
           </Badge>
         </div>
-        <DualPrice
-          amount={product.salePrice}
-          className="mt-auto pt-3 text-xl"
-          arsClassName="text-[0.55em]"
-        />
         <span className="mt-1 inline-flex w-full items-center justify-center text-sm font-medium text-muted transition-colors group-hover:text-accent">
           Ver equipo →
         </span>

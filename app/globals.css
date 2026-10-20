@@ -112,6 +112,16 @@ html.light ::-webkit-scrollbar-thumb {
   background: transparent;
 }
 
+.public-page {
+  background-color: var(--background);
+  background-image: radial-gradient(
+    ellipse at top,
+    color-mix(in srgb, #007bff 18%, transparent),
+    transparent 70%
+  );
+  background-attachment: fixed;
+}
+
 .catalog-thumb-scroll,
 .catalog-h-scroll {
   scrollbar-width: none;

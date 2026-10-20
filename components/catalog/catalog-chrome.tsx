@@ -33,7 +33,7 @@ export function CatalogHeader() {
       (isCatalogSite && pathname !== "/" && !pathname.startsWith("/usados")));
 
   return (
-    <header className="sticky top-0 z-40 border-b border-card-border/80 bg-background/90 pt-[env(safe-area-inset-top)] backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-card-border/80 bg-background/55 pt-[env(safe-area-inset-top)] backdrop-blur-md">
       <div className="mx-auto flex h-14 min-h-14 w-full min-w-0 max-w-6xl items-center justify-between gap-2 px-3 sm:h-[4.5rem] sm:gap-4 sm:px-6 lg:h-20 lg:px-8">
         <Link
           href={homePath}

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCatalogSite } from "@/components/catalog/catalog-site-context";
 
-const SLIDE_COUNT = 2;
+const SLIDES = ["Usados premium", "Plan Canje", "Vender"] as const;
 const ROTATE_MS = 7000;
 
 export function CatalogHero({ availableLabel }: { availableLabel: string }) {
@@ -17,7 +17,7 @@ export function CatalogHero({ availableLabel }: { availableLabel: string }) {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (motion.matches || paused) return;
     const timer = window.setInterval(() => {
-      setIndex((current) => (current + 1) % SLIDE_COUNT);
+      setIndex((current) => (current + 1) % SLIDES.length);
     }, ROTATE_MS);
     return () => window.clearInterval(timer);
   }, [paused]);
@@ -47,10 +47,17 @@ export function CatalogHero({ availableLabel }: { availableLabel: string }) {
         >
           <PlanCanjeSlide href={quotePath()} />
         </div>
+        <div
+          className={index === 2 ? "col-start-1 row-start-1" : "invisible col-start-1 row-start-1"}
+          aria-hidden={index !== 2}
+          inert={index !== 2}
+        >
+          <VenderSlide href={quotePath()} />
+        </div>
       </div>
 
       <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-2">
-        {["Usados premium", "Plan Canje"].map((label, slide) => {
+        {SLIDES.map((label, slide) => {
           const selected = index === slide;
           return (
             <button
@@ -75,10 +82,6 @@ export function CatalogHero({ availableLabel }: { availableLabel: string }) {
 function CurrentHero({ availableLabel }: { availableLabel: string }) {
   return (
     <div className="relative h-full overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_color-mix(in_srgb,var(--accent)_18%,transparent),_transparent_55%)]"
-      />
       <div className="relative mx-auto grid w-full min-w-0 max-w-6xl grid-cols-1 gap-8 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,36rem)_420px] lg:items-end lg:justify-between lg:gap-x-8">
         <div className="flex max-w-xl flex-col items-start text-left">
           <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
@@ -161,6 +164,29 @@ function PlanCanjeSlide({ href }: { href: string }) {
           className="absolute left-[8%] top-[37%] inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover md:left-[5%] md:top-[64%] md:px-5 md:py-2.5 md:text-sm md:leading-normal"
         >
           Plan Canje
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function VenderSlide({ href }: { href: string }) {
+  return (
+    <div className="flex h-full w-full items-center bg-[#e8eef6]">
+      <div className="relative w-full">
+        <Image
+          src="/catalog/hero-compramos-2.jpg"
+          alt="Compramos tu iPhone al mejor precio."
+          width={1024}
+          height={409}
+          sizes="100vw"
+          className="h-auto w-full"
+        />
+        <Link
+          href={href}
+          className="absolute left-[8%] top-[68%] inline-flex -translate-y-1/2 items-center justify-center rounded-full bg-accent px-3 py-1 text-[11px] font-semibold leading-none text-accent-contrast transition-colors hover:bg-accent-hover md:px-5 md:py-2.5 md:text-sm md:leading-normal"
+        >
+          Cotizar mi iPhone
         </Link>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type CSSProperties, type ReactNode } from "react";
 
 export function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -26,12 +26,15 @@ export function Card({
 export function Badge({
   children,
   className,
+  style,
 }: {
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
 }) {
   return (
     <span
+      style={style}
       className={cn(
         "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
         className,
