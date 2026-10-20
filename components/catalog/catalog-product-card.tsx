@@ -189,7 +189,7 @@ export function CatalogProductCard({
             Garantía 90 días
           </Badge>
         </div>
-        <span className="mt-1 inline-flex w-full items-center justify-center text-sm font-medium text-muted transition-colors group-hover:text-accent">
+        <span className="mt-auto inline-flex w-fit self-center items-center justify-center rounded-full border border-white/70 bg-white/25 px-3 py-1.5 text-sm font-semibold text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl transition-colors group-hover:bg-white/45 light:border-white/90 light:bg-white/40 light:group-hover:bg-white/65">
           Ver equipo →
         </span>
       </div>

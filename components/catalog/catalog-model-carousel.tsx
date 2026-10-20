@@ -187,7 +187,7 @@ export function CatalogModelCarousel({
           syncPause();
         }}
         className={cn(
-          "catalog-h-scroll flex w-full min-w-0 max-w-full gap-3 py-1",
+          "catalog-h-scroll flex w-full min-w-0 max-w-full items-stretch gap-3 py-1",
           single
             ? "overflow-hidden"
             : "snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain",
