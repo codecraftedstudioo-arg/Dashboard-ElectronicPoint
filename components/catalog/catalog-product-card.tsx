@@ -16,7 +16,8 @@ import { deviceColorBadgeStyle } from "@/lib/device-color";
 import { buildProductSlug } from "@/lib/product-slug";
 import type { PublicCatalogProduct } from "@/lib/public-catalog";
 
-const SLIDE_MS = 2530;
+const SLIDE_MS = 5000;
+const FIRST_SLIDE_MS = 8000;
 
 export function CatalogProductCard({
   product,
@@ -32,6 +33,7 @@ export function CatalogProductCard({
   const { productPath } = useCatalogSite();
   const href = productPath(buildProductSlug(product));
   const rootRef = useRef<HTMLAnchorElement>(null);
+  const indexRef = useRef(0);
   const [index, setIndex] = useState(0);
   const [loaded, setLoaded] = useState<Record<string, boolean>>({});
   const [paused, setPaused] = useState(false);
@@ -60,13 +62,22 @@ export function CatalogProductCard({
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let timer = 0;
-    const tick = () => {
-      if (!document.hidden) {
-        setIndex((current) => (current + 1) % images.length);
-      }
-      timer = window.setTimeout(tick, SLIDE_MS);
+    let firstWait = true;
+    const schedule = () => {
+      const delay =
+        (indexRef.current === 0 ? FIRST_SLIDE_MS : SLIDE_MS) +
+        (firstWait ? phase : 0);
+      firstWait = false;
+      timer = window.setTimeout(() => {
+        if (!document.hidden) {
+          const next = (indexRef.current + 1) % images.length;
+          indexRef.current = next;
+          setIndex(next);
+        }
+        schedule();
+      }, delay);
     };
-    timer = window.setTimeout(tick, SLIDE_MS + phase);
+    schedule();
     return () => window.clearTimeout(timer);
   }, [images.length, paused, phase, visible]);
 
@@ -111,7 +122,7 @@ export function CatalogProductCard({
                   unoptimized
                   sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 25vw"
                   className={cn(
-                    "object-cover transition-opacity duration-700",
+                    "object-cover transition-opacity duration-1000",
                     active
                       ? ready
                         ? reserved
