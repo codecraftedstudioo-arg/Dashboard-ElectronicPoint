@@ -152,10 +152,10 @@ function PlanCanjeSlide({ href }: { href: string }) {
           className="h-auto w-full md:hidden"
         />
         <Image
-          src="/catalog/hero-plan-canje-desktop.jpg"
+          src="/catalog/hero-plan-canje-wide.jpg"
           alt="Plan Canje. Entregá tu iPhone y llevate el próximo."
-          width={1024}
-          height={409}
+          width={4096}
+          height={1636}
           sizes="100vw"
           className="hidden h-auto w-full md:block"
         />
@@ -180,7 +180,15 @@ function VenderSlide({ href }: { href: string }) {
           width={1024}
           height={409}
           sizes="100vw"
-          className="h-auto w-full"
+          className="h-auto w-full md:hidden"
+        />
+        <Image
+          src="/catalog/hero-compramos-wide.jpg"
+          alt="Compramos tu iPhone al mejor precio."
+          width={4096}
+          height={1636}
+          sizes="100vw"
+          className="hidden h-auto w-full md:block"
         />
         <Link
           href={href}
