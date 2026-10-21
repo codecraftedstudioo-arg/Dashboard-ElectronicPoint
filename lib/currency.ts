@@ -40,13 +40,25 @@ export function formatARS(amount: number): string {
   }).format(rounded);
 }
 
-/** Price in list lines without $: "900 USD" (WhatsApp lists stay in USD). */
-export function formatListPrice(amount: number): string {
-  const rounded = Math.round(amount);
+/** Price in list lines without $: "900 USD" or "1.313.250 ARS". */
+export function formatListPrice(
+  amount: number,
+  currency: CurrencyCode = "USD",
+  usdToArs?: number | null,
+): string {
+  const useArs =
+    currency === "ARS" &&
+    typeof usdToArs === "number" &&
+    Number.isFinite(usdToArs) &&
+    usdToArs > 0;
+  const rounded = Math.round(
+    useArs ? convertUsdToArs(amount, usdToArs) : amount,
+  );
   const formatted = Math.abs(rounded)
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  return `${formatted} USD`;
+  const sign = rounded < 0 ? "-" : "";
+  return `${sign}${formatted} ${useArs ? "ARS" : "USD"}`;
 }
 
 /**

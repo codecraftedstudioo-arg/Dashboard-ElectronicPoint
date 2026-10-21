@@ -144,7 +144,11 @@ export function CatalogModelCarousel({
           >
             {model}
           </h2>
-          <p className="mt-0.5 text-xs text-muted sm:text-sm">{countLabel}</p>
+          <span
+            aria-hidden
+            className="mt-2 block h-[3px] w-8 rounded-full bg-[#007bff]"
+          />
+          <p className="mt-1.5 text-xs text-muted sm:text-sm">{countLabel}</p>
         </div>
         {showControls ? (
           <div className="flex shrink-0 items-center gap-1.5">

@@ -28,15 +28,8 @@ export function CatalogModels({
           <CatalogModelCarousel model="Oportunidades" products={opportunities} />
         </div>
       ) : null}
-      {groups.map((group, index) => (
-        <div
-          key={group.model}
-          className={
-            opportunities.length === 0 && index === 0
-              ? "min-w-0"
-              : "min-w-0 border-t border-card-border/80 pt-6 sm:pt-7"
-          }
-        >
+      {groups.map((group) => (
+        <div key={group.model} className="min-w-0">
           <CatalogModelCarousel
             model={group.model}
             products={group.products}

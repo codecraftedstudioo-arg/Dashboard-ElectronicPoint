@@ -1,4 +1,4 @@
-import { formatListPrice } from "@/lib/currency";
+import { formatListPrice, type CurrencyCode } from "@/lib/currency";
 import type { ListFieldKey, ListSortOption } from "@/lib/constants";
 import { PHYSICAL_CONDITION_LABELS } from "@/lib/constants";
 import type { PhysicalCondition, ProductType } from "@prisma/client";
@@ -23,6 +23,8 @@ export type ListGeneratorOptions = {
   select: "available" | "all" | "manual" | "iphone" | "macbook" | "model";
   modelFilter?: string;
   selectedIds?: string[];
+  currency?: CurrencyCode;
+  usdToArs?: number | null;
 };
 
 export function filterProductsForList(
@@ -107,7 +109,12 @@ export function sortProductsForList(
   return sorted;
 }
 
-function buildLine(product: ListProduct, fields: Record<ListFieldKey, boolean>): string {
+function buildLine(
+  product: ListProduct,
+  fields: Record<ListFieldKey, boolean>,
+  currency: CurrencyCode,
+  usdToArs?: number | null,
+): string {
   const parts: string[] = [];
 
   if (fields.modelStorage || fields.color) {
@@ -124,7 +131,7 @@ function buildLine(product: ListProduct, fields: Record<ListFieldKey, boolean>):
   }
 
   if (fields.price) {
-    parts.push(formatListPrice(product.salePrice));
+    parts.push(formatListPrice(product.salePrice, currency, usdToArs));
   }
 
   if (fields.condition) {
@@ -140,7 +147,9 @@ export function generateEquipmentList(
 ): string {
   const filtered = filterProductsForList(products, options);
   const sorted = sortProductsForList(filtered, options.sort);
-  const lines = sorted.map((p) => buildLine(p, options.fields));
+  const lines = sorted.map((p) =>
+    buildLine(p, options.fields, options.currency ?? "USD", options.usdToArs),
+  );
 
   return [options.title, "", options.subtitle, "", ...lines].join("\n");
 }

@@ -2,11 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { useCurrency } from "@/components/currency/currency-provider";
 import {
   generateEquipmentList,
   type ListProduct,
 } from "@/lib/list-generator";
 import type { ListFieldKey, ListSortOption, ListSelectOption } from "@/lib/constants";
+import type { CurrencyCode } from "@/lib/currency";
+import { formatBlueRate } from "@/lib/exchange-rate";
 import { Button, Card, Input, Label, Select, cn } from "@/components/ui";
 
 const defaultFields: Record<ListFieldKey, boolean> = {
@@ -48,6 +51,8 @@ export function ListGenerator({
   const [copied, setCopied] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [generated, setGenerated] = useState(false);
+  const [listCurrency, setListCurrency] = useState<CurrencyCode>("USD");
+  const { canShowArs, rate, rateError } = useCurrency();
 
   const options = useMemo(
     () => ({
@@ -58,8 +63,20 @@ export function ListGenerator({
       select,
       modelFilter,
       selectedIds,
+      currency: listCurrency,
+      usdToArs: rate?.usdToArs,
     }),
-    [title, subtitle, fields, sort, select, modelFilter, selectedIds],
+    [
+      title,
+      subtitle,
+      fields,
+      sort,
+      select,
+      modelFilter,
+      selectedIds,
+      listCurrency,
+      rate?.usdToArs,
+    ],
   );
 
   const livePreview = preview || generateEquipmentList(products, options);
@@ -80,6 +97,14 @@ export function ListGenerator({
 
   function toggleField(key: ListFieldKey) {
     setFields((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  function selectCurrency(next: CurrencyCode) {
+    if (next === "ARS" && !canShowArs) return;
+    setListCurrency(next);
+    setPreview("");
+    setGenerated(false);
+    setCopied(false);
   }
 
   return (
@@ -171,6 +196,54 @@ export function ListGenerator({
             <option value="newest">Más nuevos</option>
             <option value="oldest">Más antiguos</option>
           </Select>
+        </div>
+
+        <div>
+          <Label>Moneda del precio</Label>
+          <div
+            role="group"
+            aria-label="Moneda del precio"
+            className="inline-flex rounded-xl border border-card-border bg-card p-0.5 text-sm"
+          >
+            {(
+              [
+                ["USD", "Dólares"],
+                ["ARS", "Pesos"],
+              ] as const
+            ).map(([code, label]) => {
+              const active = listCurrency === code;
+              const disabled = code === "ARS" && !canShowArs;
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => selectCurrency(code)}
+                  className={cn(
+                    "rounded-lg px-3 py-1.5 font-semibold transition-colors",
+                    active
+                      ? "bg-accent text-accent-contrast"
+                      : "text-muted hover:bg-hover hover:text-foreground",
+                    disabled && "cursor-not-allowed opacity-40 hover:bg-transparent",
+                  )}
+                  title={
+                    disabled ? "No se pudo actualizar la cotización" : undefined
+                  }
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+          {listCurrency === "ARS" && rate ? (
+            <p className="mt-1.5 text-xs text-muted">
+              Dólar blue venta {formatBlueRate(rate.usdToArs)}
+              {rate.stale ? " · última cotización disponible" : ""}
+            </p>
+          ) : null}
+          {listCurrency === "ARS" && !rate && rateError ? (
+            <p className="mt-1.5 text-xs text-muted">{rateError}</p>
+          ) : null}
         </div>
 
         <div>
