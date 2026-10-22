@@ -16,6 +16,7 @@ const SALE_CHANNEL_OPTIONS = [
   "INSTAGRAM",
   "REFERIDO",
   "GREMIO",
+  "ALE_KIVI",
   "OTRO",
 ] as const satisfies ReadonlyArray<SaleChannel>;
 

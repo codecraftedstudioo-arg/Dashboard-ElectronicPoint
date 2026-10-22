@@ -438,6 +438,7 @@ function parseSaleChannel(
     channel === "INSTAGRAM" ||
     channel === "REFERIDO" ||
     channel === "GREMIO" ||
+    channel === "ALE_KIVI" ||
     channel === "OTRO"
   ) {
     return channel;

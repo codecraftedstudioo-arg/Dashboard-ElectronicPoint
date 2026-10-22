@@ -61,6 +61,7 @@ export function SellModal({
               <option value="INSTAGRAM">Instagram</option>
               <option value="REFERIDO">Referido</option>
               <option value="GREMIO">Gremio</option>
+              <option value="ALE_KIVI">Ale Kivi</option>
               <option value="OTRO">Otro</option>
             </Select>
           </div>

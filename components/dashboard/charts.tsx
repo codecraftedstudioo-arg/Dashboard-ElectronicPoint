@@ -19,6 +19,7 @@ const CHANNEL_COLORS = [
   "#14b8a6",
   "#8b5cf6",
   "#06b6d4",
+  "#f43f5e",
   "#a1a1aa",
 ];
 

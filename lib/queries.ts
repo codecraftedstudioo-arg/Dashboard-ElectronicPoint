@@ -126,6 +126,7 @@ export async function getDashboardStats() {
     INSTAGRAM: 0,
     REFERIDO: 0,
     GREMIO: 0,
+    ALE_KIVI: 0,
     OTRO: 0,
   };
   for (const sale of recentSales) {

@@ -17,6 +17,7 @@ export const SALE_CHANNEL_LABELS = {
   INSTAGRAM: "Instagram",
   REFERIDO: "Referido",
   GREMIO: "Gremio",
+  ALE_KIVI: "Ale Kivi",
   OTRO: "Otro",
 } as const;
 
@@ -26,6 +27,7 @@ export const CHANNEL_CHART_ORDER = [
   "INSTAGRAM",
   "REFERIDO",
   "GREMIO",
+  "ALE_KIVI",
   "OTRO",
 ] as const satisfies ReadonlyArray<keyof typeof SALE_CHANNEL_LABELS>;
 
@@ -42,6 +44,7 @@ export const CHANNEL_COLORS: Record<keyof typeof SALE_CHANNEL_LABELS, string> = 
   INSTAGRAM: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
   REFERIDO: "bg-violet-500/15 text-violet-400 border-violet-500/30",
   GREMIO: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
+  ALE_KIVI: "bg-rose-500/15 text-rose-400 border-rose-500/30",
   OTRO: "bg-zinc-500/15 text-zinc-300 border-zinc-500/30",
 };
 

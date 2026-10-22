@@ -39,6 +39,7 @@ enum SaleChannel {
   INSTAGRAM
   REFERIDO
   GREMIO
+  ALE_KIVI
   OTRO
 }
 
