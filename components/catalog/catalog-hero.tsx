@@ -175,10 +175,10 @@ function VenderSlide({ href }: { href: string }) {
     <div className="flex h-full w-full items-center bg-[#e8eef6]">
       <div className="relative w-full">
         <Image
-          src="/catalog/hero-compramos-2.jpg"
+          src="/catalog/hero-compramos-portrait.jpg"
           alt="Compramos tu iPhone al mejor precio."
-          width={1024}
-          height={409}
+          width={1728}
+          height={3072}
           sizes="100vw"
           className="h-auto w-full md:hidden"
         />
@@ -192,7 +192,7 @@ function VenderSlide({ href }: { href: string }) {
         />
         <Link
           href={href}
-          className="absolute left-[8%] top-[68%] inline-flex -translate-y-1/2 items-center justify-center rounded-full bg-accent px-3 py-1 text-[11px] font-semibold leading-none text-accent-contrast transition-colors hover:bg-accent-hover md:px-5 md:py-2.5 md:text-sm md:leading-normal"
+          className="absolute left-[11%] top-[78%] inline-flex -translate-y-1/2 items-center justify-center rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover md:left-[8%] md:top-[68%] md:px-5 md:py-2.5"
         >
           Cotizar mi iPhone
         </Link>
