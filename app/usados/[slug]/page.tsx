@@ -17,6 +17,7 @@ import {
   CONDITION_COLORS,
   PHYSICAL_CONDITION_LABELS,
   CHIP_TYPE_LABELS,
+  productHasStorage,
 } from "@/lib/constants";
 import { formatUSD } from "@/lib/currency";
 import {
@@ -65,10 +66,13 @@ export async function generateMetadata({
     });
   }
 
-  const title = `${product.name} ${product.storage} usado — ${CATALOG_TITLE}`;
+  const storageLabel = productHasStorage(product.type)
+    ? ` ${product.storage}`
+    : "";
+  const title = `${product.name}${storageLabel} usado — ${CATALOG_TITLE}`;
   const description =
     product.description ||
-    `${product.name} ${product.storage} en estado ${PHYSICAL_CONDITION_LABELS[product.physicalCondition]}. Precio ${formatUSD(product.salePrice)}.`;
+    `${product.name}${storageLabel} en estado ${PHYSICAL_CONDITION_LABELS[product.physicalCondition]}. Precio ${formatUSD(product.salePrice)}.`;
   const image = primaryImageUrl(product.images);
 
   return catalogProductMetadata({
@@ -94,6 +98,13 @@ export default async function UsadosProductPage({ params }: PageProps) {
     isCatalogHost(hostFromHeaders(headerStore));
   const equiposHref = catalogEquiposPath(isCatalogSite);
   const colorStyle = deviceColorBadgeStyle(product.color);
+  const storageLabel = productHasStorage(product.type)
+    ? ` ${product.storage}`
+    : "";
+  const neighborLabel = (item: { name: string; storage: string }) =>
+    !item.storage || item.storage === "-"
+      ? item.name
+      : `${item.name} ${item.storage}`;
   const prevHref = prev
     ? catalogProductPath(buildProductSlug(prev), isCatalogSite)
     : null;
@@ -202,12 +213,14 @@ export default async function UsadosProductPage({ params }: PageProps) {
             </div>
 
             <div className="grid w-full min-w-0 max-w-full gap-3 rounded-2xl border border-card-border bg-card p-4">
-              <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
-                <span className="shrink-0 text-muted">Capacidad</span>
-                <Badge className="min-w-0 max-w-[70%] truncate border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
-                  {product.storage}
-                </Badge>
-              </div>
+              {productHasStorage(product.type) ? (
+                <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
+                  <span className="shrink-0 text-muted">Capacidad</span>
+                  <Badge className="min-w-0 max-w-[70%] truncate border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
+                    {product.storage}
+                  </Badge>
+                </div>
+              ) : null}
               <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
                 <span className="shrink-0 text-muted">Batería</span>
                 <Badge className="min-w-0 max-w-[70%] truncate border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
@@ -216,12 +229,14 @@ export default async function UsadosProductPage({ params }: PageProps) {
                     : "—"}
                 </Badge>
               </div>
-              <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
-                <span className="shrink-0 text-muted">Chip</span>
-                <Badge className="min-w-0 max-w-[70%] truncate border-card-border text-muted">
-                  {product.chip ? CHIP_TYPE_LABELS[product.chip] : "—"}
-                </Badge>
-              </div>
+              {product.type === "IPHONE" ? (
+                <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
+                  <span className="shrink-0 text-muted">Chip</span>
+                  <Badge className="min-w-0 max-w-[70%] truncate border-card-border text-muted">
+                    {product.chip ? CHIP_TYPE_LABELS[product.chip] : "—"}
+                  </Badge>
+                </div>
+              ) : null}
               <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
                 <span className="shrink-0 text-muted">Estado</span>
                 <Badge
@@ -242,8 +257,8 @@ export default async function UsadosProductPage({ params }: PageProps) {
             ) : null}
 
             <ShareProductLink
-              title={`${product.name} ${product.storage}`}
-              text={`${product.name} ${product.storage} — ${formatUSD(product.salePrice)}`}
+              title={`${product.name}${storageLabel}`}
+              text={`${product.name}${storageLabel} — ${formatUSD(product.salePrice)}`}
             />
           </div>
         </div>
@@ -263,7 +278,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
                   Anterior
                 </span>
                 <span className="truncate text-sm font-medium text-foreground group-hover:text-accent">
-                  {prev.name} {prev.storage}
+                  {neighborLabel(prev)}
                 </span>
               </Link>
             ) : (
@@ -279,7 +294,7 @@ export default async function UsadosProductPage({ params }: PageProps) {
                   <ChevronRight className="h-3.5 w-3.5 shrink-0" />
                 </span>
                 <span className="truncate text-sm font-medium text-foreground group-hover:text-accent">
-                  {next.name} {next.storage}
+                  {neighborLabel(next)}
                 </span>
               </Link>
             ) : (

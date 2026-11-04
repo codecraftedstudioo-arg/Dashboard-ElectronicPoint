@@ -14,6 +14,7 @@ import {
   PRODUCT_TYPE_LABELS,
   CHANNEL_COLORS,
   SALE_CHANNEL_LABELS,
+  productHasStorage,
 } from "@/lib/constants";
 import { getProductById } from "@/lib/queries";
 import { requireDashboardPage } from "@/lib/auth/session";
@@ -75,7 +76,9 @@ export default async function ProductDetailPage({
 
         <div className="space-y-4">
           <Card className="space-y-3">
-            <Row label="Capacidad" value={product.storage} />
+            {productHasStorage(product.type) ? (
+              <Row label="Capacidad" value={product.storage} />
+            ) : null}
             <Row label="Color" value={product.color} />
             <Row label="IMEI" value={product.imei || "—"} />
             <Row

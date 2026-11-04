@@ -11,6 +11,7 @@ import {
   CONDITION_COLORS,
   PHYSICAL_CONDITION_LABELS,
   PRODUCT_TYPE_LABELS,
+  NO_STORAGE_VALUE,
 } from "@/lib/constants";
 import { primaryImageUrl } from "@/lib/images";
 import { ReserveProductButton } from "@/components/products/reserve-product-button";
@@ -47,7 +48,13 @@ export function InventoryGrid({ products }: { products: InventoryItem[] }) {
   const [maxPrice, setMaxPrice] = useState("");
 
   const storageOptions = useMemo(() => {
-    return Array.from(new Set(products.map((p) => p.storage))).sort();
+    return Array.from(
+      new Set(
+        products
+          .map((p) => p.storage)
+          .filter((value) => value && value !== NO_STORAGE_VALUE),
+      ),
+    ).sort();
   }, [products]);
 
   const filtered = useMemo(() => {
@@ -199,7 +206,9 @@ export function InventoryGrid({ products }: { products: InventoryItem[] }) {
                       {product.name}
                     </div>
                     <div className="mt-1 text-sm text-muted">
-                      {product.storage} · {product.color}
+                      {product.type === "APPLE_WATCH"
+                        ? product.color
+                        : `${product.storage} · ${product.color}`}
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       <Badge className="border-card-border text-muted">

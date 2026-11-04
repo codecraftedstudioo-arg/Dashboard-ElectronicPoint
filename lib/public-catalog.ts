@@ -10,6 +10,7 @@ import type {
 /** Public-facing product shape — never includes cost, IMEI, or internal codes. */
 export type PublicCatalogProduct = {
   id: string;
+  type: ProductType;
   name: string;
   storage: string;
   color: string;
@@ -36,6 +37,7 @@ const PUBLIC_CATALOG_TYPES = [
 
 const publicProductSelect = {
   id: true,
+  type: true,
   name: true,
   storage: true,
   color: true,

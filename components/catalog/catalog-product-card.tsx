@@ -9,6 +9,7 @@ import { Badge, cn } from "@/components/ui";
 import {
   CONDITION_COLORS,
   PHYSICAL_CONDITION_LABELS,
+  productHasStorage,
 } from "@/lib/constants";
 import { sortProductImages } from "@/lib/images";
 import { ReservedOverlay } from "@/components/products/reserved-overlay";
@@ -170,9 +171,11 @@ export function CatalogProductCard({
           {product.name}
         </h3>
         <div className="flex min-w-0 flex-wrap gap-1.5">
-          <Badge className="border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
-            {product.storage}
-          </Badge>
+          {productHasStorage(product.type) ? (
+            <Badge className="border-emerald-500/30 bg-emerald-500/15 text-emerald-500">
+              {product.storage}
+            </Badge>
+          ) : null}
           <Badge
             className={
               colorStyle

@@ -20,7 +20,12 @@ import {
   Card,
   cn,
 } from "@/components/ui";
-import { STORAGE_OPTIONS, PHYSICAL_CONDITION_LABELS, CHIP_TYPE_LABELS } from "@/lib/constants";
+import {
+  STORAGE_OPTIONS,
+  PHYSICAL_CONDITION_LABELS,
+  CHIP_TYPE_LABELS,
+  NO_STORAGE_VALUE,
+} from "@/lib/constants";
 import { calcProfit, formatMargin } from "@/lib/calculations";
 import { Money } from "@/components/currency/currency-toggle";
 import {
@@ -357,19 +362,27 @@ export function ProductForm({
               }
             />
           </div>
-          <div>
-            <Label>Capacidad</Label>
-            <Select name="storage" defaultValue={initial?.storage ?? "128GB"} required>
-              {STORAGE_OPTIONS.map((opt) => {
-                const value = opt.replace(" ", "");
-                return (
-                  <option key={value} value={value}>
-                    {opt}
-                  </option>
-                );
-              })}
-            </Select>
-          </div>
+          {type === "APPLE_WATCH" ? (
+            <input type="hidden" name="storage" value={NO_STORAGE_VALUE} />
+          ) : (
+            <div>
+              <Label>Capacidad</Label>
+              <Select
+                name="storage"
+                defaultValue={initial?.storage ?? "128GB"}
+                required
+              >
+                {STORAGE_OPTIONS.map((opt) => {
+                  const value = opt.replace(" ", "");
+                  return (
+                    <option key={value} value={value}>
+                      {opt}
+                    </option>
+                  );
+                })}
+              </Select>
+            </div>
+          )}
           <div>
             <Label>Color</Label>
             <Input

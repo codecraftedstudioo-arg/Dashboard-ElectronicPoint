@@ -1,6 +1,10 @@
 import { formatListPrice, type CurrencyCode } from "@/lib/currency";
 import type { ListFieldKey, ListSortOption } from "@/lib/constants";
-import { PHYSICAL_CONDITION_LABELS } from "@/lib/constants";
+import {
+  NO_STORAGE_VALUE,
+  PHYSICAL_CONDITION_LABELS,
+  productHasStorage,
+} from "@/lib/constants";
 import type { PhysicalCondition, ProductType } from "@prisma/client";
 
 export type ListProduct = {
@@ -123,7 +127,14 @@ function buildLine(
   if (fields.modelStorage || fields.color) {
     const boldParts: string[] = [];
     if (fields.modelStorage) {
-      boldParts.push(product.name, product.storage.replace(/\s/g, ""));
+      boldParts.push(product.name);
+      if (
+        productHasStorage(product.type) &&
+        product.storage &&
+        product.storage !== NO_STORAGE_VALUE
+      ) {
+        boldParts.push(product.storage.replace(/\s/g, ""));
+      }
     }
     if (fields.color) boldParts.push(product.color);
     parts.push(`*${boldParts.join(" ")}*`);

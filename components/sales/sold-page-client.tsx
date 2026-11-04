@@ -314,7 +314,9 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
                   </div>
                   <div className="min-w-0">
                     <div className="font-medium text-foreground">
-                      {sale.product.name} {sale.product.storage}
+                      {sale.product.type === "APPLE_WATCH"
+                        ? sale.product.name
+                        : `${sale.product.name} ${sale.product.storage}`}
                     </div>
                     <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted">
                       <span>{PRODUCT_TYPE_LABELS[sale.product.type]}</span>
@@ -352,7 +354,11 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
                 saleId={sale.id}
                 soldPrice={sale.soldPrice}
                 channel={sale.channel}
-                productLabel={`${sale.product.name} ${sale.product.storage}`}
+                productLabel={
+                  sale.product.type === "APPLE_WATCH"
+                    ? sale.product.name
+                    : `${sale.product.name} ${sale.product.storage}`
+                }
               />
             </Card>
           );

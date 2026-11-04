@@ -12,8 +12,12 @@ export function buildProductSlug(product: {
   name: string;
   storage: string;
 }): string {
-  const base = slugify(`${product.name}-${product.storage}`);
-  return `${base}--${product.id}`;
+  const storage = product.storage.trim();
+  const label =
+    !storage || storage === "-"
+      ? product.name
+      : `${product.name}-${storage}`;
+  return `${slugify(label)}--${product.id}`;
 }
 
 export function parseProductIdFromSlug(slug: string): string | null {

@@ -86,7 +86,9 @@ export function RecentProductsCard({
                   {product.name}
                 </div>
                 <div className="truncate text-xs text-muted">
-                  {product.storage} {product.color}
+                  {!product.storage || product.storage === "-"
+                    ? product.color
+                    : `${product.storage} ${product.color}`}
                 </div>
                 <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                   {product.batteryCondition != null ? (
@@ -176,9 +178,11 @@ export function RecentSalesCard({
                 <div className="truncate text-sm font-medium text-foreground">
                   {sale.product.name}
                 </div>
-                <div className="truncate text-xs text-muted">
-                  {sale.product.storage}
-                </div>
+                {sale.product.storage && sale.product.storage !== "-" ? (
+                  <div className="truncate text-xs text-muted">
+                    {sale.product.storage}
+                  </div>
+                ) : null}
                 <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
                   <Badge className={CHANNEL_COLORS[sale.channel]}>
                     {SALE_CHANNEL_LABELS[sale.channel]}

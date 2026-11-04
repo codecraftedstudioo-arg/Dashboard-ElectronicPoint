@@ -37,6 +37,15 @@ export const PRODUCT_TYPE_LABELS = {
   APPLE_WATCH: "Apple Watch",
 } as const;
 
+/** Stored when a product type has no capacity field (Apple Watch). */
+export const NO_STORAGE_VALUE = "-";
+
+export function productHasStorage(
+  type: keyof typeof PRODUCT_TYPE_LABELS,
+): boolean {
+  return type !== "APPLE_WATCH";
+}
+
 export const STORAGE_OPTIONS = [
   "32 GB",
   "64 GB",

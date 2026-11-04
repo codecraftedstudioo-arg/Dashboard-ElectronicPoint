@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { nextInternalCode } from "@/lib/queries";
 import { deleteStoredImage, uploadProductImage } from "@/lib/storage";
 import { extractImei, isValidImeiFormat } from "@/lib/imei";
+import { NO_STORAGE_VALUE } from "@/lib/constants";
 import type {
   ChipType,
   PhysicalCondition,
@@ -129,7 +130,10 @@ export async function createProduct(formData: FormData) {
   await requireAdmin();
   const type = String(formData.get("type")) as ProductType;
   const name = String(formData.get("name") || "").trim();
-  const storage = String(formData.get("storage") || "").trim();
+  const storage =
+    type === "APPLE_WATCH"
+      ? NO_STORAGE_VALUE
+      : String(formData.get("storage") || "").trim();
   const color = String(formData.get("color") || "").trim();
   const imei = parseImei(formData.get("imei"));
   const batteryRaw = formData.get("batteryCondition");
@@ -145,8 +149,13 @@ export async function createProduct(formData: FormData) {
   const isPublished = formData.get("isPublished") === "true";
   const isOpportunity = formData.get("isOpportunity") === "true";
 
-  if (!name || !storage || !color) {
-    return { error: "Completá modelo, capacidad y color." };
+  if (!name || !color || (type !== "APPLE_WATCH" && !storage)) {
+    return {
+      error:
+        type === "APPLE_WATCH"
+          ? "Completá modelo y color."
+          : "Completá modelo, capacidad y color.",
+    };
   }
 
   const conflict = await imeiConflict(imei);
@@ -200,8 +209,19 @@ export async function updateProduct(productId: string, formData: FormData) {
   await requireAdmin();
   const type = String(formData.get("type")) as ProductType;
   const name = String(formData.get("name") || "").trim();
-  const storage = String(formData.get("storage") || "").trim();
+  const storage =
+    type === "APPLE_WATCH"
+      ? NO_STORAGE_VALUE
+      : String(formData.get("storage") || "").trim();
   const color = String(formData.get("color") || "").trim();
+  if (!name || !color || (type !== "APPLE_WATCH" && !storage)) {
+    return {
+      error:
+        type === "APPLE_WATCH"
+          ? "Completá modelo y color."
+          : "Completá modelo, capacidad y color.",
+    };
+  }
   const imei = parseImei(formData.get("imei"));
   const batteryRaw = formData.get("batteryCondition");
   const batteryCondition =
