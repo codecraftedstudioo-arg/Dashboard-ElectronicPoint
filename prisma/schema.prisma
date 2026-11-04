@@ -11,6 +11,7 @@ datasource db {
 enum ProductType {
   IPHONE
   MACBOOK
+  APPLE_WATCH
 }
 
 enum ProductStatus {

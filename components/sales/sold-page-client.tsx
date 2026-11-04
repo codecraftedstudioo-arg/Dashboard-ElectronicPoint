@@ -275,6 +275,7 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
             <option value="ALL">Tipo: todos</option>
             <option value="IPHONE">iPhone</option>
             <option value="MACBOOK">MacBook</option>
+            <option value="APPLE_WATCH">Apple Watch</option>
           </Select>
           <Input
             type="date"

@@ -20,7 +20,7 @@ export type ListGeneratorOptions = {
   subtitle: string;
   fields: Record<ListFieldKey, boolean>;
   sort: ListSortOption;
-  select: "available" | "all" | "manual" | "iphone" | "macbook" | "model";
+  select: "available" | "all" | "manual" | "iphone" | "macbook" | "apple_watch" | "model";
   modelFilter?: string;
   selectedIds?: string[];
   currency?: CurrencyCode;
@@ -39,6 +39,9 @@ export function filterProductsForList(
       break;
     case "macbook":
       result = result.filter((p) => p.type === "MACBOOK");
+      break;
+    case "apple_watch":
+      result = result.filter((p) => p.type === "APPLE_WATCH");
       break;
     case "model":
       if (options.modelFilter?.trim()) {

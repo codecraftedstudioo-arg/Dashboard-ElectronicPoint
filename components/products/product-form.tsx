@@ -339,6 +339,7 @@ export function ProductForm({
             >
               <option value="IPHONE">iPhone</option>
               <option value="MACBOOK">MacBook</option>
+              <option value="APPLE_WATCH">Apple Watch</option>
             </Select>
           </div>
           <div>
@@ -347,7 +348,13 @@ export function ProductForm({
               name="name"
               required
               defaultValue={initial?.name}
-              placeholder="iPhone 16 Pro Max"
+              placeholder={
+                type === "APPLE_WATCH"
+                  ? "Apple Watch Series 10"
+                  : type === "MACBOOK"
+                    ? "MacBook Air M2"
+                    : "iPhone 16 Pro Max"
+              }
             />
           </div>
           <div>
@@ -380,7 +387,7 @@ export function ProductForm({
               }
             />
           </div>
-          {type === "IPHONE" ? (
+          {type === "IPHONE" || type === "APPLE_WATCH" ? (
             <div>
               <Label>Batería (%)</Label>
               <Input
@@ -474,8 +481,8 @@ export function ProductForm({
         <div className="rounded-xl border border-card-border bg-input p-4">
           <Label>Mostrar en catálogo público</Label>
           <p className="mb-3 text-xs text-muted">
-            Solo iPhones disponibles y publicados aparecen en /usados. Por
-            defecto queda oculto.
+            Solo iPhones y Apple Watch disponibles y publicados aparecen en
+            /usados. Por defecto queda oculto.
           </p>
           <input type="hidden" name="isPublished" value={isPublished ? "true" : "false"} />
           <div className="flex flex-wrap gap-2">

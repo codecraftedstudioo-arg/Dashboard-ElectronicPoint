@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { compareIphoneModelsDesc } from "@/lib/iphone-model-sort";
-import type { ChipType, PhysicalCondition, Prisma } from "@prisma/client";
+import { compareCatalogModelsDesc } from "@/lib/iphone-model-sort";
+import type {
+  ChipType,
+  PhysicalCondition,
+  Prisma,
+  ProductType,
+} from "@prisma/client";
 
 /** Public-facing product shape — never includes cost, IMEI, or internal codes. */
 export type PublicCatalogProduct = {
@@ -22,6 +27,12 @@ export type PublicCatalogProduct = {
     sortOrder: number;
   }[];
 };
+
+/** Product types shown on the public catalog. MacBook stays admin-only. */
+const PUBLIC_CATALOG_TYPES = [
+  "IPHONE",
+  "APPLE_WATCH",
+] as const satisfies ReadonlyArray<ProductType>;
 
 const publicProductSelect = {
   id: true,
@@ -61,7 +72,7 @@ export async function getPublishedIphones(
     where: {
       status: "AVAILABLE",
       isPublished: true,
-      type: "IPHONE",
+      type: { in: [...PUBLIC_CATALOG_TYPES] },
       ...(filters?.storage ? { storage: filters.storage } : {}),
       ...(search
         ? {
@@ -91,7 +102,7 @@ export async function getPublishedIphones(
       );
       break;
     default:
-      sorted.sort((a, b) => compareIphoneModelsDesc(a.name, b.name));
+      sorted.sort((a, b) => compareCatalogModelsDesc(a.name, b.name));
       break;
   }
 
@@ -106,7 +117,7 @@ export async function getPublishedIphoneById(
       id,
       status: "AVAILABLE",
       isPublished: true,
-      type: "IPHONE",
+      type: { in: [...PUBLIC_CATALOG_TYPES] },
     },
     select: publicProductSelect,
   });
@@ -142,14 +153,14 @@ export async function getPublishedModelNames(): Promise<string[]> {
     where: {
       status: "AVAILABLE",
       isPublished: true,
-      type: "IPHONE",
+      type: { in: [...PUBLIC_CATALOG_TYPES] },
     },
     select: { name: true },
     distinct: ["name"],
   });
   return rows
     .map((r) => r.name)
-    .sort(compareIphoneModelsDesc);
+    .sort(compareCatalogModelsDesc);
 }
 
 export type CatalogModelGroup = {
@@ -184,7 +195,7 @@ export function groupPublishedIphonesByModel(
   }
 
   return [...map.keys()]
-    .sort(compareIphoneModelsDesc)
+    .sort(compareCatalogModelsDesc)
     .map((model) => {
       const units = [...(map.get(model) ?? [])].sort((a, b) => {
         const byStorage = storageRank(a.storage) - storageRank(b.storage);

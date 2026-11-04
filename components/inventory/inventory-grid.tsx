@@ -121,6 +121,7 @@ export function InventoryGrid({ products }: { products: InventoryItem[] }) {
             <option value="ALL">Tipo: todos</option>
             <option value="IPHONE">iPhone</option>
             <option value="MACBOOK">MacBook</option>
+            <option value="APPLE_WATCH">Apple Watch</option>
           </Select>
           <Select value={storage} onChange={(e) => setStorage(e.target.value)}>
             <option value="ALL">Capacidad: todas</option>

@@ -164,7 +164,8 @@ export async function createProduct(formData: FormData) {
       storage,
       color,
       imei,
-      batteryCondition: type === "IPHONE" ? batteryCondition : null,
+      batteryCondition:
+        type === "IPHONE" || type === "APPLE_WATCH" ? batteryCondition : null,
       physicalCondition,
       chip: type === "IPHONE" ? chip : null,
       cost,
@@ -250,7 +251,8 @@ export async function updateProduct(productId: string, formData: FormData) {
       storage,
       color,
       imei,
-      batteryCondition: type === "IPHONE" ? batteryCondition : null,
+      batteryCondition:
+        type === "IPHONE" || type === "APPLE_WATCH" ? batteryCondition : null,
       physicalCondition,
       chip: type === "IPHONE" ? chip : null,
       cost,

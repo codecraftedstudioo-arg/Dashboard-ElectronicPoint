@@ -1,4 +1,19 @@
 /** Higher = newer / higher-tier model for catalog ordering. */
+export function appleWatchModelSortKey(name: string): number {
+  const n = name.trim().toLowerCase();
+  if (/ultra/.test(n)) {
+    const gen = n.match(/\b(\d+)\b/);
+    return 9000 + (gen ? Number(gen[1]) : 1) * 10;
+  }
+  if (/\bse\b/.test(n)) {
+    const gen = n.match(/\b(\d+)\b/);
+    return 7000 + (gen ? Number(gen[1]) : 1) * 10;
+  }
+  const series = n.match(/series\s+(\d+)/i) ?? n.match(/\b(\d+)\b/);
+  return 8000 + (series ? Number(series[1]) : 0) * 10;
+}
+
+/** Higher = newer / higher-tier model for catalog ordering. */
 export function iphoneModelSortKey(name: string): number {
   const n = name.trim().toLowerCase();
 
@@ -28,4 +43,20 @@ export function compareIphoneModelsDesc(aName: string, bName: string): number {
   const rankDiff = iphoneModelSortKey(bName) - iphoneModelSortKey(aName);
   if (rankDiff !== 0) return rankDiff;
   return aName.localeCompare(bName, "es");
+}
+
+/**
+ * Public catalog order: iPhones first (newest first), then Apple Watch
+ * (Ultra → Series → SE), then any other name alphabetically.
+ */
+export function compareCatalogModelsDesc(aName: string, bName: string): number {
+  const aWatch = /apple\s*watch/i.test(aName);
+  const bWatch = /apple\s*watch/i.test(bName);
+  if (aWatch !== bWatch) return aWatch ? 1 : -1;
+  if (aWatch && bWatch) {
+    const rankDiff = appleWatchModelSortKey(bName) - appleWatchModelSortKey(aName);
+    if (rankDiff !== 0) return rankDiff;
+    return aName.localeCompare(bName, "es");
+  }
+  return compareIphoneModelsDesc(aName, bName);
 }

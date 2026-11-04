@@ -34,9 +34,18 @@ export const CHANNEL_CHART_ORDER = [
 export const PRODUCT_TYPE_LABELS = {
   IPHONE: "iPhone",
   MACBOOK: "MacBook",
+  APPLE_WATCH: "Apple Watch",
 } as const;
 
-export const STORAGE_OPTIONS = ["64 GB", "128 GB", "256 GB", "512 GB", "1 TB", "2 TB"] as const;
+export const STORAGE_OPTIONS = [
+  "32 GB",
+  "64 GB",
+  "128 GB",
+  "256 GB",
+  "512 GB",
+  "1 TB",
+  "2 TB",
+] as const;
 
 export const CHANNEL_COLORS: Record<keyof typeof SALE_CHANNEL_LABELS, string> = {
   CLIENTE: "bg-blue-500/15 text-blue-400 border-blue-500/30",
@@ -74,4 +83,5 @@ export type ListSelectOption =
   | "manual"
   | "iphone"
   | "macbook"
+  | "apple_watch"
   | "model";
