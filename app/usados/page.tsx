@@ -14,7 +14,7 @@ export const metadata: Metadata = catalogMetadata();
 
 export default async function UsadosPage() {
   const products = await getPublishedIphones();
-  const availableCount = products.length;
+  const availableCount = products.filter((product) => !product.isReserved).length;
   const availableLabel =
     availableCount === 1
       ? "1 equipo disponible ahora"

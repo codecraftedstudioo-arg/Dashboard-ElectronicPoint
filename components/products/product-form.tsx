@@ -617,7 +617,7 @@ export function ProductForm({
                           type="button"
                           disabled={index === 0 || busy || pending}
                           onClick={() => moveExistingImage(index, -1)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 text-foreground hover:bg-black/80 disabled:opacity-30"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 text-white hover:bg-black/80 disabled:opacity-30"
                           title="Mover antes"
                         >
                           <ArrowUp className="h-3.5 w-3.5" />
@@ -626,7 +626,7 @@ export function ProductForm({
                           type="button"
                           disabled={index === images.length - 1 || busy || pending}
                           onClick={() => moveExistingImage(index, 1)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 text-foreground hover:bg-black/80 disabled:opacity-30"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg bg-black/60 text-white hover:bg-black/80 disabled:opacity-30"
                           title="Mover después"
                         >
                           <ArrowDown className="h-3.5 w-3.5" />
@@ -638,7 +638,7 @@ export function ProductForm({
                             type="button"
                             disabled={busy || pending}
                             onClick={() => handleSetPrimary(img.id)}
-                            className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-white/10 px-2 py-1.5 text-[11px] font-medium text-foreground hover:bg-white/20 disabled:opacity-50"
+                            className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-white/10 px-2 py-1.5 text-[11px] font-medium text-white hover:bg-white/20 disabled:opacity-50"
                             title="Marcar como principal"
                           >
                             <Star className="h-3.5 w-3.5" />
@@ -728,7 +728,7 @@ export function ProductForm({
                           type="button"
                           disabled={index === 0}
                           onClick={() => moveSelectedFile(index, -1)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-foreground hover:bg-black/90 disabled:opacity-30"
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black/90 disabled:opacity-30"
                           title="Mover antes"
                         >
                           <ArrowUp className="h-3.5 w-3.5" />
@@ -737,7 +737,7 @@ export function ProductForm({
                           type="button"
                           disabled={index === selectedFiles.length - 1}
                           onClick={() => moveSelectedFile(index, 1)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-foreground hover:bg-black/90 disabled:opacity-30"
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black/90 disabled:opacity-30"
                           title="Mover después"
                         >
                           <ArrowDown className="h-3.5 w-3.5" />
@@ -755,7 +755,7 @@ export function ProductForm({
                                 setNewPrimaryAmongNew(index);
                               }
                             }}
-                            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-foreground hover:bg-accent"
+                            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white hover:bg-accent"
                             title="Marcar como principal"
                           >
                             <Star className="h-3.5 w-3.5" />
@@ -764,7 +764,7 @@ export function ProductForm({
                         <button
                           type="button"
                           onClick={() => removeSelectedFile(index)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-foreground hover:bg-red-500/80"
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white hover:bg-red-500/80"
                           title="Quitar de la selección"
                         >
                           <X className="h-3.5 w-3.5" />

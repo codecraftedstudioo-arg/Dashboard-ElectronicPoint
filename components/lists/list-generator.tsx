@@ -25,7 +25,7 @@ function renderPreviewLine(line: string) {
   return parts.map((part, i) => {
     if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
       return (
-        <strong key={i} className="font-semibold text-foreground">
+        <strong key={i} className="font-semibold text-[#e9edef]">
           {part.slice(1, -1)}
         </strong>
       );
@@ -108,7 +108,7 @@ export function ListGenerator({
   }
 
   return (
-    <Card className={cn("flex h-full flex-col", compact && "p-4")}>
+    <Card className={cn("flex flex-col", compact && "p-4")}>
       <div>
         <h2 className="text-base font-semibold text-foreground md:text-lg">
           Generar lista de equipos
@@ -306,7 +306,7 @@ export function ListGenerator({
               backgroundSize: "22px 22px",
             }}
           />
-          <div className="relative max-h-64 overflow-y-auto rounded-2xl bg-whatsapp p-4 text-[13px] leading-relaxed text-foreground shadow-lg">
+          <div className="relative max-h-64 overflow-y-auto rounded-2xl bg-[#1f2c34] p-4 text-[13px] leading-relaxed text-[#e9edef] shadow-lg">
             {livePreview.split("\n").map((line, i) => (
               <div key={i} className={line === "" ? "h-2" : ""}>
                 {renderPreviewLine(line)}

@@ -33,7 +33,7 @@ export default async function CotizarIphonePage({
 
   return (
     <QuoteExperience
-      models={listQuoteModels()}
+      models={listQuoteModels(active.config)}
       tradeOptions={tradeOptions}
       initialSlug={target ? requested : undefined}
       demoPricing={active.demo}

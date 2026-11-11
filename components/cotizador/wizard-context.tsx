@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useRef, useState, type ReactNode } from "react";
 import type { TradeOption } from "@/lib/cotizador/types";
 import type {
   BackCondition,
@@ -103,6 +103,8 @@ export function WizardProvider({
   const [quote, setQuote] = useState<ServerQuote | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   const value: WizardContextValue = {
     state,
@@ -129,11 +131,13 @@ export function WizardProvider({
         originalParts: { ...current.originalParts, ...parts },
       })),
     setOriginalBox: (hasOriginalBox) => setState((current) => ({ ...current, hasOriginalBox })),
-    setFunctionality: (issues) =>
+    setFunctionality: (issues) => {
+      setError(null);
       setState((current) => ({
         ...current,
         functionalityIssues: { ...current.functionalityIssues, ...issues },
-      })),
+      }));
+    },
     setCanjeMode: (canjeMode) => setState((current) => ({ ...current, canjeMode })),
     setUpgradeSlug: (upgradeSlug) => setState((current) => ({ ...current, upgradeSlug })),
     clearUpgrade: () => setState((current) => ({ ...current, upgradeSlug: null })),
@@ -147,10 +151,19 @@ export function WizardProvider({
       setError(null);
       setPending(false);
     },
-    submitQuote: () =>
-      requestQuote(state, state.canjeMode ? state.upgradeSlug : null, setPending, setError, setQuote, setState),
+    submitQuote: () => {
+      const current = stateRef.current;
+      return requestQuote(
+        current,
+        current.canjeMode ? current.upgradeSlug : null,
+        setPending,
+        setError,
+        setQuote,
+        setState,
+      );
+    },
     chooseUpgrade: (slug) =>
-      requestQuote(state, slug, setPending, setError, setQuote, setState),
+      requestQuote(stateRef.current, slug, setPending, setError, setQuote, setState),
   };
 
   return <WizardContext.Provider value={value}>{children}</WizardContext.Provider>;
@@ -165,7 +178,10 @@ async function requestQuote(
   setState: (value: WizardState | ((current: WizardState) => WizardState)) => void,
 ) {
   const answers = toAnswers(state);
-  if (!answers) return;
+  if (!answers) {
+    setError("Faltan datos de la cotización. Volvé un paso y revisá las respuestas.");
+    return;
+  }
   setPending(true);
   setError(null);
   try {
@@ -177,18 +193,37 @@ async function requestQuote(
         ...(equipoSlug ? { equipo: equipoSlug } : {}),
       }),
     });
-    const data = (await response.json()) as
-      | (ServerQuote & { ok: true })
-      | { ok: false; message?: string };
-    if (!response.ok || !data.ok) {
-      setError("message" in data && data.message ? data.message : "No se pudo calcular la cotización.");
+
+    let data: unknown;
+    try {
+      data = await response.json();
+    } catch {
+      setError("No se pudo calcular la cotización. Revisá la conexión e intentá de nuevo.");
       return;
     }
+
+    if (!isRecord(data) || data.ok !== true) {
+      const message =
+        isRecord(data) && typeof data.message === "string" && data.message.trim()
+          ? data.message
+          : "No se pudo calcular la cotización.";
+      setError(message);
+      return;
+    }
+
+    if (typeof data.finalPrice !== "number" || !Number.isFinite(data.finalPrice)) {
+      setError("La cotización llegó incompleta. Probá de nuevo.");
+      return;
+    }
+
     setQuote({
       demo: data.demo !== false,
       finalPrice: data.finalPrice,
-      target: data.target,
-      difference: data.difference,
+      target: readTarget(data.target),
+      difference:
+        typeof data.difference === "number" && Number.isFinite(data.difference)
+          ? data.difference
+          : null,
       deductions: readDeductions(data.deductions),
     });
     setState((current) => ({
@@ -198,10 +233,34 @@ async function requestQuote(
       canjeMode: equipoSlug ? true : current.canjeMode,
     }));
   } catch {
-    setError("No se pudo calcular la cotización.");
+    setError("No se pudo calcular la cotización. Revisá la conexión e intentá de nuevo.");
   } finally {
     setPending(false);
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function readTarget(value: unknown): PublicTradeTarget | null {
+  if (!isRecord(value)) return null;
+  if (typeof value.name !== "string" || typeof value.storage !== "string") return null;
+  if (typeof value.color !== "string") return null;
+  if (typeof value.salePrice !== "number" || !Number.isFinite(value.salePrice)) return null;
+  const batteryCondition =
+    value.batteryCondition === null || value.batteryCondition === undefined
+      ? null
+      : typeof value.batteryCondition === "number" && Number.isFinite(value.batteryCondition)
+        ? value.batteryCondition
+        : null;
+  return {
+    name: value.name,
+    storage: value.storage,
+    color: value.color,
+    salePrice: value.salePrice,
+    batteryCondition,
+  };
 }
 
 function readDeductions(value: unknown): { label: string; amount: number }[] {

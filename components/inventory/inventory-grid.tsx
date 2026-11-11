@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Battery, Search } from "lucide-react";
 import { Badge, Card, Input, Select } from "@/components/ui";
 import { DualPrice, Money } from "@/components/currency/currency-toggle";
@@ -37,8 +37,18 @@ type InventoryItem = {
   images: { url: string; isPrimary: boolean }[];
 };
 
-export function InventoryGrid({ products }: { products: InventoryItem[] }) {
-  const [search, setSearch] = useState("");
+export function InventoryGrid({
+  products,
+  initialQuery = "",
+}: {
+  products: InventoryItem[];
+  initialQuery?: string;
+}) {
+  const [search, setSearch] = useState(initialQuery);
+
+  useEffect(() => {
+    setSearch(initialQuery);
+  }, [initialQuery]);
   const [type, setType] = useState("ALL");
   const [condition, setCondition] = useState("ALL");
   const [storage, setStorage] = useState("ALL");

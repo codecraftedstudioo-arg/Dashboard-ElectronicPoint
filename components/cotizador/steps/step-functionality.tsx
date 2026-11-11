@@ -108,8 +108,18 @@ export function StepFunctionality() {
           ? "⚠️ Los problemas seleccionados afectarán el precio final"
           : "✓ Todo funciona correctamente"}
       </div>
-      {error ? <p className="mt-4 text-sm text-red-500 dark:text-red-400">{error}</p> : null}
-      <Button onClick={() => void submitQuote()} fullWidth disabled={pending} className="mt-6">
+      {error ? (
+        <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
+          {error}
+        </div>
+      ) : null}
+      <Button
+        type="button"
+        onClick={() => void submitQuote()}
+        fullWidth
+        disabled={pending}
+        className="mt-6"
+      >
         {pending ? "Calculando..." : "Ver mi cotización"}
       </Button>
     </Card>

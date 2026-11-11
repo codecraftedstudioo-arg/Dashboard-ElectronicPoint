@@ -104,7 +104,8 @@ export async function getDashboardStats() {
     include: { product: true },
   });
 
-  const totalAvailable = available.length;
+  const sellable = available.filter((product) => !product.isReserved);
+  const totalAvailable = sellable.length;
   const totalCost = available.reduce((s, p) => s + p.cost, 0);
   const totalSaleValue = available.reduce((s, p) => s + p.salePrice, 0);
   const potentialProfit = totalSaleValue - totalCost;

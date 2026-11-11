@@ -1,4 +1,3 @@
-import { demoConfig } from "@/lib/cotizador/pricing-engine";
 import type {
   FunctionalityIssues,
   QuoteAnswers,
@@ -50,14 +49,11 @@ export function parseQuoteInput(body: unknown): ParseResult {
 
   const model = body.model;
   const storage = body.storage;
-  if (typeof model !== "string" || !demoConfig.prices.some((p) => p.model === model)) {
+  if (typeof model !== "string" || !model.trim()) {
     return { ok: false, message: "Elegí un modelo de la lista." };
   }
   if (typeof storage !== "string" || !STORAGES.has(storage as StorageCapacity)) {
     return { ok: false, message: "Elegí una capacidad válida." };
-  }
-  if (!demoConfig.prices.some((p) => p.model === model && p.storage === storage)) {
-    return { ok: false, message: "Esa capacidad no corresponde al modelo." };
   }
 
   if (typeof body.screenCondition !== "string" || !SCREENS.has(body.screenCondition)) {

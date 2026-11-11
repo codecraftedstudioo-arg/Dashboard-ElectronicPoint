@@ -28,7 +28,9 @@ function relativeDate(date: Date) {
 
 export function RecentProductsCard({
   products,
+  total,
 }: {
+  total?: number;
   products: Array<{
     id: string;
     name: string;
@@ -43,10 +45,13 @@ export function RecentProductsCard({
   }>;
 }) {
   return (
-    <Card className="h-full">
+    <Card>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-foreground md:text-lg">
-          Últimos equipos ingresados
+          Equipos
+          {total != null ? (
+            <span className="ml-2 text-sm font-medium text-muted">{total}</span>
+          ) : null}
         </h2>
         <Link
           href="/inventario"
@@ -63,7 +68,7 @@ export function RecentProductsCard({
             <Link
               key={product.id}
               href={`/equipos/${product.id}`}
-              className="flex items-center gap-3 rounded-xl border border-transparent px-2 py-2.5 transition-colors hover:border-card-border hover:bg-white/[0.03]"
+              className="flex items-center gap-3 rounded-xl border border-transparent px-2 py-2.5 transition-colors hover:border-card-border hover:bg-hover"
             >
               <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-input">
                 {img ? (
@@ -141,7 +146,7 @@ export function RecentSalesCard({
   }>;
 }) {
   return (
-    <Card className="h-full">
+    <Card>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-foreground md:text-lg">
           Ventas recientes
@@ -161,7 +166,7 @@ export function RecentSalesCard({
             <Link
               key={sale.id}
               href={`/equipos/${sale.product.id}`}
-              className="flex items-center gap-3 rounded-xl border border-transparent px-2 py-2.5 transition-colors hover:border-card-border hover:bg-white/[0.03]"
+              className="flex items-center gap-3 rounded-xl border border-transparent px-2 py-2.5 transition-colors hover:border-card-border hover:bg-hover"
             >
               <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-input">
                 {img ? (

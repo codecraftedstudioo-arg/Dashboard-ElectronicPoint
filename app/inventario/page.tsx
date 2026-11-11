@@ -6,8 +6,13 @@ import { requireDashboardPage } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
-export default async function InventarioPage() {
+export default async function InventarioPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   await requireDashboardPage();
+  const { q } = await searchParams;
   const products = await getAllProducts({ status: "AVAILABLE" });
 
   return (
@@ -17,7 +22,7 @@ export default async function InventarioPage() {
         subtitle="Todos los equipos disponibles"
         actions={<CurrencySelector />}
       />
-      <InventoryGrid products={products} />
+      <InventoryGrid products={products} initialQuery={q ?? ""} />
     </div>
   );
 }

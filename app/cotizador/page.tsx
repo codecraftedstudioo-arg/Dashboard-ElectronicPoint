@@ -27,7 +27,7 @@ export default async function CotizadorPage() {
       />
 
       <section className="rounded-xl border border-amber-500/40 bg-card p-5">
-        <p className="text-xs font-semibold tracking-wide text-amber-300 light:text-amber-800">
+        <p className="text-xs font-semibold tracking-wide text-amber-800">
           VIGENTE PARA EL PÚBLICO
         </p>
         {state.revisions.some((revision) => revision.status === "PUBLISHED") ? (

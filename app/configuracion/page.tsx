@@ -1,5 +1,4 @@
 import { Card, PageHeader } from "@/components/ui";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { requireDashboardPage } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
@@ -12,14 +11,11 @@ export default async function ConfiguracionPage() {
         title="Configuración"
         subtitle="Ajustes generales del dashboard"
       />
-      <Card className="flex items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base font-semibold text-foreground">Apariencia</h2>
-          <p className="mt-2 text-sm text-muted">
-            Cambiá entre modo oscuro y modo claro. La preferencia se guarda en este dispositivo.
-          </p>
-        </div>
-        <ThemeToggle />
+      <Card>
+        <h2 className="text-base font-semibold text-foreground">Apariencia</h2>
+        <p className="mt-2 text-sm text-muted">
+          El panel usa el diseño claro: fondo menta, navegación oscura y tarjetas blancas.
+        </p>
       </Card>
       <Card>
         <h2 className="text-base font-semibold text-foreground">Moneda</h2>

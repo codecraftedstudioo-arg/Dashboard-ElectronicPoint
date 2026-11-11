@@ -12,9 +12,11 @@ import {
 export function CurrencyToggle({
   className,
   compact = false,
+  tone = "default",
 }: {
   className?: string;
   compact?: boolean;
+  tone?: "default" | "onDark";
 }) {
   const { currency, setCurrency, canShowArs, rateError } = useCurrency();
 
@@ -28,7 +30,12 @@ export function CurrencyToggle({
       <div
         role="group"
         aria-label="Moneda"
-        className="inline-flex rounded-xl border border-card-border bg-card p-0.5 text-sm"
+        className={cn(
+          "inline-flex rounded-full p-1 text-sm",
+          tone === "onDark"
+            ? "border border-white/10 bg-white/10"
+            : "border border-card-border bg-card",
+        )}
       >
         {(["USD", "ARS"] as const).map((code) => {
           const active = currency === code;
@@ -40,10 +47,14 @@ export function CurrencyToggle({
               disabled={disabled}
               onClick={() => select(code)}
               className={cn(
-                "rounded-lg px-2.5 py-1.5 font-semibold transition-colors sm:px-3",
+                "rounded-full px-3 py-1.5 font-semibold transition-colors",
                 active
-                  ? "bg-accent text-accent-contrast"
-                  : "text-muted hover:bg-hover hover:text-foreground",
+                  ? tone === "onDark"
+                    ? "bg-white text-[#101816]"
+                    : "bg-accent text-accent-contrast"
+                  : tone === "onDark"
+                    ? "text-white/70 hover:text-white"
+                    : "text-muted hover:bg-hover hover:text-foreground",
                 disabled && "cursor-not-allowed opacity-40 hover:bg-transparent",
               )}
               title={

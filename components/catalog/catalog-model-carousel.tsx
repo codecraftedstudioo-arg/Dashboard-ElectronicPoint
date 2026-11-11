@@ -96,10 +96,11 @@ export function CatalogModelCarousel({
     pausedRef.current = hoverRef.current || pointerRef.current;
   }
 
+  const availableCount = products.filter((product) => !product.isReserved).length;
   const countLabel =
-    products.length === 1
+    availableCount === 1
       ? "1 equipo disponible"
-      : `${products.length} equipos disponibles`;
+      : `${availableCount} equipos disponibles`;
 
   const showControls = products.length > 1 && overflows;
   const single = products.length === 1;

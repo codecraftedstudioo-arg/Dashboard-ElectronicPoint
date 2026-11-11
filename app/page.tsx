@@ -1,8 +1,6 @@
-import Link from "next/link";
-import { Package, DollarSign, Tag, TrendingUp, Plus } from "lucide-react";
-import { PageHeader, Button } from "@/components/ui";
-import { CurrencySelector } from "@/components/layout/app-shell";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Package, DollarSign, Tag, TrendingUp } from "lucide-react";
+import { AddProductLink } from "@/components/layout/app-shell";
+import { CurrencyToggle, ExchangeRateBadge } from "@/components/currency/currency-toggle";
 import { StatCard } from "@/components/dashboard/stat-card";
 import {
   RecentProductsCard,
@@ -32,6 +30,10 @@ export default async function DashboardPage() {
   ]);
 
   const recentProducts = available.slice(0, 6);
+  const period = new Intl.DateTimeFormat("es-AR", {
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
   const listProducts = available.map((p) => ({
     id: p.id,
     name: p.name,
@@ -45,73 +47,82 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Dashboard"
-        subtitle="Resumen general de tu inventario"
-        actions={
-          <>
-            <ThemeToggle />
-            <CurrencySelector />
-            <Link href="/agregar">
-              <Button>
-                <Plus className="h-4 w-4" />
-                Agregar equipo
-              </Button>
-            </Link>
-          </>
-        }
-      />
+    <div className="flex min-h-0 flex-1 flex-col">
+      <section className="px-4 pt-1 pb-5 text-white sm:px-6 sm:pb-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-[1.75rem]">
+              Stock Apple
+            </h1>
+            <p className="mt-1 text-sm text-white/55">
+              Mostrando el inventario de {period}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-col items-end gap-1">
+              <CurrencyToggle compact tone="onDark" />
+              <ExchangeRateBadge className="text-white/50" />
+            </div>
+            <AddProductLink />
+          </div>
+        </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          title="Equipos disponibles"
-          value={`${stats.totalAvailable} equipos`}
-          subtitle="Stock actual"
-          icon={<Package className="h-5 w-5" />}
-          iconClassName="bg-accent-dim text-accent"
-        />
-        <StatCard
-          title="Costo total del stock"
-          value={<Money amount={stats.totalCost} />}
-          subtitle="Dinero invertido"
-          icon={<DollarSign className="h-5 w-5" />}
-          iconClassName="bg-accent-dim text-accent"
-        />
-        <StatCard
-          title="Valor total de venta"
-          value={<Money amount={stats.totalSaleValue} />}
-          subtitle="Precio de venta total"
-          icon={<Tag className="h-5 w-5" />}
-          iconClassName="bg-blue-500/15 text-blue-400"
-        />
-        <StatCard
-          title="Ganancia potencial"
-          value={<Money amount={stats.potentialProfit} />}
-          subtitle="Podrías ganar"
-          icon={<TrendingUp className="h-5 w-5" />}
-          iconClassName="bg-violet-500/15 text-violet-400"
-        />
-      </div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            variant="glass"
+            title="Equipos disponibles"
+            value={`${stats.totalAvailable} equipos`}
+            subtitle="Stock actual"
+            icon={<Package className="h-5 w-5" />}
+          />
+          <StatCard
+            variant="glass"
+            title="Costo del stock"
+            value={<Money amount={stats.totalCost} />}
+            subtitle="Dinero invertido"
+            icon={<DollarSign className="h-5 w-5" />}
+          />
+          <StatCard
+            variant="glass"
+            title="Valor de venta"
+            value={<Money amount={stats.totalSaleValue} />}
+            subtitle="Precio de venta total"
+            icon={<Tag className="h-5 w-5" />}
+          />
+          <StatCard
+            variant="glass"
+            title="Ganancia potencial"
+            value={<Money amount={stats.potentialProfit} />}
+            subtitle="Podrías ganar"
+            icon={<TrendingUp className="h-5 w-5" />}
+          />
+        </div>
+      </section>
 
-      <div className="grid gap-4 xl:grid-cols-[1.1fr_1fr_0.95fr]">
-        <RecentProductsCard products={recentProducts} />
-        <RecentSalesCard sales={sales} />
+      <section className="admin-sheet flex-1 space-y-4 px-4 py-5 md:px-6">
+        <div className="grid gap-4 xl:grid-cols-2">
+          <FinancialSummaryChart
+            totalCost={stats.totalCost}
+            potentialProfit={stats.potentialProfit}
+            realizedProfit={stats.realizedProfit}
+            totalRevenue={stats.totalRevenue}
+          />
+          <ChannelSalesChart
+            channelCounts={stats.channelCounts}
+            total={stats.channelTotal}
+          />
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-2">
+          <RecentProductsCard
+            products={recentProducts}
+            total={stats.totalAvailable}
+          />
+          <RecentSalesCard sales={sales} />
+        </div>
+
         <ListGenerator products={listProducts} />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <FinancialSummaryChart
-          totalCost={stats.totalCost}
-          potentialProfit={stats.potentialProfit}
-          realizedProfit={stats.realizedProfit}
-          totalRevenue={stats.totalRevenue}
-        />
-        <ChannelSalesChart
-          channelCounts={stats.channelCounts}
-          total={stats.channelTotal}
-        />
-      </div>
+      </section>
     </div>
   );
 }

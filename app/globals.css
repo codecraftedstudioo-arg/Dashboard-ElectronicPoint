@@ -139,3 +139,99 @@ html.light ::-webkit-scrollbar-thumb {
   height: 0;
   width: 0;
 }
+
+/* Panel interno: menta de fondo, cabecera oscura y contenido claro. */
+.admin-canvas {
+  color-scheme: light;
+  background:
+    radial-gradient(900px 420px at 0% 0%, #edfff8 0%, transparent 55%),
+    #d4f3e7;
+  --background: #f4f7f5;
+  --foreground: #14211d;
+  --card: #ffffff;
+  --card-border: #e4eeea;
+  --muted: #6b7c76;
+  --accent: #128a49;
+  --accent-hover: #0d733c;
+  --accent-dim: rgba(18, 138, 73, 0.12);
+  --accent-border: rgba(18, 138, 73, 0.28);
+  --accent-contrast: #ffffff;
+  --sidebar: #101816;
+  --input: #f7faf8;
+  --hover: rgba(16, 24, 22, 0.05);
+  --shadow: 0 14px 34px rgba(18, 40, 32, 0.07);
+  --admin-ink: #101816;
+  --admin-sheet: #f3f6f4;
+}
+
+.admin-panel {
+  background: var(--admin-ink);
+  border-radius: 28px;
+  min-height: calc(100dvh - 1.5rem);
+  box-shadow: 0 24px 50px rgba(16, 40, 32, 0.14);
+}
+
+.admin-sheet {
+  background: var(--admin-sheet);
+  border-radius: 28px 28px 0 0;
+}
+
+.admin-rail {
+  width: 76px;
+  border-radius: 28px;
+  background: #101816;
+  box-shadow: 0 18px 40px rgba(16, 40, 32, 0.16);
+  transition:
+    width 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.admin-rail:hover,
+.admin-rail:focus-within {
+  width: 228px;
+  box-shadow: 0 22px 48px rgba(16, 40, 32, 0.28);
+}
+
+.admin-rail-label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    max-width 220ms ease,
+    opacity 160ms ease,
+    margin 220ms ease;
+}
+
+.admin-rail:hover .admin-rail-label,
+.admin-rail:focus-within .admin-rail-label {
+  max-width: 10rem;
+  opacity: 1;
+  margin-left: 0.75rem;
+}
+
+.admin-rail-brand {
+  margin-inline: auto;
+  width: 2.75rem;
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.admin-rail:hover .admin-rail-brand,
+.admin-rail:focus-within .admin-rail-brand {
+  margin-inline: 0.75rem;
+  width: auto;
+  justify-content: flex-start;
+  padding-inline: 0.75rem;
+}
+
+.admin-rail-item {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.admin-rail:hover .admin-rail-item,
+.admin-rail:focus-within .admin-rail-item {
+  justify-content: flex-start;
+  padding-inline: 0.75rem;
+}

@@ -14,6 +14,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await createQuote(body);
-  return NextResponse.json(result, { status: result.ok ? 200 : 400 });
+  try {
+    const result = await createQuote(body);
+    return NextResponse.json(result, { status: result.ok ? 200 : 400 });
+  } catch {
+    return NextResponse.json(
+      { ok: false, message: "No se pudo calcular la cotización. Probá de nuevo." },
+      { status: 500 },
+    );
+  }
 }
