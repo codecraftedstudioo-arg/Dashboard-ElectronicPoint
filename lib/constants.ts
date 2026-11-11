@@ -35,14 +35,20 @@ export const PRODUCT_TYPE_LABELS = {
   IPHONE: "iPhone",
   MACBOOK: "MacBook",
   APPLE_WATCH: "Apple Watch",
+  AIRPODS: "AirPods",
+  IPAD: "iPad",
+  OTROS: "Otros",
 } as const;
 
-/** Public/admin category that groups MacBook + Apple Watch together. */
+/** Public/admin category for non-iPhone Apple products. */
 export const VARIED_OPPORTUNITIES_LABEL = "Oportunidades varias";
 
 export const VARIED_OPPORTUNITY_TYPES = [
   "MACBOOK",
   "APPLE_WATCH",
+  "AIRPODS",
+  "IPAD",
+  "OTROS",
 ] as const satisfies ReadonlyArray<keyof typeof PRODUCT_TYPE_LABELS>;
 
 export function isVariedOpportunityType(
@@ -59,13 +65,26 @@ export function productCategoryLabel(
   return PRODUCT_TYPE_LABELS[type];
 }
 
-/** Stored when a product type has no capacity field (Apple Watch). */
+/** Stored when a product type has no capacity field. */
 export const NO_STORAGE_VALUE = "-";
+
+const NO_STORAGE_TYPES = [
+  "APPLE_WATCH",
+  "AIRPODS",
+  "OTROS",
+] as const satisfies ReadonlyArray<keyof typeof PRODUCT_TYPE_LABELS>;
 
 export function productHasStorage(
   type: keyof typeof PRODUCT_TYPE_LABELS,
 ): boolean {
-  return type !== "APPLE_WATCH";
+  return !(NO_STORAGE_TYPES as ReadonlyArray<string>).includes(type);
+}
+
+/** Types that track battery health percentage. */
+export function productHasBattery(
+  type: keyof typeof PRODUCT_TYPE_LABELS,
+): boolean {
+  return type === "IPHONE" || type === "APPLE_WATCH" || type === "IPAD";
 }
 
 export const STORAGE_OPTIONS = [

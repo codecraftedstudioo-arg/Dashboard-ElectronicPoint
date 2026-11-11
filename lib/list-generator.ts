@@ -5,6 +5,7 @@ import type {
   ListSortOption,
 } from "@/lib/constants";
 import {
+  isVariedOpportunityType,
   NO_STORAGE_VALUE,
   PHYSICAL_CONDITION_LABELS,
   productHasStorage,
@@ -46,9 +47,7 @@ export function filterProductsForList(
       result = result.filter((p) => p.type === "IPHONE");
       break;
     case "oportunidades_varias":
-      result = result.filter(
-        (p) => p.type === "MACBOOK" || p.type === "APPLE_WATCH",
-      );
+      result = result.filter((p) => isVariedOpportunityType(p.type));
       break;
     case "model":
       if (options.modelFilter?.trim()) {

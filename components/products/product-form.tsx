@@ -25,6 +25,8 @@ import {
   PHYSICAL_CONDITION_LABELS,
   CHIP_TYPE_LABELS,
   NO_STORAGE_VALUE,
+  productHasBattery,
+  productHasStorage,
 } from "@/lib/constants";
 import { calcProfit, formatMargin } from "@/lib/calculations";
 import { Money } from "@/components/currency/currency-toggle";
@@ -345,6 +347,9 @@ export function ProductForm({
               <option value="IPHONE">iPhone</option>
               <option value="MACBOOK">Oportunidades varias · MacBook</option>
               <option value="APPLE_WATCH">Oportunidades varias · Apple Watch</option>
+              <option value="AIRPODS">Oportunidades varias · AirPods</option>
+              <option value="IPAD">Oportunidades varias · iPad</option>
+              <option value="OTROS">Oportunidades varias · Otros</option>
             </Select>
           </div>
           <div>
@@ -358,11 +363,17 @@ export function ProductForm({
                   ? "Apple Watch Series 10"
                   : type === "MACBOOK"
                     ? "MacBook Air M2"
-                    : "iPhone 16 Pro Max"
+                    : type === "AIRPODS"
+                      ? "AirPods Pro 2"
+                      : type === "IPAD"
+                        ? "iPad Air M2"
+                        : type === "OTROS"
+                          ? "Accesorio Apple"
+                          : "iPhone 16 Pro Max"
               }
             />
           </div>
-          {type === "APPLE_WATCH" ? (
+          {!productHasStorage(type) ? (
             <input type="hidden" name="storage" value={NO_STORAGE_VALUE} />
           ) : (
             <div>
@@ -400,7 +411,7 @@ export function ProductForm({
               }
             />
           </div>
-          {type === "IPHONE" || type === "APPLE_WATCH" ? (
+          {productHasBattery(type) ? (
             <div>
               <Label>Batería (%)</Label>
               <Input
@@ -494,9 +505,8 @@ export function ProductForm({
         <div className="rounded-xl border border-card-border bg-input p-4">
           <Label>Mostrar en catálogo público</Label>
           <p className="mb-3 text-xs text-muted">
-            Los iPhones y las Oportunidades varias (MacBook y Apple Watch)
-            disponibles y publicados aparecen en el catálogo. Por defecto queda
-            oculto.
+            Los iPhones y las Oportunidades varias disponibles y publicados
+            aparecen en el catálogo. Por defecto queda oculto.
           </p>
           <input type="hidden" name="isPublished" value={isPublished ? "true" : "false"} />
           <div className="flex flex-wrap gap-2">

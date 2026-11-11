@@ -13,6 +13,7 @@ import {
   SALE_CHANNEL_LABELS,
   isVariedOpportunityType,
   productCategoryLabel,
+  productHasStorage,
 } from "@/lib/constants";
 import { primaryImageUrl } from "@/lib/images";
 import { ChannelSalesChart } from "@/components/dashboard/charts";
@@ -318,9 +319,9 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
                   </div>
                   <div className="min-w-0">
                     <div className="font-medium text-foreground">
-                      {sale.product.type === "APPLE_WATCH"
-                        ? sale.product.name
-                        : `${sale.product.name} ${sale.product.storage}`}
+                      {productHasStorage(sale.product.type)
+                        ? `${sale.product.name} ${sale.product.storage}`
+                        : sale.product.name}
                     </div>
                     <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted">
                       <span>{productCategoryLabel(sale.product.type)}</span>
@@ -359,9 +360,9 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
                 soldPrice={sale.soldPrice}
                 channel={sale.channel}
                 productLabel={
-                  sale.product.type === "APPLE_WATCH"
-                    ? sale.product.name
-                    : `${sale.product.name} ${sale.product.storage}`
+                  productHasStorage(sale.product.type)
+                    ? `${sale.product.name} ${sale.product.storage}`
+                    : sale.product.name
                 }
               />
             </Card>

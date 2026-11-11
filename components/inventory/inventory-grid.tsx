@@ -10,8 +10,10 @@ import { calcProfit, formatMargin } from "@/lib/calculations";
 import {
   CONDITION_COLORS,
   PHYSICAL_CONDITION_LABELS,
+  isVariedOpportunityType,
   NO_STORAGE_VALUE,
   productCategoryLabel,
+  productHasStorage,
 } from "@/lib/constants";
 import { primaryImageUrl } from "@/lib/images";
 import { ReserveProductButton } from "@/components/products/reserve-product-button";
@@ -81,9 +83,7 @@ export function InventoryGrid({
       );
     }
     if (type === "OPORTUNIDADES_VARIAS") {
-      list = list.filter(
-        (p) => p.type === "MACBOOK" || p.type === "APPLE_WATCH",
-      );
+      list = list.filter((p) => isVariedOpportunityType(p.type));
     } else if (type !== "ALL") {
       list = list.filter((p) => p.type === type);
     }
@@ -221,9 +221,9 @@ export function InventoryGrid({
                       {product.name}
                     </div>
                     <div className="mt-1 text-sm text-muted">
-                      {product.type === "APPLE_WATCH"
-                        ? product.color
-                        : `${product.storage} · ${product.color}`}
+                      {productHasStorage(product.type)
+                        ? `${product.storage} · ${product.color}`
+                        : product.color}
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       <Badge className="border-card-border text-muted">

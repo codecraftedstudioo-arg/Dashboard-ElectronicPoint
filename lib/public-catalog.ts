@@ -34,6 +34,9 @@ const PUBLIC_CATALOG_TYPES = [
   "IPHONE",
   "MACBOOK",
   "APPLE_WATCH",
+  "AIRPODS",
+  "IPAD",
+  "OTROS",
 ] as const satisfies ReadonlyArray<ProductType>;
 
 const publicProductSelect = {

@@ -7,7 +7,11 @@ import { prisma } from "@/lib/prisma";
 import { nextInternalCode } from "@/lib/queries";
 import { deleteStoredImage, uploadProductImage } from "@/lib/storage";
 import { extractImei, isValidImeiFormat } from "@/lib/imei";
-import { NO_STORAGE_VALUE } from "@/lib/constants";
+import {
+  NO_STORAGE_VALUE,
+  productHasBattery,
+  productHasStorage,
+} from "@/lib/constants";
 import type {
   ChipType,
   PhysicalCondition,
@@ -130,10 +134,9 @@ export async function createProduct(formData: FormData) {
   await requireAdmin();
   const type = String(formData.get("type")) as ProductType;
   const name = String(formData.get("name") || "").trim();
-  const storage =
-    type === "APPLE_WATCH"
-      ? NO_STORAGE_VALUE
-      : String(formData.get("storage") || "").trim();
+  const storage = productHasStorage(type)
+    ? String(formData.get("storage") || "").trim()
+    : NO_STORAGE_VALUE;
   const color = String(formData.get("color") || "").trim();
   const imei = parseImei(formData.get("imei"));
   const batteryRaw = formData.get("batteryCondition");
@@ -149,12 +152,11 @@ export async function createProduct(formData: FormData) {
   const isPublished = formData.get("isPublished") === "true";
   const isOpportunity = formData.get("isOpportunity") === "true";
 
-  if (!name || !color || (type !== "APPLE_WATCH" && !storage)) {
+  if (!name || !color || (productHasStorage(type) && !storage)) {
     return {
-      error:
-        type === "APPLE_WATCH"
-          ? "Completá modelo y color."
-          : "Completá modelo, capacidad y color.",
+      error: productHasStorage(type)
+        ? "Completá modelo, capacidad y color."
+        : "Completá modelo y color.",
     };
   }
 
@@ -173,8 +175,7 @@ export async function createProduct(formData: FormData) {
       storage,
       color,
       imei,
-      batteryCondition:
-        type === "IPHONE" || type === "APPLE_WATCH" ? batteryCondition : null,
+      batteryCondition: productHasBattery(type) ? batteryCondition : null,
       physicalCondition,
       chip: type === "IPHONE" ? chip : null,
       cost,
@@ -209,17 +210,15 @@ export async function updateProduct(productId: string, formData: FormData) {
   await requireAdmin();
   const type = String(formData.get("type")) as ProductType;
   const name = String(formData.get("name") || "").trim();
-  const storage =
-    type === "APPLE_WATCH"
-      ? NO_STORAGE_VALUE
-      : String(formData.get("storage") || "").trim();
+  const storage = productHasStorage(type)
+    ? String(formData.get("storage") || "").trim()
+    : NO_STORAGE_VALUE;
   const color = String(formData.get("color") || "").trim();
-  if (!name || !color || (type !== "APPLE_WATCH" && !storage)) {
+  if (!name || !color || (productHasStorage(type) && !storage)) {
     return {
-      error:
-        type === "APPLE_WATCH"
-          ? "Completá modelo y color."
-          : "Completá modelo, capacidad y color.",
+      error: productHasStorage(type)
+        ? "Completá modelo, capacidad y color."
+        : "Completá modelo y color.",
     };
   }
   const imei = parseImei(formData.get("imei"));
@@ -271,8 +270,7 @@ export async function updateProduct(productId: string, formData: FormData) {
       storage,
       color,
       imei,
-      batteryCondition:
-        type === "IPHONE" || type === "APPLE_WATCH" ? batteryCondition : null,
+      batteryCondition: productHasBattery(type) ? batteryCondition : null,
       physicalCondition,
       chip: type === "IPHONE" ? chip : null,
       cost,

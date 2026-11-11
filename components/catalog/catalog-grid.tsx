@@ -33,9 +33,22 @@ export function CatalogGrid({
       products
         .filter((product) => isVariedOpportunityType(product.type))
         .sort((a, b) => {
-          if (a.type !== b.type) {
-            return a.type === "APPLE_WATCH" ? -1 : 1;
-          }
+          const rank = (type: string) => {
+            switch (type) {
+              case "APPLE_WATCH":
+                return 0;
+              case "AIRPODS":
+                return 1;
+              case "MACBOOK":
+                return 2;
+              case "IPAD":
+                return 3;
+              default:
+                return 4;
+            }
+          };
+          const byType = rank(a.type) - rank(b.type);
+          if (byType !== 0) return byType;
           return a.name.localeCompare(b.name, "es");
         }),
     [products],

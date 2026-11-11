@@ -30,7 +30,7 @@ export async function getAvailableProducts() {
 export async function getAllProducts(filters?: {
   status?: ProductStatus;
   search?: string;
-  type?: "IPHONE" | "MACBOOK" | "APPLE_WATCH";
+  type?: "IPHONE" | "MACBOOK" | "APPLE_WATCH" | "AIRPODS" | "IPAD" | "OTROS";
 }) {
   const where: Prisma.ProductWhereInput = {};
   if (filters?.status) where.status = filters.status;
@@ -71,7 +71,7 @@ export async function getRecentSales(limit = 8) {
 
 export async function getSales(filters?: {
   channel?: SaleChannel;
-  type?: "IPHONE" | "MACBOOK" | "APPLE_WATCH";
+  type?: "IPHONE" | "MACBOOK" | "APPLE_WATCH" | "AIRPODS" | "IPAD" | "OTROS";
   search?: string;
 }) {
   const where: Prisma.SaleWhereInput = {};

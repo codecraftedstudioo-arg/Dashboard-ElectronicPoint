@@ -12,6 +12,9 @@ enum ProductType {
   IPHONE
   MACBOOK
   APPLE_WATCH
+  AIRPODS
+  IPAD
+  OTROS
 }
 
 enum ProductStatus {
