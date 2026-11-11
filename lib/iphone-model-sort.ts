@@ -46,17 +46,20 @@ export function compareIphoneModelsDesc(aName: string, bName: string): number {
 }
 
 /**
- * Public catalog order: iPhones first (newest first), then Apple Watch
- * (Ultra → Series → SE), then any other name alphabetically.
+ * Public catalog order for remaining non-iPhone names (Oportunidades varias).
+ * Apple Watch: Ultra → Series → SE. Other names alphabetically after watches.
  */
 export function compareCatalogModelsDesc(aName: string, bName: string): number {
   const aWatch = /apple\s*watch/i.test(aName);
   const bWatch = /apple\s*watch/i.test(bName);
-  if (aWatch !== bWatch) return aWatch ? 1 : -1;
+  if (aWatch !== bWatch) return aWatch ? -1 : 1;
   if (aWatch && bWatch) {
     const rankDiff = appleWatchModelSortKey(bName) - appleWatchModelSortKey(aName);
     if (rankDiff !== 0) return rankDiff;
     return aName.localeCompare(bName, "es");
   }
-  return compareIphoneModelsDesc(aName, bName);
+  const aIphone = /iphone/i.test(aName);
+  const bIphone = /iphone/i.test(bName);
+  if (aIphone || bIphone) return compareIphoneModelsDesc(aName, bName);
+  return aName.localeCompare(bName, "es");
 }

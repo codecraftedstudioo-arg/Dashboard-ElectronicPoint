@@ -140,8 +140,7 @@ export function ListGenerator({
             <option value="all">Todos</option>
             <option value="manual">Seleccionar manualmente</option>
             <option value="iphone">Solo iPhone</option>
-            <option value="macbook">Solo MacBook</option>
-            <option value="apple_watch">Solo Apple Watch</option>
+            <option value="oportunidades_varias">Oportunidades varias</option>
             <option value="model">Filtrar por modelo</option>
           </Select>
         </div>

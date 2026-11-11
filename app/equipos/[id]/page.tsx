@@ -11,9 +11,9 @@ import {
   CONDITION_COLORS,
   PHYSICAL_CONDITION_LABELS,
   CHIP_TYPE_LABELS,
-  PRODUCT_TYPE_LABELS,
   CHANNEL_COLORS,
   SALE_CHANNEL_LABELS,
+  productCategoryLabel,
   productHasStorage,
 } from "@/lib/constants";
 import { getProductById } from "@/lib/queries";
@@ -40,7 +40,7 @@ export default async function ProductDetailPage({
     <div className="mx-auto max-w-5xl space-y-6">
       <PageHeader
         title={product.name}
-        subtitle={`${product.internalCode} · ${PRODUCT_TYPE_LABELS[product.type]}`}
+        subtitle={`${product.internalCode} · ${productCategoryLabel(product.type)}`}
         actions={
           product.status === "AVAILABLE" ? (
             <>

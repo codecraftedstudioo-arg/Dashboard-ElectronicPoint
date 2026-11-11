@@ -10,7 +10,7 @@ export default async function AgregarPage() {
     <div className="mx-auto max-w-3xl">
       <PageHeader
         title="Agregar equipo"
-        subtitle="Cargá un iPhone o MacBook al stock"
+        subtitle="Cargá un iPhone u oportunidades varias al stock"
       />
       <ProductForm />
     </div>

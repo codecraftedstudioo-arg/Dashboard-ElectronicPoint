@@ -11,7 +11,8 @@ import {
   CHANNEL_CHART_ORDER,
   CHANNEL_COLORS,
   SALE_CHANNEL_LABELS,
-  PRODUCT_TYPE_LABELS,
+  isVariedOpportunityType,
+  productCategoryLabel,
 } from "@/lib/constants";
 import { primaryImageUrl } from "@/lib/images";
 import { ChannelSalesChart } from "@/components/dashboard/charts";
@@ -88,7 +89,11 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
       const soldAt = new Date(sale.soldAt);
       if (periodStart && soldAt < periodStart) return false;
       if (channel !== "ALL" && sale.channel !== channel) return false;
-      if (type !== "ALL" && sale.product.type !== type) return false;
+      if (type === "OPORTUNIDADES_VARIAS") {
+        if (!isVariedOpportunityType(sale.product.type)) return false;
+      } else if (type !== "ALL" && sale.product.type !== type) {
+        return false;
+      }
       if (search.trim()) {
         const q = search.toLowerCase();
         if (!sale.product.name.toLowerCase().includes(q)) return false;
@@ -274,8 +279,7 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
           <Select value={type} onChange={(e) => setType(e.target.value)}>
             <option value="ALL">Tipo: todos</option>
             <option value="IPHONE">iPhone</option>
-            <option value="MACBOOK">MacBook</option>
-            <option value="APPLE_WATCH">Apple Watch</option>
+            <option value="OPORTUNIDADES_VARIAS">Oportunidades varias</option>
           </Select>
           <Input
             type="date"
@@ -319,7 +323,7 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
                         : `${sale.product.name} ${sale.product.storage}`}
                     </div>
                     <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted">
-                      <span>{PRODUCT_TYPE_LABELS[sale.product.type]}</span>
+                      <span>{productCategoryLabel(sale.product.type)}</span>
                       <Badge className={CHANNEL_COLORS[sale.channel]}>
                         {SALE_CHANNEL_LABELS[sale.channel]}
                       </Badge>

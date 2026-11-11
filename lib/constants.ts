@@ -37,6 +37,28 @@ export const PRODUCT_TYPE_LABELS = {
   APPLE_WATCH: "Apple Watch",
 } as const;
 
+/** Public/admin category that groups MacBook + Apple Watch together. */
+export const VARIED_OPPORTUNITIES_LABEL = "Oportunidades varias";
+
+export const VARIED_OPPORTUNITY_TYPES = [
+  "MACBOOK",
+  "APPLE_WATCH",
+] as const satisfies ReadonlyArray<keyof typeof PRODUCT_TYPE_LABELS>;
+
+export function isVariedOpportunityType(
+  type: keyof typeof PRODUCT_TYPE_LABELS,
+): boolean {
+  return (VARIED_OPPORTUNITY_TYPES as ReadonlyArray<string>).includes(type);
+}
+
+/** Category shown in filters, badges and the public catalog. */
+export function productCategoryLabel(
+  type: keyof typeof PRODUCT_TYPE_LABELS,
+): string {
+  if (isVariedOpportunityType(type)) return VARIED_OPPORTUNITIES_LABEL;
+  return PRODUCT_TYPE_LABELS[type];
+}
+
 /** Stored when a product type has no capacity field (Apple Watch). */
 export const NO_STORAGE_VALUE = "-";
 
@@ -91,6 +113,5 @@ export type ListSelectOption =
   | "all"
   | "manual"
   | "iphone"
-  | "macbook"
-  | "apple_watch"
+  | "oportunidades_varias"
   | "model";

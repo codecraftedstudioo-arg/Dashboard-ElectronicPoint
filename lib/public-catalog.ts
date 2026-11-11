@@ -29,9 +29,10 @@ export type PublicCatalogProduct = {
   }[];
 };
 
-/** Product types shown on the public catalog. MacBook stays admin-only. */
+/** Product types shown on the public catalog (iPhone + Oportunidades varias). */
 const PUBLIC_CATALOG_TYPES = [
   "IPHONE",
+  "MACBOOK",
   "APPLE_WATCH",
 ] as const satisfies ReadonlyArray<ProductType>;
 

@@ -1,5 +1,9 @@
 import { formatListPrice, type CurrencyCode } from "@/lib/currency";
-import type { ListFieldKey, ListSortOption } from "@/lib/constants";
+import type {
+  ListFieldKey,
+  ListSelectOption,
+  ListSortOption,
+} from "@/lib/constants";
 import {
   NO_STORAGE_VALUE,
   PHYSICAL_CONDITION_LABELS,
@@ -24,7 +28,7 @@ export type ListGeneratorOptions = {
   subtitle: string;
   fields: Record<ListFieldKey, boolean>;
   sort: ListSortOption;
-  select: "available" | "all" | "manual" | "iphone" | "macbook" | "apple_watch" | "model";
+  select: ListSelectOption;
   modelFilter?: string;
   selectedIds?: string[];
   currency?: CurrencyCode;
@@ -41,11 +45,10 @@ export function filterProductsForList(
     case "iphone":
       result = result.filter((p) => p.type === "IPHONE");
       break;
-    case "macbook":
-      result = result.filter((p) => p.type === "MACBOOK");
-      break;
-    case "apple_watch":
-      result = result.filter((p) => p.type === "APPLE_WATCH");
+    case "oportunidades_varias":
+      result = result.filter(
+        (p) => p.type === "MACBOOK" || p.type === "APPLE_WATCH",
+      );
       break;
     case "model":
       if (options.modelFilter?.trim()) {

@@ -10,8 +10,8 @@ import { calcProfit, formatMargin } from "@/lib/calculations";
 import {
   CONDITION_COLORS,
   PHYSICAL_CONDITION_LABELS,
-  PRODUCT_TYPE_LABELS,
   NO_STORAGE_VALUE,
+  productCategoryLabel,
 } from "@/lib/constants";
 import { primaryImageUrl } from "@/lib/images";
 import { ReserveProductButton } from "@/components/products/reserve-product-button";
@@ -80,7 +80,13 @@ export function InventoryGrid({
           (p.imei?.toLowerCase().includes(q) ?? false),
       );
     }
-    if (type !== "ALL") list = list.filter((p) => p.type === type);
+    if (type === "OPORTUNIDADES_VARIAS") {
+      list = list.filter(
+        (p) => p.type === "MACBOOK" || p.type === "APPLE_WATCH",
+      );
+    } else if (type !== "ALL") {
+      list = list.filter((p) => p.type === type);
+    }
     if (condition !== "ALL")
       list = list.filter((p) => p.physicalCondition === condition);
     if (storage !== "ALL") list = list.filter((p) => p.storage === storage);
@@ -137,8 +143,7 @@ export function InventoryGrid({
           <Select value={type} onChange={(e) => setType(e.target.value)}>
             <option value="ALL">Tipo: todos</option>
             <option value="IPHONE">iPhone</option>
-            <option value="MACBOOK">MacBook</option>
-            <option value="APPLE_WATCH">Apple Watch</option>
+            <option value="OPORTUNIDADES_VARIAS">Oportunidades varias</option>
           </Select>
           <Select value={storage} onChange={(e) => setStorage(e.target.value)}>
             <option value="ALL">Capacidad: todas</option>
@@ -222,7 +227,7 @@ export function InventoryGrid({
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       <Badge className="border-card-border text-muted">
-                        {PRODUCT_TYPE_LABELS[product.type]}
+                        {productCategoryLabel(product.type)}
                       </Badge>
                       <Badge className={CONDITION_COLORS[product.physicalCondition]}>
                         {PHYSICAL_CONDITION_LABELS[product.physicalCondition]}
