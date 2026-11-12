@@ -235,3 +235,22 @@ html.light ::-webkit-scrollbar-thumb {
   justify-content: flex-start;
   padding-inline: 0.75rem;
 }
+
+@keyframes catalog-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.catalog-marquee-track {
+  animation: catalog-marquee 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-marquee-track {
+    animation: none;
+  }
+}

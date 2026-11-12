@@ -20,6 +20,38 @@ function AppleLogo({ className }: { className?: string }) {
   );
 }
 
+const ANNOUNCEMENT_PHRASE = "USADOS PREMIUM 3 MESES DE GARANTIA";
+
+function CatalogAnnouncementBar() {
+  const segment = (
+    <span className="inline-flex shrink-0 items-center gap-3 px-3 text-[11px] font-semibold tracking-[0.14em] text-white sm:gap-4 sm:px-4 sm:text-xs">
+      <span>{ANNOUNCEMENT_PHRASE}</span>
+      <span aria-hidden>·</span>
+      <span>{ANNOUNCEMENT_PHRASE}</span>
+      <span aria-hidden>·</span>
+      <span>{ANNOUNCEMENT_PHRASE}</span>
+      <span aria-hidden>·</span>
+    </span>
+  );
+
+  return (
+    <div
+      className="overflow-hidden bg-[#5aa6f3] pt-[env(safe-area-inset-top)]"
+      role="status"
+      aria-label={ANNOUNCEMENT_PHRASE}
+    >
+      <div className="py-1.5">
+        <div className="catalog-marquee-track flex w-max">
+          <div className="flex shrink-0">{segment}</div>
+          <div className="flex shrink-0" aria-hidden>
+            {segment}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function CatalogHeader() {
   const pathname = usePathname();
   const { isCatalogSite, homePath, quotePath } = useCatalogSite();
@@ -33,8 +65,10 @@ export function CatalogHeader() {
       (isCatalogSite && pathname !== "/" && !pathname.startsWith("/usados")));
 
   return (
-    <header className="sticky top-0 z-40 border-b border-card-border/80 bg-background/55 pt-[env(safe-area-inset-top)] backdrop-blur-md">
-      <div className="mx-auto flex h-14 min-h-14 w-full min-w-0 max-w-6xl items-center justify-between gap-2 px-3 sm:h-[4.5rem] sm:gap-4 sm:px-6 lg:h-20 lg:px-8">
+    <header className="sticky top-0 z-40">
+      <CatalogAnnouncementBar />
+      <div className="border-b border-card-border/80 bg-background/55 backdrop-blur-md">
+        <div className="mx-auto flex h-14 min-h-14 w-full min-w-0 max-w-6xl items-center justify-between gap-2 px-3 sm:h-[4.5rem] sm:gap-4 sm:px-6 lg:h-20 lg:px-8">
         <Link
           href={homePath}
           aria-current={isCatalogHome ? "page" : undefined}
@@ -77,6 +111,7 @@ export function CatalogHeader() {
           <div className="ml-2 flex items-center border-l border-card-border pl-2 sm:ml-4 sm:pl-4 lg:ml-6 lg:pl-6">
             <ThemeToggle />
           </div>
+        </div>
         </div>
       </div>
     </header>
