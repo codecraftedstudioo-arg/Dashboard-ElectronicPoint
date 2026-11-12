@@ -146,6 +146,7 @@ export async function createProduct(formData: FormData) {
     formData.get("physicalCondition"),
   ) as PhysicalCondition;
   const chip = parseChip(formData.get("chip"));
+  const hasBox = formData.get("hasBox") !== "false";
   const cost = parseNumber(formData.get("cost"));
   const salePrice = parseNumber(formData.get("salePrice"));
   const description = String(formData.get("description") || "").trim() || null;
@@ -178,6 +179,7 @@ export async function createProduct(formData: FormData) {
       batteryCondition: productHasBattery(type) ? batteryCondition : null,
       physicalCondition,
       chip: type === "IPHONE" ? chip : null,
+      hasBox,
       cost,
       salePrice,
       description,
@@ -229,6 +231,7 @@ export async function updateProduct(productId: string, formData: FormData) {
     formData.get("physicalCondition"),
   ) as PhysicalCondition;
   const chip = parseChip(formData.get("chip"));
+  const hasBox = formData.get("hasBox") !== "false";
   const cost = parseNumber(formData.get("cost"));
   const salePrice = parseNumber(formData.get("salePrice"));
   const description = String(formData.get("description") || "").trim() || null;
@@ -273,6 +276,7 @@ export async function updateProduct(productId: string, formData: FormData) {
       batteryCondition: productHasBattery(type) ? batteryCondition : null,
       physicalCondition,
       chip: type === "IPHONE" ? chip : null,
+      hasBox,
       cost,
       salePrice,
       description,

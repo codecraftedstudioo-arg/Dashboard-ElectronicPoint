@@ -44,6 +44,7 @@ export default async function EditProductPage({
           batteryCondition: product.batteryCondition,
           physicalCondition: product.physicalCondition,
           chip: product.chip,
+          hasBox: product.hasBox,
           cost: product.cost,
           salePrice: product.salePrice,
           description: product.description,

@@ -11,6 +11,11 @@ export const CHIP_TYPE_LABELS = {
   ESIM: "eSIM (Virtual)",
 } as const;
 
+export const BOX_OPTION_LABELS = {
+  true: "Con caja",
+  false: "Sin caja",
+} as const;
+
 export const SALE_CHANNEL_LABELS = {
   CLIENTE: "Cliente",
   FACEBOOK_MARKETPLACE: "Facebook Marketplace",

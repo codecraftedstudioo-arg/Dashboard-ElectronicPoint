@@ -58,6 +58,7 @@ model Product {
   batteryCondition   Int?
   physicalCondition  PhysicalCondition
   chip               ChipType?
+  hasBox             Boolean            @default(true)
   cost               Float
   salePrice          Float
   description        String?

@@ -24,6 +24,7 @@ import {
   STORAGE_OPTIONS,
   PHYSICAL_CONDITION_LABELS,
   CHIP_TYPE_LABELS,
+  BOX_OPTION_LABELS,
   NO_STORAGE_VALUE,
   productHasBattery,
   productHasStorage,
@@ -78,6 +79,7 @@ type ProductFormValues = {
   batteryCondition: number | null;
   physicalCondition: PhysicalCondition;
   chip?: ChipType | null;
+  hasBox?: boolean;
   cost: number;
   salePrice: number;
   description: string | null;
@@ -453,6 +455,19 @@ export function ProductForm({
           ) : (
             <input type="hidden" name="chip" value="" />
           )}
+          <div>
+            <Label>Caja</Label>
+            <Select
+              name="hasBox"
+              defaultValue={initial?.hasBox === false ? "false" : "true"}
+            >
+              {Object.entries(BOX_OPTION_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </Select>
+          </div>
           <div>
             <Label>Costo (USD)</Label>
             <Input

@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 // Replace a dev client created before later schema fields existed.
-const CLIENT_REVISION = "product-type-airpods-ipad-v2";
+const CLIENT_REVISION = "product-has-box-v1";
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
   prismaRevision: string | undefined;
