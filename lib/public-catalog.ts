@@ -30,14 +30,14 @@ export type PublicCatalogProduct = {
 };
 
 /** Product types shown on the public catalog (iPhone + Oportunidades varias). */
-const PUBLIC_CATALOG_TYPES = [
+const PUBLIC_CATALOG_TYPES: ProductType[] = [
   "IPHONE",
   "MACBOOK",
   "APPLE_WATCH",
   "AIRPODS",
   "IPAD",
   "OTROS",
-] as const satisfies ReadonlyArray<ProductType>;
+];
 
 const publicProductSelect = {
   id: true,
