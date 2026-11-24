@@ -72,35 +72,33 @@ export function SellModal({
               <option value="OTRO">Otro</option>
             </Select>
           </div>
-          <div>
-            <Label>Comisión (USD)</Label>
-            <Input
-              name="commission"
-              type="number"
-              step="0.01"
-              min={0}
-              value={commission}
-              onChange={(e) => setCommission(e.target.value)}
-              placeholder="0"
-            />
-            <p className="mt-1 text-xs text-muted">
-              Se descuenta de la ganancia de esta venta.
-            </p>
-          </div>
-          <div>
-            <Label>Vendedor {hasCommission ? "" : "(opcional)"}</Label>
-            <Select
-              name="seller"
-              defaultValue=""
-              required={hasCommission}
-            >
-              <option value="">Sin comisión</option>
-              {SELLER_NAME_ORDER.map((seller) => (
-                <option key={seller} value={seller}>
-                  {SELLER_NAME_LABELS[seller]}
-                </option>
-              ))}
-            </Select>
+          <div className="space-y-3 rounded-xl border border-amber-500/25 bg-amber-500/10 p-3">
+            <div>
+              <Label>Comisión (USD)</Label>
+              <Input
+                name="commission"
+                type="number"
+                step="0.01"
+                min={0}
+                value={commission}
+                onChange={(e) => setCommission(e.target.value)}
+                placeholder="0"
+              />
+              <p className="mt-1 text-xs text-muted">
+                Se descuenta de la ganancia de esta venta.
+              </p>
+            </div>
+            <div>
+              <Label>Vendedor {hasCommission ? "" : "(opcional)"}</Label>
+              <Select name="seller" defaultValue="" required={hasCommission}>
+                <option value="">Sin comisión</option>
+                {SELLER_NAME_ORDER.map((seller) => (
+                  <option key={seller} value={seller}>
+                    {SELLER_NAME_LABELS[seller]}
+                  </option>
+                ))}
+              </Select>
+            </div>
           </div>
           <div>
             <Label>Observaciones</Label>
