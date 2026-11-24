@@ -38,6 +38,11 @@ const EXTRA: Record<string, string> = {
   plateado: "#c9cdd3",
   naranja: "#d97a32",
   celeste: "#87ceeb",
+  burgundy: "#800020",
+  "light blue": "#add8e6",
+  dessert: "#c4a882",
+  grey: "#8e8e93",
+  "jet black": "#1d1d1f",
 };
 
 function resolveHex(name: string): string | null {

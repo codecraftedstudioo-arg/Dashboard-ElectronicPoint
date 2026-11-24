@@ -16,6 +16,14 @@ export const BOX_OPTION_LABELS = {
   false: "Sin caja",
 } as const;
 
+export const SELLER_NAME_LABELS = {
+  RAMI: "Rami",
+  SABRY: "Sabry",
+  TOBI: "Tobi",
+} as const;
+
+export const SELLER_NAME_ORDER = ["RAMI", "SABRY", "TOBI"] as const;
+
 export const SALE_CHANNEL_LABELS = {
   CLIENTE: "Cliente",
   FACEBOOK_MARKETPLACE: "Facebook Marketplace",

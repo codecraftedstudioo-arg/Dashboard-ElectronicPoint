@@ -142,7 +142,7 @@ function CurrentHero({ availableLabel }: { availableLabel: string }) {
           width={1024}
           height={246}
           sizes="(max-width: 1152px) 100vw, 1152px"
-          className="h-auto w-full rounded-2xl"
+          className="h-auto w-full"
           priority
         />
       </div>

@@ -98,6 +98,23 @@ model Sale {
   product    Product     @relation(fields: [productId], references: [id], onDelete: Restrict)
 }
 
+enum SellerName {
+  RAMI
+  SABRY
+  TOBI
+}
+
+model SellerCommission {
+  id        String     @id @default(cuid())
+  seller    SellerName
+  amount    Float
+  notes     String?
+  paidAt    DateTime   @default(now())
+  createdAt DateTime   @default(now())
+
+  @@index([seller, paidAt])
+}
+
 model AppCounter {
   id    String @id
   value Int    @default(0)

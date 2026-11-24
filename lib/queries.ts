@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { calcProfit } from "@/lib/calculations";
-import type { Prisma, ProductStatus, SaleChannel } from "@prisma/client";
+import type {
+  Prisma,
+  ProductStatus,
+  SaleChannel,
+  SellerName,
+} from "@prisma/client";
 
 export const productImagesInclude = {
   orderBy: [{ sortOrder: "asc" as const }, { createdAt: "asc" as const }],
@@ -92,6 +97,15 @@ export async function getSales(filters?: {
     include: {
       product: { include: { images: productImagesInclude } },
     },
+  });
+}
+
+export async function getSellerCommissions(filters?: {
+  seller?: SellerName;
+}) {
+  return prisma.sellerCommission.findMany({
+    where: filters?.seller ? { seller: filters.seller } : undefined,
+    orderBy: { paidAt: "desc" },
   });
 }
 

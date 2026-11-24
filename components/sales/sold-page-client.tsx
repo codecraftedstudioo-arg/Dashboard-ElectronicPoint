@@ -18,7 +18,8 @@ import {
 import { primaryImageUrl } from "@/lib/images";
 import { ChannelSalesChart } from "@/components/dashboard/charts";
 import { EditSaleModal } from "@/components/sales/edit-sale-modal";
-import type { SaleChannel, ProductType } from "@prisma/client";
+import { CommissionsPanel } from "@/components/sales/commissions-panel";
+import type { SaleChannel, ProductType, SellerName } from "@prisma/client";
 import { DollarSign, Package, TrendingUp, ChartPie } from "lucide-react";
 import { StatCard as MetricCard } from "@/components/dashboard/stat-card";
 
@@ -74,7 +75,21 @@ type SaleRow = {
   };
 };
 
-export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
+type CommissionRow = {
+  id: string;
+  seller: SellerName;
+  amount: number;
+  notes: string | null;
+  paidAt: Date | string;
+};
+
+export function SoldPageClient({
+  sales,
+  commissions,
+}: {
+  sales: SaleRow[];
+  commissions: CommissionRow[];
+}) {
   const [period, setPeriod] = useState<Period>("all");
   const [channel, setChannel] = useState("ALL");
   const [type, setType] = useState("ALL");
@@ -261,6 +276,8 @@ export function SoldPageClient({ sales }: { sales: SaleRow[] }) {
           histórico de cada venta permanece almacenado en USD.
         </p>
       ) : null}
+
+      {!showingHistory ? <CommissionsPanel commissions={commissions} /> : null}
 
       <Card className="space-y-3">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">

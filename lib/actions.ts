@@ -17,6 +17,7 @@ import type {
   PhysicalCondition,
   ProductType,
   SaleChannel,
+  SellerName,
 } from "@prisma/client";
 
 function parseNumber(value: FormDataEntryValue | null): number {
@@ -502,6 +503,60 @@ export async function updateSalePrice(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/vendidos");
   revalidatePath(`/equipos/${sale.productId}`);
+}
+
+function parseSellerName(
+  value: FormDataEntryValue | null,
+): SellerName | null {
+  const seller = String(value ?? "").trim();
+  if (seller === "RAMI" || seller === "SABRY" || seller === "TOBI") {
+    return seller;
+  }
+  return null;
+}
+
+export async function createSellerCommission(formData: FormData) {
+  await requireAdmin();
+  const seller = parseSellerName(formData.get("seller"));
+  const amount = parseNumber(formData.get("amount"));
+  const notes = String(formData.get("notes") || "").trim() || null;
+  const paidAtRaw = String(formData.get("paidAt") || "").trim();
+  const paidAt = paidAtRaw ? new Date(`${paidAtRaw}T12:00:00`) : new Date();
+
+  if (!seller) {
+    throw new Error("Vendedor inválido.");
+  }
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error("Monto de comisión inválido.");
+  }
+  if (Number.isNaN(paidAt.getTime())) {
+    throw new Error("Fecha de pago inválida.");
+  }
+
+  await prisma.sellerCommission.create({
+    data: {
+      seller,
+      amount,
+      notes,
+      paidAt,
+    },
+  });
+
+  revalidatePath("/vendidos");
+}
+
+export async function deleteSellerCommission(formData: FormData) {
+  await requireAdmin();
+  const commissionId = String(formData.get("commissionId") || "").trim();
+  if (!commissionId) {
+    throw new Error("Comisión no encontrada.");
+  }
+
+  await prisma.sellerCommission.delete({
+    where: { id: commissionId },
+  });
+
+  revalidatePath("/vendidos");
 }
 
 export type ReservationResult =
