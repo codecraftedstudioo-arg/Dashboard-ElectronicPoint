@@ -134,6 +134,21 @@ export default async function ProductDetailPage({
             />
           </Card>
 
+          {product.status === "AVAILABLE" ? (
+            <Card className="space-y-3">
+              <div>
+                <h3 className="font-semibold text-foreground">Registrar venta</h3>
+                <p className="text-sm text-muted">
+                  Incluye comisión opcional para Rami, Sabry o Tobi.
+                </p>
+              </div>
+              <SellModal
+                productId={product.id}
+                defaultPrice={product.salePrice}
+              />
+            </Card>
+          ) : null}
+
           {product.sale ? (
             <Card className="space-y-3">
               <h3 className="font-semibold text-foreground">Venta registrada</h3>
@@ -147,6 +162,12 @@ export default async function ProductDetailPage({
                   {SALE_CHANNEL_LABELS[product.sale.channel]}
                 </Badge>
               </div>
+              {(product.sale.commission ?? 0) > 0 ? (
+                <Row
+                  label="Comisión"
+                  value={<Money amount={product.sale.commission} />}
+                />
+              ) : null}
               <Row
                 label="Fecha"
                 value={product.sale.soldAt.toLocaleDateString("es-AR")}
