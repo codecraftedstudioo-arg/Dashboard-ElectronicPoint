@@ -83,7 +83,7 @@ export function SellModal({
               </Select>
             </div>
 
-            <div className="space-y-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
+            <div className="space-y-3 rounded-xl border border-[#b8e8d6] bg-[#d4f3e7] p-3">
               <p className="text-sm font-semibold text-foreground">
                 Comisión
               </p>
