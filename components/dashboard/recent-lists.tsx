@@ -134,6 +134,7 @@ export function RecentSalesCard({
   sales: Array<{
     id: string;
     soldPrice: number;
+    commission?: number;
     channel: SaleChannel;
     soldAt: Date;
     product: {
