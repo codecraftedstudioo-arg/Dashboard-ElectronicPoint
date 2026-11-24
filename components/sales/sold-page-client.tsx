@@ -11,6 +11,7 @@ import {
   CHANNEL_CHART_ORDER,
   CHANNEL_COLORS,
   SALE_CHANNEL_LABELS,
+  SELLER_NAME_LABELS,
   isVariedOpportunityType,
   productCategoryLabel,
   productHasStorage,
@@ -64,6 +65,8 @@ type SaleRow = {
   id: string;
   soldPrice: number;
   channel: SaleChannel;
+  commission: number;
+  seller: SellerName | null;
   soldAt: Date | string;
   product: {
     id: string;
@@ -148,7 +151,9 @@ export function SoldPageClient({
       .map(([key, group]) => {
         const revenue = group.sales.reduce((sum, sale) => sum + sale.soldPrice, 0);
         const monthProfit = group.sales.reduce(
-          (sum, sale) => sum + calcProfit(sale.soldPrice, sale.product.cost),
+          (sum, sale) =>
+            sum +
+            calcProfit(sale.soldPrice, sale.product.cost, sale.commission ?? 0),
           0,
         );
         return {
@@ -175,7 +180,8 @@ export function SoldPageClient({
   const soldCount = filtered.length;
   const revenue = filtered.reduce((s, sale) => s + sale.soldPrice, 0);
   const profit = filtered.reduce(
-    (s, sale) => s + calcProfit(sale.soldPrice, sale.product.cost),
+    (s, sale) =>
+      s + calcProfit(sale.soldPrice, sale.product.cost, sale.commission ?? 0),
     0,
   );
   const avg = soldCount ? profit / soldCount : 0;
@@ -318,7 +324,12 @@ export function SoldPageClient({
       <div className="space-y-3">
         {filtered.map((sale) => {
           const img = primaryImageUrl(sale.product.images);
-          const realProfit = calcProfit(sale.soldPrice, sale.product.cost);
+          const commission = sale.commission ?? 0;
+          const realProfit = calcProfit(
+            sale.soldPrice,
+            sale.product.cost,
+            commission,
+          );
           return (
             <Card
               key={sale.id}
@@ -345,13 +356,18 @@ export function SoldPageClient({
                       <Badge className={CHANNEL_COLORS[sale.channel]}>
                         {SALE_CHANNEL_LABELS[sale.channel]}
                       </Badge>
+                      {commission > 0 && sale.seller ? (
+                        <Badge className="border-amber-500/30 bg-amber-500/15 text-amber-500">
+                          Comisión {SELLER_NAME_LABELS[sale.seller]}
+                        </Badge>
+                      ) : null}
                       <span>
                         {new Date(sale.soldAt).toLocaleDateString("es-AR")}
                       </span>
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-3 text-sm sm:w-[320px]">
+                <div className="grid grid-cols-2 gap-3 text-sm sm:w-[360px] sm:grid-cols-4">
                   <div>
                     <div className="text-xs text-muted">Costo</div>
                     <div>
@@ -362,6 +378,12 @@ export function SoldPageClient({
                     <div className="text-xs text-muted">Final</div>
                     <div>
                       <Money amount={sale.soldPrice} />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted">Comisión</div>
+                    <div>
+                      <Money amount={commission} />
                     </div>
                   </div>
                   <div>
@@ -376,6 +398,8 @@ export function SoldPageClient({
                 saleId={sale.id}
                 soldPrice={sale.soldPrice}
                 channel={sale.channel}
+                commission={commission}
+                seller={sale.seller}
                 productLabel={
                   productHasStorage(sale.product.type)
                     ? `${sale.product.name} ${sale.product.storage}`

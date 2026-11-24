@@ -88,14 +88,17 @@ model ProductImage {
 }
 
 model Sale {
-  id         String      @id @default(cuid())
-  productId  String      @unique
-  soldPrice  Float
-  channel    SaleChannel
-  notes      String?
-  soldAt     DateTime    @default(now())
-  createdAt  DateTime    @default(now())
-  product    Product     @relation(fields: [productId], references: [id], onDelete: Restrict)
+  id          String            @id @default(cuid())
+  productId   String            @unique
+  soldPrice   Float
+  channel     SaleChannel
+  commission  Float             @default(0)
+  seller      SellerName?
+  notes       String?
+  soldAt      DateTime          @default(now())
+  createdAt   DateTime          @default(now())
+  product     Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  commissionPayment SellerCommission?
 }
 
 enum SellerName {
@@ -111,6 +114,8 @@ model SellerCommission {
   notes     String?
   paidAt    DateTime   @default(now())
   createdAt DateTime   @default(now())
+  saleId    String?    @unique
+  sale      Sale?      @relation(fields: [saleId], references: [id], onDelete: Cascade)
 
   @@index([seller, paidAt])
 }

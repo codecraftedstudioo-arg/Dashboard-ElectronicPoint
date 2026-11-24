@@ -423,27 +423,50 @@ export async function markAsSold(formData: FormData) {
   const soldPrice = parseNumber(formData.get("soldPrice"));
   const channel = String(formData.get("channel")) as SaleChannel;
   const notes = String(formData.get("notes") || "").trim() || null;
+  const commissionRaw = parseNumber(formData.get("commission"));
+  const commission =
+    Number.isFinite(commissionRaw) && commissionRaw > 0 ? commissionRaw : 0;
+  const seller = parseSellerName(formData.get("seller"));
+
+  if (commission > 0 && !seller) {
+    throw new Error("Seleccioná el vendedor de la comisión.");
+  }
 
   const product = await prisma.product.findUnique({ where: { id: productId } });
   if (!product || product.status !== "AVAILABLE") {
     throw new Error("El equipo no está disponible para venta.");
   }
 
-  await prisma.$transaction([
-    prisma.sale.create({
+  await prisma.$transaction(async (tx) => {
+    const sale = await tx.sale.create({
       data: {
         productId,
         soldPrice,
         channel,
         notes,
+        commission,
+        seller: commission > 0 ? seller : null,
         soldAt: new Date(),
       },
-    }),
-    prisma.product.update({
+    });
+
+    await tx.product.update({
       where: { id: productId },
       data: { status: "SOLD", isReserved: false },
-    }),
-  ]);
+    });
+
+    if (commission > 0 && seller) {
+      await tx.sellerCommission.create({
+        data: {
+          seller,
+          amount: commission,
+          notes: `Comisión por venta de ${product.name}`,
+          paidAt: new Date(),
+          saleId: sale.id,
+        },
+      });
+    }
+  });
 
   revalidatePath("/");
   revalidatePath("/inventario");
@@ -471,11 +494,25 @@ function parseSaleChannel(
   return null;
 }
 
+function parseSellerName(
+  value: FormDataEntryValue | null,
+): SellerName | null {
+  const seller = String(value ?? "").trim();
+  if (seller === "RAMI" || seller === "SABRY" || seller === "TOBI") {
+    return seller;
+  }
+  return null;
+}
+
 export async function updateSalePrice(formData: FormData) {
   await requireAdmin();
   const saleId = String(formData.get("saleId"));
   const soldPrice = parseNumber(formData.get("soldPrice"));
   const channel = parseSaleChannel(formData.get("channel"));
+  const commissionRaw = parseNumber(formData.get("commission"));
+  const commission =
+    Number.isFinite(commissionRaw) && commissionRaw > 0 ? commissionRaw : 0;
+  const seller = parseSellerName(formData.get("seller"));
 
   if (!saleId) {
     throw new Error("Venta no encontrada.");
@@ -486,33 +523,64 @@ export async function updateSalePrice(formData: FormData) {
   if (!channel) {
     throw new Error("Canal de venta inválido.");
   }
+  if (commission > 0 && !seller) {
+    throw new Error("Seleccioná el vendedor de la comisión.");
+  }
 
   const sale = await prisma.sale.findUnique({
     where: { id: saleId },
-    select: { productId: true },
+    select: {
+      productId: true,
+      product: { select: { name: true } },
+      commissionPayment: { select: { id: true } },
+    },
   });
   if (!sale) {
     throw new Error("Venta no encontrada.");
   }
 
-  await prisma.sale.update({
-    where: { id: saleId },
-    data: { soldPrice, channel },
+  await prisma.$transaction(async (tx) => {
+    await tx.sale.update({
+      where: { id: saleId },
+      data: {
+        soldPrice,
+        channel,
+        commission,
+        seller: commission > 0 ? seller : null,
+      },
+    });
+
+    if (commission > 0 && seller) {
+      if (sale.commissionPayment) {
+        await tx.sellerCommission.update({
+          where: { id: sale.commissionPayment.id },
+          data: {
+            seller,
+            amount: commission,
+            notes: `Comisión por venta de ${sale.product.name}`,
+          },
+        });
+      } else {
+        await tx.sellerCommission.create({
+          data: {
+            seller,
+            amount: commission,
+            notes: `Comisión por venta de ${sale.product.name}`,
+            paidAt: new Date(),
+            saleId,
+          },
+        });
+      }
+    } else if (sale.commissionPayment) {
+      await tx.sellerCommission.delete({
+        where: { id: sale.commissionPayment.id },
+      });
+    }
   });
 
   revalidatePath("/");
   revalidatePath("/vendidos");
   revalidatePath(`/equipos/${sale.productId}`);
-}
-
-function parseSellerName(
-  value: FormDataEntryValue | null,
-): SellerName | null {
-  const seller = String(value ?? "").trim();
-  if (seller === "RAMI" || seller === "SABRY" || seller === "TOBI") {
-    return seller;
-  }
-  return null;
 }
 
 export async function createSellerCommission(formData: FormData) {

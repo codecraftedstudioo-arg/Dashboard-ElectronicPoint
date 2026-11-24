@@ -125,7 +125,8 @@ export async function getDashboardStats() {
   const potentialProfit = totalSaleValue - totalCost;
 
   const realizedProfit = sales.reduce(
-    (s, sale) => s + calcProfit(sale.soldPrice, sale.product.cost),
+    (s, sale) =>
+      s + calcProfit(sale.soldPrice, sale.product.cost, sale.commission ?? 0),
     0,
   );
   const totalRevenue = sales.reduce((s, sale) => s + sale.soldPrice, 0);

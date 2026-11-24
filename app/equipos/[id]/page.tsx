@@ -33,7 +33,11 @@ export default async function ProductDetailPage({
 
   const profit = calcProfit(product.salePrice, product.cost);
   const realProfit = product.sale
-    ? calcProfit(product.sale.soldPrice, product.cost)
+    ? calcProfit(
+        product.sale.soldPrice,
+        product.cost,
+        product.sale.commission ?? 0,
+      )
     : null;
 
   return (

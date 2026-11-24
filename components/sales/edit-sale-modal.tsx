@@ -5,8 +5,12 @@ import { useState, useTransition } from "react";
 import { Pencil, RotateCcw } from "lucide-react";
 import { republishSoldProduct, updateSalePrice } from "@/lib/actions";
 import { Button, Input, Label, Select, cn } from "@/components/ui";
-import { SALE_CHANNEL_LABELS } from "@/lib/constants";
-import type { SaleChannel } from "@prisma/client";
+import {
+  SALE_CHANNEL_LABELS,
+  SELLER_NAME_LABELS,
+  SELLER_NAME_ORDER,
+} from "@/lib/constants";
+import type { SaleChannel, SellerName } from "@prisma/client";
 
 type ModalView = "edit" | "confirm-republish";
 
@@ -24,11 +28,15 @@ export function EditSaleModal({
   saleId,
   soldPrice,
   channel,
+  commission = 0,
+  seller = null,
   productLabel,
 }: {
   saleId: string;
   soldPrice: number;
   channel: SaleChannel;
+  commission?: number;
+  seller?: SellerName | null;
   productLabel: string;
 }) {
   const router = useRouter();
@@ -36,6 +44,10 @@ export function EditSaleModal({
   const [view, setView] = useState<ModalView>("edit");
   const [price, setPrice] = useState(String(soldPrice));
   const [selectedChannel, setSelectedChannel] = useState<SaleChannel>(channel);
+  const [commissionValue, setCommissionValue] = useState(
+    commission > 0 ? String(commission) : "",
+  );
+  const [selectedSeller, setSelectedSeller] = useState<string>(seller ?? "");
   const [feedback, setFeedback] = useState<{
     type: "success" | "error";
     message: string;
@@ -47,6 +59,8 @@ export function EditSaleModal({
     setFeedback(null);
     setPrice(String(soldPrice));
     setSelectedChannel(channel);
+    setCommissionValue(commission > 0 ? String(commission) : "");
+    setSelectedSeller(seller ?? "");
   }
 
   function openModal() {
@@ -182,6 +196,36 @@ export function EditSaleModal({
                   {SALE_CHANNEL_OPTIONS.map((value) => (
                     <option key={value} value={value}>
                       {SALE_CHANNEL_LABELS[value]}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <Label>Comisión (USD)</Label>
+                <Input
+                  name="commission"
+                  type="number"
+                  step="0.01"
+                  min={0}
+                  value={commissionValue}
+                  onChange={(e) => setCommissionValue(e.target.value)}
+                  placeholder="0"
+                  disabled={pending}
+                />
+              </div>
+              <div>
+                <Label>Vendedor</Label>
+                <Select
+                  name="seller"
+                  value={selectedSeller}
+                  onChange={(e) => setSelectedSeller(e.target.value)}
+                  disabled={pending}
+                  required={Number(commissionValue) > 0}
+                >
+                  <option value="">Sin comisión</option>
+                  {SELLER_NAME_ORDER.map((value) => (
+                    <option key={value} value={value}>
+                      {SELLER_NAME_LABELS[value]}
                     </option>
                   ))}
                 </Select>

@@ -161,7 +161,11 @@ export function RecentSalesCard({
       <div className="space-y-1">
         {sales.map((sale) => {
           const img = primaryImageUrl(sale.product.images);
-          const profit = calcProfit(sale.soldPrice, sale.product.cost);
+          const profit = calcProfit(
+            sale.soldPrice,
+            sale.product.cost,
+            sale.commission ?? 0,
+          );
           return (
             <Link
               key={sale.id}
